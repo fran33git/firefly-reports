@@ -14,6 +14,13 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    ignore:
+      # numpy>=2.5.0 requires Python>=3.12; this project's CI matrix still
+      # tests 3.11 (see requirements.in). Without this, Dependabot widens
+      # the numpy<2.5 constraint on its own whenever a newer release ships,
+      # since it treats the pinned line in requirements.in as a direct dep.
+      - dependency-name: "numpy"
+        versions: [">=2.5.0"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
