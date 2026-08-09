@@ -3,11 +3,11 @@ reportlab>=4.0.0
 openpyxl>=3.1.0
 python-dateutil>=2.8.2
 python-dotenv>=1.0.0
-matplotlib>=3.7.0
+matplotlib>=3.11.1
 
 # numpy is a transitive dep of matplotlib. Capped because numpy>=2.5.0
 # requires Python>=3.12, and this project supports Python>=3.11 (CI
 # matrix runs both 3.11 and 3.12). Without this cap, pip-compile (and
 # Dependabot's lockfile regeneration) picks the latest numpy and
 # breaks installation on 3.11.
-numpy<2.5
+numpy<2.6
