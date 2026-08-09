@@ -1,0 +1,7 @@
+# Pinned from test environment (Python 3.12). Loose constraints in requirements.in.
+requests==2.34.2
+reportlab==4.5.1
+openpyxl==3.1.5
+python-dateutil==2.9.0.post0
+python-dotenv==1.2.2
+matplotlib==3.10.9
