@@ -7,6 +7,13 @@ updates:
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore(deps)"
+    groups:
+      # Bundle low-risk bumps into one PR; majors (e.g. a reportlab X.0.0)
+      # stay separate so they get individual review/testing.
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -14,3 +21,9 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "chore(ci)"
+    groups:
+      # Actions bump their major tag often for routine releases; low risk
+      # since it's declarative YAML executed by GitHub-hosted runners.
+      github-actions:
+        patterns:
+          - "*"

@@ -337,6 +337,10 @@ def cmd_init() -> None:
         lines.append("tags     = []")
 
     config_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    if token:
+        # Restrict to owner-only since the file may contain the API token
+        # in clear text (same convention as ~/.netrc or ~/.pgpass).
+        os.chmod(config_path, 0o600)
     print(f"\nConfig written to {config_path.resolve()}")
 
     if token:
