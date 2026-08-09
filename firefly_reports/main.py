@@ -336,11 +336,18 @@ def cmd_init() -> None:
     else:
         lines.append("tags     = []")
 
-    config_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    content = "\n".join(lines) + "\n"
     if token:
-        # Restrict to owner-only since the file may contain the API token
-        # in clear text (same convention as ~/.netrc or ~/.pgpass).
-        os.chmod(config_path, 0o600)
+        # Create atomically with owner-only permissions before any bytes
+        # are written, so the token is never briefly world/group-readable
+        # (same convention as ~/.netrc or ~/.pgpass). Also re-applied via
+        # fchmod in case a stale, more permissive file already existed.
+        fd = os.open(config_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        os.fchmod(fd, 0o600)
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(content)
+    else:
+        config_path.write_text(content, encoding="utf-8")
     print(f"\nConfig written to {config_path.resolve()}")
 
     if token:
