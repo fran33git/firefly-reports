@@ -2,10 +2,10 @@
 """
 Firefly III Report Generator
 ─────────────────────────────
-Generates all 25 financial reports (PDF + Excel) from Firefly III data.
+Generates all 26 financial reports (PDF + Excel) from Firefly III data.
 
 Usage:
-  python main.py --url https://firefly.yourdomain.com \\
+  python -m firefly_reports.main --url https://firefly.yourdomain.com \\
                  --token <PAT_TOKEN> \\
                  --start 2025-01-01 --end 2025-12-31 \\
                  --owner "Mario Rossi" --out ./output
@@ -411,7 +411,7 @@ def main():
         sys.exit(1)
     if not year and (not args.start or not args.end):
         print("Error: provide --year YYYY (full year, all reports) or both --start and --end.")
-        print("Run 'python main.py init' to create a config file.")
+        print("Run 'firefly-reports init' to create a config file.")
         sys.exit(1)
 
     url, token = _resolve_credentials(args, config)

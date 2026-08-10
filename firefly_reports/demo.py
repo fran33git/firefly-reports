@@ -2,9 +2,9 @@
 """Demo with mock data — all 26 reports.
 
 Usage:
-  python demo.py [--out ./output] [--lang en|it] [--year YYYY] [--debug]
+  python -m firefly_reports.demo [--out ./output] [--lang en|it] [--year YYYY] [--debug]
 """
-# Run from the firefly_reports/ directory: python demo.py
+# Run from the firefly_reports/ directory: python -m firefly_reports.demo
 
 import argparse
 import logging
