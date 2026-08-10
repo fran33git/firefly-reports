@@ -21,7 +21,7 @@ firefly_client.py  →  data_processor.py  →  pdf_exporter.py
                                           →  excel_exporter.py
 ```
 
-All modules live in `firefly_reports/` and are imported as flat top-level modules (e.g. `from data_processor import ...`), not via package-qualified imports. Tests insert `firefly_reports/` into `sys.path` (see `tests/conftest.py`).
+All modules live in `firefly_reports/` and are imported as package-qualified absolute imports (e.g. `from firefly_reports.data_processor import ...`). pytest resolves them via `pythonpath = ["."]` in `pyproject.toml`.
 
 | Module | Role |
 |---|---|
@@ -30,7 +30,7 @@ All modules live in `firefly_reports/` and are imported as flat top-level module
 | `pdf_exporter.py` | 28 `render_*_pdf(data, path)` functions using ReportLab (26 matching `build_*` + 2 dashboard variants). Colour constants and `_make_header_footer()` at the top of the file. |
 | `excel_exporter.py` | `render_all_xlsx()` (3 sheets, legacy) and `render_all_xlsx_full()` (16 core report sheets + Summary, used by `main.py` and `demo.py`; Account Statements contributes one sheet per asset account) |
 | `chart_engine.py` | matplotlib (Agg backend) chart generators returning `io.BytesIO` PNG buffers |
-| `main.py` | CLI entry point (`python main.py ...`); orchestrates fetch → process → export. Subcommand `python main.py init` runs an interactive wizard that creates `firefly-reports.toml` |
+| `main.py` | CLI entry point (installed as `firefly-reports`; from source `python -m firefly_reports.main ...`); orchestrates fetch → process → export. Subcommand `firefly-reports init` runs an interactive wizard that creates `firefly-reports.toml` |
 | `demo.py` | Exercises all 26 report types using inline English mock data (`TXN_2025`, `TXN_2024`, `ACCOUNTS`, `LIABILITIES`, `BUDGETS`, `BILLS`, `PIGGY_BANKS`, `TRANSACTION_LINKS`) — no Firefly III needed. Writes to `./output` by default (override with `--out`); full year via `--year YYYY` (default 2025); report language selectable with `--lang en\|it` (default `en`) |
 | `config.py` | Loads `./firefly-reports.toml` (cwd) via `tomllib`; returns `{}` if missing |
 | `i18n.py` | Loads `firefly_reports/translations/{lang}.toml` into a module-level `T` dict; `t("pdf.category")` accessor falls back to `en`, then returns the key itself |
@@ -54,20 +54,20 @@ Token/URL come from CLI flags (`--url`, `--token`), env vars `FIREFLY_URL`/`FIRE
 There is no compiled build step; it is a plain Python application.
 
 ```bash
-# Setup (a .venv already exists in firefly_reports/.venv)
-pip install -e ".[dev]"          # or: cd firefly_reports && pip install -r requirements.txt
+# Setup (a .venv already exists at .venv/ in the repo root)
+pip install -e ".[dev]"          # or: pip install -r firefly_reports/requirements.txt
 pre-commit install
 
-# Run against a real instance
-python firefly_reports/main.py --url https://firefly.example.com \
+# Run against a real instance (or use the installed `firefly-reports` command)
+python -m firefly_reports.main --url https://firefly.example.com \
   --start 2025-01-01 --end 2025-12-31 --owner "Your Name" --out ./output
 
 # Run with mock data (no Firefly III needed)
-python firefly_reports/demo.py --out ./output
+python -m firefly_reports.demo --out ./output
 
-# Tests (PYTHONPATH is required — modules are imported flat, not as a package)
-PYTHONPATH=firefly_reports pytest tests/ -v
-PYTHONPATH=firefly_reports pytest tests/ --cov=firefly_reports --cov-report=term-missing
+# Tests (no PYTHONPATH needed — pyproject.toml sets pythonpath = ["."])
+pytest tests/ -v
+pytest tests/ --cov=firefly_reports --cov-report=term-missing
 
 # Lint / type check / security
 ruff check firefly_reports/
@@ -82,14 +82,14 @@ pip-audit -r firefly_reports/requirements.txt
 - Ruff: `line-length = 100`, target `py311`; lint rules `E, W, F, I, N, UP, B, SIM`; `E501` ignored. Per-file ignores exist for `pdf_exporter.py` (`N806`, `E701`) and `excel_exporter.py` (`E701`) — do not "fix" those violations there.
 - Ruff format is enforced in CI (`ruff format --check`).
 - mypy: `disallow_untyped_defs = true` globally, but relaxed for `pdf_exporter`, `excel_exporter`, `demo`, and `main`. Missing-import stubs ignored for `reportlab`, `openpyxl`, `matplotlib`, `dateutil`.
-- Keep the flat-module import style (`from data_processor import ...`) — this is intentional and is how `main.py`, `demo.py`, and the tests import each other.
+- Use package-qualified absolute imports (`from firefly_reports.data_processor import ...`) — this is how `main.py`, `demo.py`, and the tests import each other.
 - Keep `data_processor.py` free of I/O: it only transforms dicts into dicts. Rendering lives exclusively in the exporters.
 - Monetary values are always `Decimal` (2 decimal places) produced via `_d()` in `data_processor.py` — never raw floats for money.
 
 ## Testing instructions
 
 - Framework: pytest (with `pytest-cov`; CI enforces `--cov-fail-under=60`, `demo.py` excluded from coverage). Config in `pyproject.toml` (`testpaths = ["tests"]`).
-- Always run with `PYTHONPATH=firefly_reports` from the repo root: `PYTHONPATH=firefly_reports pytest tests/ -v`.
+- Run from the repo root with plain pytest (no `PYTHONPATH` needed — `pyproject.toml` sets `pythonpath = ["."]`): `pytest tests/ -v`.
 - Tests must not require a live Firefly III instance: fixtures in `tests/conftest.py` derive from the mock data in `demo.py`, and HTTP calls are mocked with the `responses` library (see `tests/test_firefly_client.py`).
 - `conftest.py` loads English translations once per session via `i18n.load("en")` — keep this autouse fixture when adding tests that touch rendered strings.
 
@@ -105,7 +105,8 @@ pip-audit -r firefly_reports/requirements.txt
 
 - GitHub Actions (`.github/workflows/ci.yml`) runs on pushes to `main`/`develop` and on all PRs: ruff lint + format check, mypy, pytest matrix on Python 3.11/3.12 with coverage threshold, `pip-audit`, and `bandit`.
 - Pre-commit hooks (`.pre-commit-config.yaml`) run ruff (with `--fix`), ruff-format, and mypy on commit.
-- There is no deployment pipeline or published package; the tool is distributed as source and run locally via `python main.py`.
+- Release workflow (`.github/workflows/release.yml`): pushing a tag `v*` checks the tag matches the package version, runs tests, builds the sdist/wheel, publishes to PyPI via OIDC Trusted Publishing (configure the Trusted Publisher on pypi.org), builds a standalone Windows executable with PyInstaller, and creates a GitHub Release.
+- Wiki sync workflow (`.github/workflows/wiki-sync.yml`): a push to `main` touching `docs/wiki/**` pushes the pages to the GitHub Wiki repository automatically.
 
 ## Security considerations
 
@@ -116,4 +117,4 @@ pip-audit -r firefly_reports/requirements.txt
 
 ## Documentation
 
-Full user/developer documentation mirrors the GitHub Wiki under `docs/wiki/` (Installation, Configuration, Reports Reference, Architecture, Testing, Troubleshooting, Adding a New Report, Contributing). Keep `README.md`, `CONTRIBUTING.md`, `CLAUDE.md`, and the wiki files in sync when changing workflows or report lists.
+Full user/developer documentation mirrors the GitHub Wiki under `docs/wiki/` (Installation, Configuration, Reports Reference, Architecture, Testing, Troubleshooting, Adding a New Report, Contributing). `docs/wiki/` is the single source of truth — edit pages only there; the `wiki-sync` workflow pushes them to the GitHub Wiki automatically. Keep `README.md`, `CONTRIBUTING.md`, `CLAUDE.md`, and the wiki files in sync when changing workflows or report lists.

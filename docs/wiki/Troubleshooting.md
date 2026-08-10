@@ -34,10 +34,10 @@ The `--fetch-links` flag fetches each linked transaction individually with a del
 
 ```bash
 # Faster (only for local/LAN instances with no rate limit)
-python main.py ... --fetch-links --link-delay 0.05
+firefly-reports ... --fetch-links --link-delay 0.05
 
 # Slower (for remote instances or when hitting 429 errors)
-python main.py ... --fetch-links --link-delay 0.5
+firefly-reports ... --fetch-links --link-delay 0.5
 ```
 
 On HTTP 429, the tool automatically retries once using the `Retry-After` header value (or double the current delay). Failed transactions are skipped and counted; a summary is logged at the end.
@@ -61,11 +61,11 @@ On HTTP 429, the tool automatically retries once using the `Retry-After` header 
 Enable the debug log to capture the full HTTP request/response cycle, timing per report, and data summaries:
 
 ```bash
-python main.py ... --debug
+firefly-reports ... --debug
 # Writes: output/debug_20250523_143022.log
 
 # Or specify the log path:
-python main.py ... --debug --debug-file /tmp/firefly-debug.log
+firefly-reports ... --debug --debug-file /tmp/firefly-debug.log
 ```
 
 The log includes:

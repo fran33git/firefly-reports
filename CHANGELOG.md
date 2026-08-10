@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.0.1] - 2026-08-10
+
+### Added
+- PyPI packaging: `pip install firefly-reports` with a `firefly-reports` CLI command
+- Release workflow: tag `v*` publishes sdist/wheel to PyPI (OIDC Trusted Publishing),
+  builds a standalone Windows executable (PyInstaller) and creates a GitHub Release
+- Wiki sync workflow: `docs/wiki/` is the single source of truth, pushed
+  automatically to the GitHub Wiki on every change
+
+### Changed
+- Internal imports converted from flat to package-qualified
+  (`from firefly_reports.X import ...`); run from source with
+  `python -m firefly_reports.main` and tests with plain `pytest tests/`
+
+### Fixed
+- Coverage badge: CI job now commits the generated badge SVG
+  (previously skipped because `git diff` ignores untracked files)
+
 ## [1.0.0] - 2026-08-09
 
 Initial public release.

@@ -9,22 +9,34 @@
 
 ## Install
 
+From PyPI (recommended):
+
+```bash
+pip install firefly-reports
+```
+
+This installs the `firefly-reports` command. Alternatively, install from source:
+
 ```bash
 git clone https://github.com/fran33git/firefly-reports.git
-cd firefly-reports/firefly_reports
-pip install -r requirements.txt
+cd firefly-reports
+pip install -r firefly_reports/requirements.txt
 ```
 
 ## First run
 
+With the PyPI install, use the `firefly-reports` command:
+
 ```bash
-python main.py \
+firefly-reports \
   --url https://your-firefly-instance.example.com \
   --start 2025-01-01 \
   --end 2025-12-31 \
   --owner "Your Name" \
   --out ./output
 ```
+
+From a source checkout, run the same command as `python -m firefly_reports.main ...` from the repo root.
 
 You will be prompted for your Personal Access Token if it is not set via `--token` or environment variables. See [[Configuration]] for the full credential chain.
 
@@ -57,11 +69,10 @@ The tool prints a progress summary as it runs:
 
 ## Demo mode (no Firefly III required)
 
-Run the demo to see all reports generated from built-in mock data:
+Run the demo to see all reports generated from built-in mock data (from the repo root of a source checkout):
 
 ```bash
-cd firefly_reports
-python demo.py --out ./output
+python -m firefly_reports.demo --out ./output
 ```
 
 This uses realistic English freelancer mock data and produces all 26 PDF reports plus the Excel workbook (full year via `--year 2025`, override with `--year YYYY`). Useful for evaluating the tool before connecting it to a live instance.

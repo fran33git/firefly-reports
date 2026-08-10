@@ -4,13 +4,13 @@
 
 ```bash
 # From the repo root
-PYTHONPATH=firefly_reports pytest tests/ -v
+pytest tests/ -v
 ```
 
 With coverage:
 
 ```bash
-PYTHONPATH=firefly_reports pytest tests/ \
+pytest tests/ \
   --cov=firefly_reports \
   --cov-report=term-missing \
   --cov-fail-under=60
@@ -37,7 +37,7 @@ Use the `responses` library to mock HTTP calls:
 
 ```python
 import responses as rsps_lib
-from firefly_client import FireflyClient
+from firefly_reports.firefly_client import FireflyClient
 
 BASE = "https://firefly.test"
 
@@ -77,7 +77,7 @@ def test_get_transactions_basic(client):
 ```python
 from datetime import date
 from decimal import Decimal
-from data_processor import build_cash_flow
+from firefly_reports.data_processor import build_cash_flow
 
 SAMPLE = [
     {"type": "deposit",    "date": "2025-01-10", "amount": "1000.00",
