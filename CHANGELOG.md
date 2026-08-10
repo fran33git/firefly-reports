@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.0.2] - 2026-08-10
+
+### Fixed
+- Windows executable crashed with `UnicodeEncodeError` on consoles using legacy
+  codepages (e.g. cp1252) when printing help or messages containing non-ASCII
+  characters (`€`, `—`): console output now replaces unencodable characters
+  instead of crashing. The 1.0.1 PyPI release is affected by this bug on
+  cp1252 Windows consoles; 1.0.2 supersedes it.
+
 ## [1.0.1] - 2026-08-10
 
 ### Added

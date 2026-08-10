@@ -372,6 +372,11 @@ def cmd_init() -> None:
 
 
 def main():
+    # Avoid UnicodeEncodeError on Windows consoles with legacy codepages
+    # (e.g. cp1252): replace characters the console cannot encode.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(errors="replace")
     load_dotenv()
     args = parse_args()
     try:
