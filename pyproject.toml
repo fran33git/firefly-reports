@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "firefly-iii-reports"
-version = "1.0.1"
+version = "1.0.2"
 description = "Generate financial reports (PDF + Excel) from a Firefly III instance"
 readme = "README.md"
 license = { text = "GPL-3.0-or-later" }

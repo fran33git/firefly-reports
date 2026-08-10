@@ -8,6 +8,7 @@ Usage:
 
 import argparse
 import logging
+import sys
 import time
 from datetime import date
 from decimal import Decimal
@@ -905,6 +906,11 @@ def _ensure_ids(txns: list[dict], prefix: str) -> None:
 
 
 def main():
+    # Avoid UnicodeEncodeError on Windows consoles with legacy codepages
+    # (e.g. cp1252): replace characters the console cannot encode.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(errors="replace")
     parser = argparse.ArgumentParser(description="Demo Firefly report generator (mock data)")
     parser.add_argument("--out", default="./output", help="Output directory (default: ./output)")
     parser.add_argument(
