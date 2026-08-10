@@ -60,10 +60,6 @@ module = ["reportlab.*", "openpyxl.*", "matplotlib.*", "dateutil.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = ["i18n", "config", "chart_engine", "data_processor", "pdf_exporter", "excel_exporter", "firefly_client"]
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
 module = ["firefly_reports.pdf_exporter", "firefly_reports.excel_exporter", "firefly_reports.demo", "firefly_reports.main"]
 disallow_untyped_defs = false
 warn_return_any = false
@@ -71,6 +67,7 @@ warn_return_any = false
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--tb=short"
+pythonpath = ["."]
 
 [tool.coverage.run]
 source = ["firefly_reports"]

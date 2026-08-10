@@ -1,28 +1,46 @@
 """Smoke test for render_all_xlsx_full."""
 
-import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "firefly_reports"))
-
-from datetime import date
-
-from data_processor import (
-    build_cash_flow, build_income_expense, build_transaction_register,
-    build_net_worth, build_account_statements, build_tax_summary,
-    build_expense_trend, build_tagged_report, build_budget_vs_actual,
-    build_bills_report, build_savings_goals, build_liabilities_report,
-    build_kpi_scorecard, build_yoy_comparison, build_cumulative_cashflow,
-    build_income_concentration, build_summary,
+from firefly_reports.data_processor import (
+    build_account_statements,
+    build_bills_report,
+    build_budget_vs_actual,
+    build_cash_flow,
+    build_cumulative_cashflow,
+    build_expense_trend,
+    build_income_concentration,
+    build_income_expense,
+    build_kpi_scorecard,
+    build_liabilities_report,
+    build_net_worth,
+    build_savings_goals,
+    build_summary,
+    build_tagged_report,
+    build_tax_summary,
+    build_transaction_register,
+    build_yoy_comparison,
 )
-from excel_exporter import render_all_xlsx_full
+from firefly_reports.excel_exporter import render_all_xlsx_full
 
 MIN_XLSX_BYTES = 5000
 
 
 def test_render_all_xlsx_full(
-    tmp_path, txn_2025, txn_2024, accounts, liabilities,
-    budgets, budget_limits, bills, bill_txn, piggy_banks,
-    about, about_user, period, period_prev, owner, currency,
+    tmp_path,
+    txn_2025,
+    txn_2024,
+    accounts,
+    liabilities,
+    budgets,
+    budget_limits,
+    bills,
+    bill_txn,
+    piggy_banks,
+    about,
+    about_user,
+    period,
+    period_prev,
+    owner,
+    currency,
 ):
     start, end = period
     start_prev, end_prev = period_prev
@@ -44,20 +62,26 @@ def test_render_all_xlsx_full(
         ),
         "bills": build_bills_report(bills, bill_txn, start, end, owner, currency),
         "savings": build_savings_goals(piggy_banks, end, owner, currency),
-        "liabilities": build_liabilities_report(
-            liabilities, {}, end, start, end, owner, currency
-        ),
-        "kpi": build_kpi_scorecard(
-            txn_2025, accounts, liabilities, start, end, owner, currency
-        ),
+        "liabilities": build_liabilities_report(liabilities, {}, end, start, end, owner, currency),
+        "kpi": build_kpi_scorecard(txn_2025, accounts, liabilities, start, end, owner, currency),
         "yoy": build_yoy_comparison(
             txn_2025, txn_2024, start, end, start_prev, end_prev, owner, currency
         ),
         "cumulative_cf": build_cumulative_cashflow(txn_2025, start, end, owner, currency),
         "concentration": build_income_concentration(txn_2025, start, end, owner, currency),
         "summary": build_summary(
-            txn_2025, accounts, liabilities, budgets, bills, piggy_banks,
-            about, about_user, start, end, owner, currency,
+            txn_2025,
+            accounts,
+            liabilities,
+            budgets,
+            bills,
+            piggy_banks,
+            about,
+            about_user,
+            start,
+            end,
+            owner,
+            currency,
         ),
     }
 
@@ -69,7 +93,13 @@ def test_render_all_xlsx_full(
 
 
 def test_render_all_xlsx_full_skips_none_sheets(
-    tmp_path, txn_2025, accounts, liabilities, period, owner, currency,
+    tmp_path,
+    txn_2025,
+    accounts,
+    liabilities,
+    period,
+    owner,
+    currency,
 ):
     """Range mode: yoy (and any other unavailable report) is passed as None."""
     start, end = period
@@ -93,14 +123,34 @@ def test_render_all_xlsx_full_skips_none_sheets(
 
 
 def test_render_all_xlsx_full_summary_sheet(
-    tmp_path, txn_2025, accounts, liabilities, budgets, bills, piggy_banks,
-    about, about_user, period, owner, currency,
+    tmp_path,
+    txn_2025,
+    accounts,
+    liabilities,
+    budgets,
+    bills,
+    piggy_banks,
+    about,
+    about_user,
+    period,
+    owner,
+    currency,
 ):
     start, end = period
     data = {
         "summary": build_summary(
-            txn_2025, accounts, liabilities, budgets, bills, piggy_banks,
-            about, about_user, start, end, owner, currency,
+            txn_2025,
+            accounts,
+            liabilities,
+            budgets,
+            bills,
+            piggy_banks,
+            about,
+            about_user,
+            start,
+            end,
+            owner,
+            currency,
         ),
     }
     p = tmp_path / "reports_summary.xlsx"

@@ -27,9 +27,11 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-import i18n
-from config import load_config
-from data_processor import (
+from dotenv import load_dotenv
+
+from firefly_reports import i18n
+from firefly_reports.config import load_config
+from firefly_reports.data_processor import (
     apply_global_filters,
     build_account_statements,
     build_all_tags_report,
@@ -58,10 +60,9 @@ from data_processor import (
     build_transaction_register,
     build_yoy_comparison,
 )
-from dotenv import load_dotenv
-from excel_exporter import render_all_xlsx_full
-from firefly_client import FireflyClient
-from pdf_exporter import (
+from firefly_reports.excel_exporter import render_all_xlsx_full
+from firefly_reports.firefly_client import FireflyClient
+from firefly_reports.pdf_exporter import (
     render_account_statements_pdf,
     render_all_tags_pdf,
     render_audit_log_pdf,

@@ -9,11 +9,12 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
-import i18n
-from i18n import T, t
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
+
+from firefly_reports import i18n
+from firefly_reports.i18n import T, t
 
 # ─────────────────────────────────────────────────
 # Monochrome palette
