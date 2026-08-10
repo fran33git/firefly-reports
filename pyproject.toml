@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "firefly-reports"
-version = "1.0.0"
+version = "1.0.1"
 description = "Generate financial reports (PDF + Excel) from a Firefly III instance"
 readme = "README.md"
 license = { text = "GPL-3.0-or-later" }
@@ -20,9 +20,16 @@ dependencies = [
     "matplotlib>=3.7.0",
 ]
 
+[project.scripts]
+firefly-reports = "firefly_reports.main:main"
+
 [project.urls]
+Homepage = "https://bytesdust.com"
 Repository = "https://github.com/fran33git/firefly-reports"
 "Bug Tracker" = "https://github.com/fran33git/firefly-reports/issues"
+
+[tool.setuptools.package-data]
+firefly_reports = ["translations/*.toml"]
 
 [project.optional-dependencies]
 dev = [
