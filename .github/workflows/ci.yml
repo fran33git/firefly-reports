@@ -99,6 +99,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -116,12 +117,22 @@ jobs:
                   elif [ "$PCT" -ge 60 ]; then echo yellow; else echo red; fi)
           curl -sf -o docs/coverage_badge.svg \
             "https://img.shields.io/badge/coverage-${PCT}%25-${COLOR}"
-      - name: Commit coverage badge
+      # main is protected by a ruleset requiring PRs, so the bot cannot push
+      # directly: open (or update) a badge PR instead and try to merge it.
+      - name: Create or update badge PR
+        id: cpr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "chore(ci): update coverage badge"
+          title: "chore(ci): update coverage badge"
+          body: "Automated update of `docs/coverage_badge.svg` from the latest CI coverage run."
+          branch: ci/coverage-badge
+          delete-branch: true
+      - name: Merge badge PR
+        if: steps.cpr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/coverage_badge.svg
-          git diff --cached --quiet || (
-            git commit -m "chore(ci): update coverage badge" &&
-            git push
-          )
+          gh pr merge --squash "${{ steps.cpr.outputs.pull-request-number }}" || \
+          gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}" || \
+          echo "Badge PR left open for manual merge"
