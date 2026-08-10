@@ -5,7 +5,7 @@ labels: bug
 ---
 
 **Version**
-<!-- Output of: python main.py --version or the tag you're running -->
+<!-- Output of: pip show firefly-iii-reports | grep Version, or the tag you're running -->
 
 **Environment**
 - OS:
@@ -14,7 +14,7 @@ labels: bug
 
 **Command used**
 ```
-python main.py --url ... --start ... --end ...
+firefly-reports --url ... --start ... --end ...
 ```
 
 **Expected behavior**

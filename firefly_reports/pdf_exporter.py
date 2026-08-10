@@ -9,17 +9,6 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
-import i18n
-from chart_engine import (
-    create_area_chart,
-    create_bar_chart,
-    create_cashflow_combo,
-    create_donut_chart,
-    create_horizontal_bar_chart,
-    create_line_chart,
-    create_pie_chart,
-)
-from i18n import T, t
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from reportlab.lib.pagesizes import A4, landscape
@@ -39,6 +28,18 @@ from reportlab.platypus import (
     Table,
     TableStyle,
 )
+
+from firefly_reports import i18n
+from firefly_reports.chart_engine import (
+    create_area_chart,
+    create_bar_chart,
+    create_cashflow_combo,
+    create_donut_chart,
+    create_horizontal_bar_chart,
+    create_line_chart,
+    create_pie_chart,
+)
+from firefly_reports.i18n import T, t
 
 # ─────────────────────────────────────────────────
 # Strict monochrome palette

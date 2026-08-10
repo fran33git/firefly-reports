@@ -1,15 +1,10 @@
 """Tests for FireflyClient using responses (HTTP mock library)."""
 
-import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "firefly_reports"))
-
-import json
 import pytest
 import responses as rsps_lib
 from requests.exceptions import HTTPError
 
-from firefly_client import FireflyClient, _redact
+from firefly_reports.firefly_client import FireflyClient, _redact
 
 BASE = "https://firefly.test"
 TOKEN = "test-token-abc"
@@ -22,6 +17,7 @@ def client():
 
 # ---------- _redact ----------
 
+
 def test_redact_bearer_token():
     assert _redact("Bearer secret123") == "Bearer ***REDACTED***"
 
@@ -31,6 +27,7 @@ def test_redact_leaves_non_token_strings():
 
 
 # ---------- get_transactions ----------
+
 
 @rsps_lib.activate
 def test_get_transactions_single_page(client):
@@ -66,15 +63,25 @@ def test_get_transactions_pagination(client):
     """Two-page response should be merged into a single flat list."""
     page1 = {
         "data": [
-            {"id": "1", "attributes": {"group_title": None,
-             "transactions": [{"type": "deposit", "amount": "100.00"}]}},
+            {
+                "id": "1",
+                "attributes": {
+                    "group_title": None,
+                    "transactions": [{"type": "deposit", "amount": "100.00"}],
+                },
+            },
         ],
         "meta": {"pagination": {"total_pages": 2, "current_page": 1}},
     }
     page2 = {
         "data": [
-            {"id": "2", "attributes": {"group_title": None,
-             "transactions": [{"type": "withdrawal", "amount": "30.00"}]}},
+            {
+                "id": "2",
+                "attributes": {
+                    "group_title": None,
+                    "transactions": [{"type": "withdrawal", "amount": "30.00"}],
+                },
+            },
         ],
         "meta": {"pagination": {"total_pages": 2, "current_page": 2}},
     }
@@ -122,6 +129,7 @@ def test_get_transactions_flattens_splits(client):
 
 # ---------- HTTP error handling ----------
 
+
 @rsps_lib.activate
 def test_http_401_raises(client):
     rsps_lib.add(rsps_lib.GET, f"{BASE}/api/v1/transactions", status=401)
@@ -144,6 +152,7 @@ def test_http_500_raises(client):
 
 # ---------- get_asset_accounts ----------
 
+
 @rsps_lib.activate
 def test_get_asset_accounts_returns_list(client):
     rsps_lib.add(
@@ -161,7 +170,9 @@ def test_get_asset_accounts_returns_list(client):
     assert len(result) == 1
     assert result[0]["id"] == "1"
 
+
 # ---------- Annual Aggregates ----------
+
 
 @rsps_lib.activate
 def test_get_annual_totals(client):
@@ -182,7 +193,17 @@ def test_get_annual_totals(client):
             ],
             "meta": {"pagination": {"total_pages": 1}},
         },
-        match=[rsps_lib.matchers.query_param_matcher({"start": "2025-01-01", "end": "2025-12-31", "type": "deposit", "limit": 100, "page": 1})]
+        match=[
+            rsps_lib.matchers.query_param_matcher(
+                {
+                    "start": "2025-01-01",
+                    "end": "2025-12-31",
+                    "type": "deposit",
+                    "limit": 100,
+                    "page": 1,
+                }
+            )
+        ],
     )
     # Mock withdrawals
     rsps_lib.add(
@@ -202,10 +223,21 @@ def test_get_annual_totals(client):
             ],
             "meta": {"pagination": {"total_pages": 1}},
         },
-        match=[rsps_lib.matchers.query_param_matcher({"start": "2025-01-01", "end": "2025-12-31", "type": "withdrawal", "limit": 100, "page": 1})]
+        match=[
+            rsps_lib.matchers.query_param_matcher(
+                {
+                    "start": "2025-01-01",
+                    "end": "2025-12-31",
+                    "type": "withdrawal",
+                    "limit": 100,
+                    "page": 1,
+                }
+            )
+        ],
     )
 
     from decimal import Decimal
+
     result = client.get_annual_totals(2025)
     assert result["income"] == Decimal("1000.00")
     assert result["expense"] == Decimal("500.00")
@@ -232,10 +264,21 @@ def test_get_top_categories_for_year(client):
             ],
             "meta": {"pagination": {"total_pages": 1}},
         },
-        match=[rsps_lib.matchers.query_param_matcher({"start": "2025-01-01", "end": "2025-12-31", "type": "withdrawal", "limit": 100, "page": 1})]
+        match=[
+            rsps_lib.matchers.query_param_matcher(
+                {
+                    "start": "2025-01-01",
+                    "end": "2025-12-31",
+                    "type": "withdrawal",
+                    "limit": 100,
+                    "page": 1,
+                }
+            )
+        ],
     )
 
     from decimal import Decimal
+
     result = client.get_top_categories_for_year(2025, limit=2)
     assert len(result) == 2
     assert result[0]["category"] == "Food"
@@ -245,6 +288,7 @@ def test_get_top_categories_for_year(client):
 
 
 # ---------- get_budget_limits ----------
+
 
 @rsps_lib.activate
 def test_get_budget_limits_paginates(client):
@@ -261,6 +305,7 @@ def test_get_budget_limits_paginates(client):
     rsps_lib.add(rsps_lib.GET, f"{BASE}/api/v1/budgets/5/limits", json=page2)
 
     from datetime import date
+
     result = client.get_budget_limits("5", date(2025, 1, 1), date(2025, 12, 31))
     assert len(result) == 2
     assert result[0]["id"] == "1"
@@ -268,6 +313,7 @@ def test_get_budget_limits_paginates(client):
 
 
 # ---------- transaction links ----------
+
 
 @rsps_lib.activate
 def test_get_transaction_links_resolves_type_names(client):
@@ -334,6 +380,7 @@ def test_get_transaction_journal_by_id(client):
 
 
 # ---------- get_about / get_about_user ----------
+
 
 @rsps_lib.activate
 def test_get_about(client):

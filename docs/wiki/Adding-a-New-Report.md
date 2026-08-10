@@ -52,7 +52,7 @@ def test_build_<name>_basic():
     # assert the key fields your function returns
 ```
 
-Run: `PYTHONPATH=firefly_reports .test_venv/bin/pytest tests/test_data_processor.py -v -k "test_build_<name>"` → must pass.
+Run: `pytest tests/test_data_processor.py -v -k "test_build_<name>"` → must pass.
 
 ---
 
@@ -90,7 +90,7 @@ def test_render_<name>_pdf(tmp_path):
     assert Path(out).stat().st_size > 1000
 ```
 
-Run: `PYTHONPATH=firefly_reports .test_venv/bin/pytest tests/test_pdf_exporter.py -v -k "test_render_<name>"` → must pass.
+Run: `pytest tests/test_pdf_exporter.py -v -k "test_render_<name>"` → must pass.
 
 ---
 
@@ -116,7 +116,7 @@ Add mock data and a call in `firefly_reports/demo.py`:
 _run("render_<name>_pdf", render_<name>_pdf, <name>_data, out_dir / "<name>_{period_tag}.pdf")
 ```
 
-Run `python demo.py` and confirm the PDF is created and non-empty.
+Run `python -m firefly_reports.demo` and confirm the PDF is created and non-empty.
 
 ---
 
@@ -124,8 +124,8 @@ Run `python demo.py` and confirm the PDF is created and non-empty.
 
 In `firefly_reports/main.py`:
 
-1. Add `build_<name>` to the `from data_processor import (...)` block.
-2. Add `render_<name>_pdf` to the `from pdf_exporter import (...)` block.
+1. Add `build_<name>` to the `from firefly_reports.data_processor import (...)` block.
+2. Add `render_<name>_pdf` to the `from firefly_reports.pdf_exporter import (...)` block.
 3. After the processing block, add: `<name>_data = build_<name>(transactions, start, end, owner, currency)`
 4. Add to the `jobs` list: `(render_<name>_pdf, <name>_data, f"<name>_{period_tag}.pdf")`
 

@@ -1,38 +1,59 @@
 """Unit tests for data_processor build_* functions."""
 
-import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "firefly_reports"))
-
 from datetime import date
 from decimal import Decimal
 
-import pytest
-
-from data_processor import (
+from firefly_reports.data_processor import (
     apply_global_filters,
-    build_cash_flow, build_income_expense, build_transaction_register,
+    build_account_statements,
+    build_all_tags_report,
+    build_audit_log,
+    build_bills_report,
+    build_budget_vs_actual,
+    build_cash_flow,
+    build_category_ledger,
+    build_cumulative_cashflow,
+    build_expense_trend,
+    build_historical_report,
+    build_income_concentration,
+    build_income_expense,
     build_journal,
-    build_net_worth, build_account_statements, build_tax_summary,
-    build_expense_trend, build_tagged_report, build_budget_vs_actual,
-    build_bills_report, build_savings_goals, build_summary, build_liabilities_report,
-    build_kpi_scorecard, build_yoy_comparison, build_cumulative_cashflow,
-    build_income_concentration, build_audit_log, build_performance_forecast,
-    build_category_ledger, build_payee_ledger, build_linkage_report,
-    build_all_tags_report, build_historical_report, build_liquidity_forecast,
+    build_kpi_scorecard,
+    build_liabilities_report,
+    build_linkage_report,
+    build_liquidity_forecast,
+    build_net_worth,
+    build_payee_ledger,
+    build_performance_forecast,
+    build_savings_goals,
+    build_summary,
+    build_tagged_report,
+    build_tax_summary,
+    build_transaction_register,
+    build_yoy_comparison,
 )
-
 
 # ─────────────────────────────────────────────
 # Report 1 — Cash Flow Statement
 # ─────────────────────────────────────────────
 
+
 class TestBuildCashFlow:
     def test_required_keys(self, txn_2025, period, owner, currency):
         start, end = period
         result = build_cash_flow(txn_2025, start, end, owner, currency)
-        for key in ("owner", "period_start", "period_end", "currency",
-                    "inflows", "outflows", "total_in", "total_out", "net", "by_month"):
+        for key in (
+            "owner",
+            "period_start",
+            "period_end",
+            "currency",
+            "inflows",
+            "outflows",
+            "total_in",
+            "total_out",
+            "net",
+            "by_month",
+        ):
             assert key in result
 
     def test_net_equals_total_in_minus_total_out(self, txn_2025, period):
@@ -61,13 +82,24 @@ class TestBuildCashFlow:
 # Report 2 — Income & Expense Summary
 # ─────────────────────────────────────────────
 
+
 class TestBuildIncomeExpense:
     def test_required_keys(self, txn_2025, period, owner, currency):
         start, end = period
         result = build_income_expense(txn_2025, start, end, owner, currency)
-        for key in ("owner", "period_start", "period_end", "currency",
-                    "income_rows", "expense_rows", "total_income", "total_expense",
-                    "net_savings", "savings_rate", "budget_breakdown"):
+        for key in (
+            "owner",
+            "period_start",
+            "period_end",
+            "currency",
+            "income_rows",
+            "expense_rows",
+            "total_income",
+            "total_expense",
+            "net_savings",
+            "savings_rate",
+            "budget_breakdown",
+        ):
             assert key in result
 
     def test_net_savings_invariant(self, txn_2025, period):
@@ -92,21 +124,37 @@ class TestBuildIncomeExpense:
 # Report 3 — Transaction Register
 # ─────────────────────────────────────────────
 
+
 class TestBuildTransactionRegister:
     def test_required_keys(self, txn_2025, period, owner, currency):
         start, end = period
         result = build_transaction_register(txn_2025, start, end, owner, currency)
-        for key in ("owner", "period_start", "period_end", "currency",
-                    "rows", "total_transactions"):
+        for key in (
+            "owner",
+            "period_start",
+            "period_end",
+            "currency",
+            "rows",
+            "total_transactions",
+        ):
             assert key in result
 
     def test_opening_balance_excluded(self, period):
         start, end = period
         txns = [
             {"type": "opening balance", "date": "2025-01-01", "amount": "1000.00"},
-            {"type": "deposit", "date": "2025-01-15", "amount": "500.00",
-             "description": "Dep", "source_name": "", "destination_name": "",
-             "category_name": "", "budget_name": None, "tags": [], "notes": ""},
+            {
+                "type": "deposit",
+                "date": "2025-01-15",
+                "amount": "500.00",
+                "description": "Dep",
+                "source_name": "",
+                "destination_name": "",
+                "category_name": "",
+                "budget_name": None,
+                "tags": [],
+                "notes": "",
+            },
         ]
         result = build_transaction_register(txns, start, end)
         assert result["total_transactions"] == 1
@@ -128,30 +176,42 @@ class TestBuildTransactionRegister:
         start, end = period
         txns = [
             {
-                "group_id": "100", "date": "2025-01-15", "amount": "100.00",
-                "type": "withdrawal", "description": "Split 1", "category_name": "Food",
-                "group_title": "Grocery Shopping"
+                "group_id": "100",
+                "date": "2025-01-15",
+                "amount": "100.00",
+                "type": "withdrawal",
+                "description": "Split 1",
+                "category_name": "Food",
+                "group_title": "Grocery Shopping",
             },
             {
-                "group_id": "100", "date": "2025-01-15", "amount": "50.00",
-                "type": "withdrawal", "description": "Split 2", "category_name": "Home",
-                "group_title": "Grocery Shopping"
+                "group_id": "100",
+                "date": "2025-01-15",
+                "amount": "50.00",
+                "type": "withdrawal",
+                "description": "Split 2",
+                "category_name": "Home",
+                "group_title": "Grocery Shopping",
             },
             {
-                "group_id": "101", "date": "2025-01-16", "amount": "200.00",
-                "type": "deposit", "description": "Salary", "category_name": "Income"
-            }
+                "group_id": "101",
+                "date": "2025-01-16",
+                "amount": "200.00",
+                "type": "deposit",
+                "description": "Salary",
+                "category_name": "Income",
+            },
         ]
         result = build_transaction_register(txns, start, end)
         assert len(result["rows"]) == 2
         assert result["total_transactions"] == 3
-        
+
         # Check first group (split)
         split_group = next(r for r in result["rows"] if r["group_id"] == "100")
         assert split_group["total"] == Decimal("-150.00")
         assert len(split_group["splits"]) == 2
         assert split_group["description"] == "Grocery Shopping"
-        
+
         # Check second group (single)
         salary_group = next(r for r in result["rows"] if r["group_id"] == "101")
         assert salary_group["total"] == Decimal("200.00")
@@ -162,25 +222,35 @@ class TestBuildTransactionRegister:
         start, end = period
         txns = [
             {
-                "group_id": "100", "id": "501", "date": "2025-01-15",
-                "type": "withdrawal", "amount": "100.00",
-                "description": "Split 1", "category_name": "Food",
-                "group_title": "Grocery Shopping", "reconciled": True,
+                "group_id": "100",
+                "id": "501",
+                "date": "2025-01-15",
+                "type": "withdrawal",
+                "amount": "100.00",
+                "description": "Split 1",
+                "category_name": "Food",
+                "group_title": "Grocery Shopping",
+                "reconciled": True,
                 "has_attachments": True,
                 "book_date": "2025-01-16T00:00:00+01:00",
             },
             {
-                "group_id": "100", "id": "502", "date": "2025-01-15",
-                "type": "withdrawal", "amount": "50.00",
-                "description": "Split 2", "category_name": "Home",
-                "group_title": "Grocery Shopping", "reconciled": False,
+                "group_id": "100",
+                "id": "502",
+                "date": "2025-01-15",
+                "type": "withdrawal",
+                "amount": "50.00",
+                "description": "Split 2",
+                "category_name": "Home",
+                "group_title": "Grocery Shopping",
+                "reconciled": False,
             },
         ]
         result = build_transaction_register(txns, start, end)
         group = result["rows"][0]
         assert group["journal_id"] == "501"
-        assert group["reconciled"] is False       # all splits must be reconciled
-        assert group["has_attachments"] is True   # any split with attachments
+        assert group["reconciled"] is False  # all splits must be reconciled
+        assert group["has_attachments"] is True  # any split with attachments
         assert group["total_abs"] == Decimal("150.00")
         assert group["splits"][0]["description"] == "Split 1"
         # book_date normalized to plain YYYY-MM-DD (no time/timezone)
@@ -192,12 +262,21 @@ class TestBuildTransactionRegister:
 # Report 4 — Asset & Net Worth Statement
 # ─────────────────────────────────────────────
 
+
 class TestBuildNetWorth:
     def test_required_keys(self, accounts, period, owner, currency):
         _, end = period
         result = build_net_worth(accounts, end, owner, currency)
-        for key in ("owner", "as_of_date", "currency", "groups",
-                    "total_assets", "total_liabilities", "net_worth", "account_count"):
+        for key in (
+            "owner",
+            "as_of_date",
+            "currency",
+            "groups",
+            "total_assets",
+            "total_liabilities",
+            "net_worth",
+            "account_count",
+        ):
             assert key in result
         for group in result["groups"]:
             for acc in group["accounts"]:
@@ -225,6 +304,7 @@ class TestBuildNetWorth:
 # Report 5 — Account Statements
 # ─────────────────────────────────────────────
 
+
 class TestBuildAccountStatements:
     def test_returns_list_of_dicts(self, accounts, period, owner, currency):
         start, end = period
@@ -236,10 +316,22 @@ class TestBuildAccountStatements:
         start, end = period
         result = build_account_statements(accounts, {}, start, end, owner, currency)
         for stmt in result:
-            for key in ("owner", "period_start", "period_end", "currency",
-                        "account_name", "account_iban", "account_role",
-                        "opening_balance", "closing_balance", "total_in", "total_out",
-                        "rows", "tx_count", "updated_at"):
+            for key in (
+                "owner",
+                "period_start",
+                "period_end",
+                "currency",
+                "account_name",
+                "account_iban",
+                "account_role",
+                "opening_balance",
+                "closing_balance",
+                "total_in",
+                "total_out",
+                "rows",
+                "tx_count",
+                "updated_at",
+            ):
                 assert key in stmt
 
     def test_closing_balance_with_no_transactions(self, accounts, period):
@@ -261,13 +353,25 @@ class TestBuildAccountStatements:
 # Report 6 — Annual Tax Summary
 # ─────────────────────────────────────────────
 
+
 class TestBuildTaxSummary:
     def test_required_keys(self, txn_2025, owner, currency):
-        result = build_tax_summary(txn_2025, 2025, owner, currency, deductible_keywords=["deducibile"])
-        for key in ("owner", "year", "currency", "income_by_cat", "income_by_client",
-                    "deductible_rows", "nondeductible_rows",
-                    "total_income", "total_deductible", "total_nondeductible",
-                    "taxable_estimate"):
+        result = build_tax_summary(
+            txn_2025, 2025, owner, currency, deductible_keywords=["deducibile"]
+        )
+        for key in (
+            "owner",
+            "year",
+            "currency",
+            "income_by_cat",
+            "income_by_client",
+            "deductible_rows",
+            "nondeductible_rows",
+            "total_income",
+            "total_deductible",
+            "total_nondeductible",
+            "taxable_estimate",
+        ):
             assert key in result
 
     def test_taxable_estimate_invariant(self, txn_2025):
@@ -291,12 +395,22 @@ class TestBuildTaxSummary:
 # Report 7 — Expense Trend by Category
 # ─────────────────────────────────────────────
 
+
 class TestBuildExpenseTrend:
     def test_required_keys(self, txn_2025, period, owner, currency):
         start, end = period
         result = build_expense_trend(txn_2025, start, end, owner, currency)
-        for key in ("owner", "period_start", "period_end", "currency",
-                    "months", "rows", "totals_by_month", "income_by_month", "grand_total"):
+        for key in (
+            "owner",
+            "period_start",
+            "period_end",
+            "currency",
+            "months",
+            "rows",
+            "totals_by_month",
+            "income_by_month",
+            "grand_total",
+        ):
             assert key in result
 
     def test_row_structure(self, txn_2025, period):
@@ -325,13 +439,26 @@ class TestBuildExpenseTrend:
 # Report 8 — Tagged Transactions Report
 # ─────────────────────────────────────────────
 
+
 class TestBuildTaggedReport:
     def test_required_keys(self, txn_2025, period, owner, currency):
         start, end = period
         result = build_tagged_report(txn_2025, ["invoice"], start, end, owner, currency)
-        for key in ("owner", "period_start", "period_end", "currency",
-                    "tags", "match_all", "rows", "total_transactions",
-                    "income_by_cat", "expense_by_cat", "total_in", "total_out", "net"):
+        for key in (
+            "owner",
+            "period_start",
+            "period_end",
+            "currency",
+            "tags",
+            "match_all",
+            "rows",
+            "total_transactions",
+            "income_by_cat",
+            "expense_by_cat",
+            "total_in",
+            "total_out",
+            "net",
+        ):
             assert key in result
 
     def test_filters_by_tag(self, txn_2025, period):
@@ -340,8 +467,7 @@ class TestBuildTaggedReport:
         # All rows should involve transactions with the "invoice" tag
         assert result["total_transactions"] > 0
         # Rows with no matching tag should not appear
-        non_invoice = [tx for tx in txn_2025
-                       if "invoice" not in (tx.get("tags") or [])]
+        non_invoice = [tx for tx in txn_2025 if "invoice" not in (tx.get("tags") or [])]
         assert len(non_invoice) > 0  # ensure filter is doing something meaningful
 
     def test_net_invariant(self, txn_2025, period):
@@ -360,14 +486,24 @@ class TestBuildTaggedReport:
 # Report 9 — Budget vs. Actual
 # ─────────────────────────────────────────────
 
+
 class TestBuildBudgetVsActual:
     def test_required_keys(self, budgets, budget_limits, txn_2025, period, owner, currency):
         start, end = period
         result = build_budget_vs_actual(
-            budgets, budget_limits, txn_2025, start, end, owner, currency)
-        for key in ("owner", "period_start", "period_end", "currency",
-                    "rows", "total_limit", "total_actual", "total_variance",
-                    "unbudgeted_spending"):
+            budgets, budget_limits, txn_2025, start, end, owner, currency
+        )
+        for key in (
+            "owner",
+            "period_start",
+            "period_end",
+            "currency",
+            "rows",
+            "total_limit",
+            "total_actual",
+            "total_variance",
+            "unbudgeted_spending",
+        ):
             assert key in result
 
     def test_row_structure(self, budgets, budget_limits, txn_2025, period):
@@ -395,12 +531,21 @@ class TestBuildBudgetVsActual:
 # Report 10 — Bills & Subscriptions
 # ─────────────────────────────────────────────
 
+
 class TestBuildBillsReport:
     def test_required_keys(self, bills, bill_txn, period, owner, currency):
         start, end = period
         result = build_bills_report(bills, bill_txn, start, end, owner, currency)
-        for key in ("owner", "period_start", "period_end", "currency",
-                    "rows", "total_expected", "total_paid", "delta"):
+        for key in (
+            "owner",
+            "period_start",
+            "period_end",
+            "currency",
+            "rows",
+            "total_expected",
+            "total_paid",
+            "delta",
+        ):
             assert key in result
 
     def test_row_structure(self, bills, bill_txn, period):
@@ -408,9 +553,18 @@ class TestBuildBillsReport:
         result = build_bills_report(bills, bill_txn, start, end)
         assert len(result["rows"]) == len(bills)
         for row in result["rows"]:
-            for key in ("name", "amount_min", "amount_max", "expected",
-                        "frequency", "next_expected", "last_paid",
-                        "paid_amount", "times_paid", "active"):
+            for key in (
+                "name",
+                "amount_min",
+                "amount_max",
+                "expected",
+                "frequency",
+                "next_expected",
+                "last_paid",
+                "paid_amount",
+                "times_paid",
+                "active",
+            ):
                 assert key in row
 
     def test_delta_invariant(self, bills, bill_txn, period):
@@ -430,12 +584,21 @@ class TestBuildBillsReport:
 # Report 11 — Savings Goals (Piggy Banks)
 # ─────────────────────────────────────────────
 
+
 class TestBuildSavingsGoals:
     def test_required_keys(self, piggy_banks, period, owner, currency):
         _, end = period
         result = build_savings_goals(piggy_banks, end, owner, currency)
-        for key in ("owner", "as_of_date", "currency", "goals",
-                    "total_saved", "total_target", "overall_pct", "goal_count"):
+        for key in (
+            "owner",
+            "as_of_date",
+            "currency",
+            "goals",
+            "total_saved",
+            "total_target",
+            "overall_pct",
+            "goal_count",
+        ):
             assert key in result
 
     def test_goal_count_matches_piggy_banks(self, piggy_banks, period):
@@ -447,8 +610,17 @@ class TestBuildSavingsGoals:
         _, end = period
         result = build_savings_goals(piggy_banks, end)
         for goal in result["goals"]:
-            for key in ("name", "target", "current", "remaining", "pct",
-                        "start_date", "target_date", "months_left", "monthly_needed"):
+            for key in (
+                "name",
+                "target",
+                "current",
+                "remaining",
+                "pct",
+                "start_date",
+                "target_date",
+                "months_left",
+                "monthly_needed",
+            ):
                 assert key in goal
 
     def test_empty_piggy_banks(self, period):
@@ -466,9 +638,17 @@ class TestBuildSavingsGoals:
 
     def test_account_name_legacy_fallback(self, period):
         _, end = period
-        legacy = [{"id": "1", "attributes": {
-            "name": "Goal", "target_amount": "100.00", "current_amount": "10.00",
-            "account_name": "Old Field"}}]
+        legacy = [
+            {
+                "id": "1",
+                "attributes": {
+                    "name": "Goal",
+                    "target_amount": "100.00",
+                    "current_amount": "10.00",
+                    "account_name": "Old Field",
+                },
+            }
+        ]
         result = build_savings_goals(legacy, end)
         assert result["goals"][0]["account_name"] == "Old Field"
 
@@ -477,13 +657,22 @@ class TestBuildSavingsGoals:
 # Report 12 — Liabilities & Debt
 # ─────────────────────────────────────────────
 
+
 class TestBuildLiabilitiesReport:
     def test_required_keys(self, liabilities, period, owner, currency):
         start, end = period
-        result = build_liabilities_report(
-            liabilities, {}, end, start, end, owner, currency)
-        for key in ("owner", "as_of_date", "period_start", "period_end", "currency",
-                    "rows", "total_debt", "total_payments", "liability_count"):
+        result = build_liabilities_report(liabilities, {}, end, start, end, owner, currency)
+        for key in (
+            "owner",
+            "as_of_date",
+            "period_start",
+            "period_end",
+            "currency",
+            "rows",
+            "total_debt",
+            "total_payments",
+            "liability_count",
+        ):
             assert key in result
 
     def test_liability_count(self, liabilities, period):
@@ -510,17 +699,34 @@ class TestBuildLiabilitiesReport:
 # Report 13 — Financial KPI Scorecard
 # ─────────────────────────────────────────────
 
+
 class TestBuildKpiScorecard:
     def test_required_keys(self, txn_2025, accounts, liabilities, period, owner, currency):
         start, end = period
-        result = build_kpi_scorecard(
-            txn_2025, accounts, liabilities, start, end, owner, currency)
-        for key in ("owner", "period_start", "period_end", "currency",
-                    "total_in", "total_out", "net_cash_flow",
-                    "avg_monthly_in", "avg_monthly_out", "savings_rate",
-                    "burn_rate", "cash_runway", "liquid_assets", "total_liab",
-                    "net_worth", "liquidity_ratio", "hhi",
-                    "top1_client", "top1_pct", "n_months", "monthly_trend"):
+        result = build_kpi_scorecard(txn_2025, accounts, liabilities, start, end, owner, currency)
+        for key in (
+            "owner",
+            "period_start",
+            "period_end",
+            "currency",
+            "total_in",
+            "total_out",
+            "net_cash_flow",
+            "avg_monthly_in",
+            "avg_monthly_out",
+            "savings_rate",
+            "burn_rate",
+            "cash_runway",
+            "liquid_assets",
+            "total_liab",
+            "net_worth",
+            "liquidity_ratio",
+            "hhi",
+            "top1_client",
+            "top1_pct",
+            "n_months",
+            "monthly_trend",
+        ):
             assert key in result
 
     def test_net_cash_flow_invariant(self, txn_2025, accounts, liabilities, period):
@@ -545,16 +751,30 @@ class TestBuildKpiScorecard:
 # Report 14 — Year-over-Year Comparison
 # ─────────────────────────────────────────────
 
+
 class TestBuildYoyComparison:
     def test_required_keys(self, txn_2025, txn_2024, period, period_prev, owner, currency):
         start, end = period
         start_p, end_p = period_prev
         result = build_yoy_comparison(
-            txn_2025, txn_2024, start, end, start_p, end_p, owner, currency)
-        for key in ("owner", "currency", "period_a", "period_b",
-                    "income_rows", "expense_rows",
-                    "total_in_a", "total_in_b", "total_out_a", "total_out_b",
-                    "net_a", "net_b", "delta_in_pct", "delta_out_pct"):
+            txn_2025, txn_2024, start, end, start_p, end_p, owner, currency
+        )
+        for key in (
+            "owner",
+            "currency",
+            "period_a",
+            "period_b",
+            "income_rows",
+            "expense_rows",
+            "total_in_a",
+            "total_in_b",
+            "total_out_a",
+            "total_out_b",
+            "net_a",
+            "net_b",
+            "delta_in_pct",
+            "delta_out_pct",
+        ):
             assert key in result
 
     def test_net_invariants(self, txn_2025, txn_2024, period, period_prev):
@@ -584,12 +804,21 @@ class TestBuildYoyComparison:
 # Report 15 — Cumulative Cash Flow
 # ─────────────────────────────────────────────
 
+
 class TestBuildCumulativeCashflow:
     def test_required_keys(self, txn_2025, period, owner, currency):
         start, end = period
         result = build_cumulative_cashflow(txn_2025, start, end, owner, currency)
-        for key in ("owner", "period_start", "period_end", "currency",
-                    "months", "final_cumulative", "peak_month", "low_month"):
+        for key in (
+            "owner",
+            "period_start",
+            "period_end",
+            "currency",
+            "months",
+            "final_cumulative",
+            "peak_month",
+            "low_month",
+        ):
             assert key in result
 
     def test_month_entry_structure(self, txn_2025, period):
@@ -618,16 +847,23 @@ class TestBuildCumulativeCashflow:
 # Report 16 — Income Concentration
 # ─────────────────────────────────────────────
 
+
 class TestBuildIncomeConcentration:
     def test_required_keys(self, txn_2025, period, owner, currency):
         start, end = period
         result = build_income_concentration(txn_2025, start, end, owner, currency)
-        for key in ("owner", "period_start", "period_end", "currency",
-                    "rows", "total_income", "client_count"):
+        for key in (
+            "owner",
+            "period_start",
+            "period_end",
+            "currency",
+            "rows",
+            "total_income",
+            "client_count",
+        ):
             assert key in result
         # Concentration analysis (HHI/risk/fiscal note) was intentionally removed
-        for removed in ("hhi", "top1_pct", "top1_client", "risk_level", "risk_note",
-                        "fiscal_note"):
+        for removed in ("hhi", "top1_pct", "top1_client", "risk_level", "risk_note", "fiscal_note"):
             assert removed not in result
 
     def test_row_structure(self, txn_2025, period):
@@ -652,24 +888,39 @@ class TestBuildIncomeConcentration:
         assert result["total_income"] == Decimal("0")
         assert result["client_count"] == 0
 
+
 # ─────────────────────────────────────────────
 # Report 17 — Transaction Audit Log
 # ─────────────────────────────────────────────
+
 
 class TestBuildAuditLog:
     def test_required_keys(self, txn_2025, period, owner, currency):
         start, end = period
         result = build_audit_log(txn_2025, start, end, owner, currency)
-        for key in ("owner", "period_start", "period_end", "currency",
-                    "rows", "total_count", "reconciled_count"):
+        for key in (
+            "owner",
+            "period_start",
+            "period_end",
+            "currency",
+            "rows",
+            "total_count",
+            "reconciled_count",
+        ):
             assert key in result
 
     def test_row_structure_and_attachments(self, period):
         start, end = period
-        txns = [{
-            "id": "1", "date": "2025-01-01", "amount": "100.00", "type": "withdrawal",
-            "description": "Tx with attachment", "has_attachments": True
-        }]
+        txns = [
+            {
+                "id": "1",
+                "date": "2025-01-01",
+                "amount": "100.00",
+                "type": "withdrawal",
+                "description": "Tx with attachment",
+                "has_attachments": True,
+            }
+        ]
         result = build_audit_log(txns, start, end)
         row = result["rows"][0]
         assert row["has_attachments"] is True
@@ -686,23 +937,30 @@ class TestBuildAuditLog:
 # Report 18 — Budget Performance Forecast
 # ─────────────────────────────────────────────
 
+
 class TestBuildPerformanceForecast:
     def test_required_keys(self, budgets, budget_limits, txn_2025, period, owner, currency):
         start, end = period
         result = build_performance_forecast(
-            budgets, budget_limits, txn_2025, start, end, owner, currency)
-        for key in ("owner", "period_start", "period_end", "currency",
-                    "rows", "days_elapsed", "total_days", "total_limit", 
-                    "total_actual", "total_forecast"):
+            budgets, budget_limits, txn_2025, start, end, owner, currency
+        )
+        for key in (
+            "owner",
+            "period_start",
+            "period_end",
+            "currency",
+            "rows",
+            "days_elapsed",
+            "total_days",
+            "total_limit",
+            "total_actual",
+            "total_forecast",
+        ):
             assert key in result
 
     def test_forecast_calculation(self, budgets, period):
         # Setup: 10 days elapsed in a 30-day month. Spent 100. Forecast should be 300.
-        from datetime import date as dt_date, timedelta
-        start = dt_date(2025, 1, 1)
-        end = dt_date(2025, 1, 30)
-        
-        # We need to mock datetime.now() inside the function, 
+        # We need to mock datetime.now() inside the function,
         # but since we can't easily mock, we'll use a period where 'now' is mid-period
         # or just verify the keys and logic in a simpler way if it's too dynamic.
         pass
@@ -711,6 +969,7 @@ class TestBuildPerformanceForecast:
 # ─────────────────────────────────────────────
 # Report 19 — Category Ledger
 # ─────────────────────────────────────────────
+
 
 class TestBuildCategoryLedger:
     def test_required_keys(self, txn_2025, period, owner, currency):
@@ -743,12 +1002,23 @@ class TestBuildCategoryLedger:
 # Report 20 — Payee Ledger
 # ─────────────────────────────────────────────
 
+
 class TestBuildPayeeLedger:
     def test_alphabetical_sorting(self, period):
         start, end = period
         txns = [
-            {"type": "withdrawal", "amount": "10", "destination_name": "Zebra Store", "date": "2025-01-01"},
-            {"type": "withdrawal", "amount": "20", "destination_name": "Apple Store", "date": "2025-01-02"},
+            {
+                "type": "withdrawal",
+                "amount": "10",
+                "destination_name": "Zebra Store",
+                "date": "2025-01-01",
+            },
+            {
+                "type": "withdrawal",
+                "amount": "20",
+                "destination_name": "Apple Store",
+                "date": "2025-01-02",
+            },
         ]
         result = build_payee_ledger(txns, start, end)
         payees = [s["payee_name"] for s in result["sections"]]
@@ -759,22 +1029,35 @@ class TestBuildPayeeLedger:
 # Report 21 — Linkage & Reimbursement Report
 # ─────────────────────────────────────────────
 
+
 class TestBuildLinkageReport:
     def test_identifies_reimbursements(self, period):
         start, end = period
         txns = [
             {
-                "id": "100", "type": "withdrawal", "amount": "50.00",
-                "date": "2025-01-01", "description": "Business Dinner",
+                "id": "100",
+                "type": "withdrawal",
+                "amount": "50.00",
+                "date": "2025-01-01",
+                "description": "Business Dinner",
             },
             {
-                "id": "101", "type": "deposit", "amount": "50.00",
-                "date": "2025-01-15", "description": "Dinner Reimbursement",
-            }
+                "id": "101",
+                "type": "deposit",
+                "amount": "50.00",
+                "date": "2025-01-15",
+                "description": "Dinner Reimbursement",
+            },
         ]
         links = [
-            {"id": "1", "link_type_id": "9", "link_type_name": "Reimbursement",
-             "inward_id": "101", "outward_id": "100", "notes": ""}
+            {
+                "id": "1",
+                "link_type_id": "9",
+                "link_type_name": "Reimbursement",
+                "inward_id": "101",
+                "outward_id": "100",
+                "notes": "",
+            }
         ]
         result = build_linkage_report(txns, links, start, end)
         assert len(result["groups"]) == 1
@@ -795,11 +1078,20 @@ class TestBuildLinkageReport:
 # Report 23 — Multi-Year Historical Growth
 # ─────────────────────────────────────────────
 
+
 class TestBuildHistoricalReport:
     def test_required_keys(self, owner, currency):
         year_data = {
-            2024: {"total_income": Decimal("1000"), "total_expense": Decimal("800"), "net_savings": Decimal("200")},
-            2025: {"total_income": Decimal("1200"), "total_expense": Decimal("900"), "net_savings": Decimal("300")},
+            2024: {
+                "total_income": Decimal("1000"),
+                "total_expense": Decimal("800"),
+                "net_savings": Decimal("200"),
+            },
+            2025: {
+                "total_income": Decimal("1200"),
+                "total_expense": Decimal("900"),
+                "net_savings": Decimal("300"),
+            },
         }
         result = build_historical_report(year_data, owner, currency)
         for key in ("owner", "currency", "rows", "year_count"):
@@ -808,19 +1100,35 @@ class TestBuildHistoricalReport:
 
     def test_growth_calculation(self):
         year_data = {
-            2023: {"total_income": Decimal("1000"), "total_expense": Decimal("1000"), "net_savings": Decimal("0")},
-            2024: {"total_income": Decimal("1100"), "total_expense": Decimal("900"), "net_savings": Decimal("200")},
+            2023: {
+                "total_income": Decimal("1000"),
+                "total_expense": Decimal("1000"),
+                "net_savings": Decimal("0"),
+            },
+            2024: {
+                "total_income": Decimal("1100"),
+                "total_expense": Decimal("900"),
+                "net_savings": Decimal("200"),
+            },
         }
         result = build_historical_report(year_data)
         row_2024 = result["rows"][1]
         assert row_2024["income_growth"] == Decimal("10.0")  # (1100-1000)/1000 * 100
-        assert row_2024["expense_growth"] == Decimal("-10.0") # (900-1000)/1000 * 100
-        assert row_2024["net_growth"] == Decimal("0") # previous was 0
+        assert row_2024["expense_growth"] == Decimal("-10.0")  # (900-1000)/1000 * 100
+        assert row_2024["net_growth"] == Decimal("0")  # previous was 0
 
     def test_negative_net_growth(self):
         year_data = {
-            2023: {"total_income": Decimal("1000"), "total_expense": Decimal("1200"), "net_savings": Decimal("-200")},
-            2024: {"total_income": Decimal("1000"), "total_expense": Decimal("1100"), "net_savings": Decimal("-100")},
+            2023: {
+                "total_income": Decimal("1000"),
+                "total_expense": Decimal("1200"),
+                "net_savings": Decimal("-200"),
+            },
+            2024: {
+                "total_income": Decimal("1000"),
+                "total_expense": Decimal("1100"),
+                "net_savings": Decimal("-100"),
+            },
         }
         result = build_historical_report(year_data)
         row_2024 = result["rows"][1]
@@ -829,8 +1137,16 @@ class TestBuildHistoricalReport:
 
     def test_zero_previous_values(self):
         year_data = {
-            2023: {"total_income": Decimal("0"), "total_expense": Decimal("0"), "net_savings": Decimal("0")},
-            2024: {"total_income": Decimal("1000"), "total_expense": Decimal("1000"), "net_savings": Decimal("0")},
+            2023: {
+                "total_income": Decimal("0"),
+                "total_expense": Decimal("0"),
+                "net_savings": Decimal("0"),
+            },
+            2024: {
+                "total_income": Decimal("1000"),
+                "total_expense": Decimal("1000"),
+                "net_savings": Decimal("0"),
+            },
         }
         result = build_historical_report(year_data)
         row_2024 = result["rows"][1]
@@ -843,6 +1159,7 @@ class TestBuildHistoricalReport:
 # Report 24 — Liquidity Forecast (6 Months)
 # ─────────────────────────────────────────────
 
+
 class TestBuildLiquidityForecast:
     def test_required_keys(self, owner, currency):
         bills = [
@@ -852,7 +1169,7 @@ class TestBuildLiquidityForecast:
                     "amount_min": "1000",
                     "amount_max": "1000",
                     "repeat_freq": "monthly",
-                    "active": True
+                    "active": True,
                 }
             }
         ]
@@ -863,7 +1180,7 @@ class TestBuildLiquidityForecast:
             bills=bills,
             end_date=date(2025, 5, 31),
             owner_name=owner,
-            currency_symbol=currency
+            currency_symbol=currency,
         )
         for key in ("owner", "currency", "start_date", "forecast_months", "final_balance"):
             assert key in result
@@ -873,13 +1190,22 @@ class TestBuildLiquidityForecast:
         # balance 1000, income 2000, var 500, bills 500 (monthly)
         # month 1: 1000 + 2000 - 500 - 500 = 2000
         # month 2: 2000 + 2000 - 500 - 500 = 3000
-        bills = [{"attributes": {"amount_min": "500", "amount_max": "500", "repeat_freq": "monthly", "active": True}}]
+        bills = [
+            {
+                "attributes": {
+                    "amount_min": "500",
+                    "amount_max": "500",
+                    "repeat_freq": "monthly",
+                    "active": True,
+                }
+            }
+        ]
         result = build_liquidity_forecast(
             current_balance=Decimal("1000"),
             avg_income=Decimal("2000"),
             avg_variable_expense=Decimal("500"),
             bills=bills,
-            end_date=date(2025, 1, 1)
+            end_date=date(2025, 1, 1),
         )
         assert result["forecast_months"][0]["balance"] == Decimal("2000.00")
         assert result["forecast_months"][1]["balance"] == Decimal("3000.00")
@@ -890,14 +1216,15 @@ class TestBuildLiquidityForecast:
         bills = [
             {
                 "attributes": {
-                    "amount_min": "300", "amount_max": "300", 
-                    "repeat_freq": "quarterly", 
+                    "amount_min": "300",
+                    "amount_max": "300",
+                    "repeat_freq": "quarterly",
                     "next_expected_match": "2025-03-15",
-                    "active": True
+                    "active": True,
                 }
             }
         ]
-        # end_date Jan 2025. 
+        # end_date Jan 2025.
         # Forecast: Feb, Mar, Apr, May, Jun, Jul
         # Bill should hit in Mar (idx 1) and Jun (idx 4)
         result = build_liquidity_forecast(
@@ -905,7 +1232,7 @@ class TestBuildLiquidityForecast:
             avg_income=Decimal("0"),
             avg_variable_expense=Decimal("0"),
             bills=bills,
-            end_date=date(2025, 1, 31)
+            end_date=date(2025, 1, 31),
         )
         # Feb
         assert result["forecast_months"][0]["fixed_outflow"] == Decimal("0.00")
@@ -924,6 +1251,7 @@ class TestBuildLiquidityForecast:
 # ─────────────────────────────────────────────
 # Report 22 — All Tags Ledger
 # ─────────────────────────────────────────────
+
 
 class TestBuildAllTagsReport:
     def test_required_keys(self, txn_2025, period, owner, currency):
@@ -945,7 +1273,7 @@ class TestBuildAllTagsReport:
     def test_tag_structure(self, txn_2025, period, owner, currency):
         start, end = period
         result = build_all_tags_report(txn_2025, start, end, owner, currency)
-        for tag_name, tag_data in result["tags"].items():
+        for _tag_name, tag_data in result["tags"].items():
             assert "rows" in tag_data
             assert "total" in tag_data
             for row in tag_data["rows"]:
@@ -956,8 +1284,13 @@ class TestBuildAllTagsReport:
     def test_transfers_excluded(self, period, owner, currency):
         start, end = period
         txn = [
-            {"type": "transfer", "date": "2025-01-01", "amount": "500.00",
-             "description": "Transfer", "tags": ["recurring"]},
+            {
+                "type": "transfer",
+                "date": "2025-01-01",
+                "amount": "500.00",
+                "description": "Transfer",
+                "tags": ["recurring"],
+            },
         ]
         result = build_all_tags_report(txn, start, end, owner, currency)
         assert "recurring" not in result["tags"]
@@ -972,18 +1305,37 @@ class TestBuildAllTagsReport:
 # Global filters (spec sez. 5)
 # ─────────────────────────────────────────────
 
+
 class TestApplyGlobalFilters:
     TXNS = [
-        {"type": "withdrawal", "amount": "10.00", "source_id": "1",
-         "source_type": "Asset account", "destination_type": "Expense account",
-         "category_name": "Food", "reconciled": True},
-        {"type": "deposit", "amount": "20.00", "destination_id": "2",
-         "destination_type": "Asset account", "source_type": "Revenue account",
-         "category_name": "Salary", "reconciled": False},
-        {"type": "transfer", "amount": "5.00", "source_id": "1",
-         "destination_id": "2", "source_type": "Asset account",
-         "destination_type": "Asset account", "category_name": None,
-         "reconciled": True},
+        {
+            "type": "withdrawal",
+            "amount": "10.00",
+            "source_id": "1",
+            "source_type": "Asset account",
+            "destination_type": "Expense account",
+            "category_name": "Food",
+            "reconciled": True,
+        },
+        {
+            "type": "deposit",
+            "amount": "20.00",
+            "destination_id": "2",
+            "destination_type": "Asset account",
+            "source_type": "Revenue account",
+            "category_name": "Salary",
+            "reconciled": False,
+        },
+        {
+            "type": "transfer",
+            "amount": "5.00",
+            "source_id": "1",
+            "destination_id": "2",
+            "source_type": "Asset account",
+            "destination_type": "Asset account",
+            "category_name": None,
+            "reconciled": True,
+        },
     ]
 
     def test_no_filters_returns_all(self):
@@ -1031,36 +1383,66 @@ class TestApplyGlobalFilters:
 # Cash flow waterfall (R-INT-03) + General Journal (R-ITA-06)
 # ─────────────────────────────────────────────
 
+
 class TestCashFlowWaterfall:
     ACCOUNTS = [
-        {"id": "1", "attributes": {"account_role": "defaultAsset",
-                                    "current_balance": "1000.00"}},
-        {"id": "2", "attributes": {"account_role": "savingsAsset",
-                                    "current_balance": "500.00"}},
+        {"id": "1", "attributes": {"account_role": "defaultAsset", "current_balance": "1000.00"}},
+        {"id": "2", "attributes": {"account_role": "savingsAsset", "current_balance": "500.00"}},
     ]
     LIABILITIES = [{"id": "30", "attributes": {"current_balance": "-800.00"}}]
     TXNS = [
-        {"type": "deposit", "amount": "2000.00", "source_id": "10",
-         "destination_id": "1", "date": "2025-01-10"},
-        {"type": "withdrawal", "amount": "700.00", "source_id": "1",
-         "destination_id": "20", "date": "2025-01-11"},
-        {"type": "transfer", "amount": "300.00", "source_id": "1",
-         "destination_id": "2", "date": "2025-01-12"},   # investing out
-        {"type": "transfer", "amount": "150.00", "source_id": "1",
-         "destination_id": "30", "date": "2025-01-13"},  # financing out
-        {"type": "transfer", "amount": "50.00", "source_id": "1",
-         "destination_id": "3", "date": "2025-01-14"},   # neutral, excluded
+        {
+            "type": "deposit",
+            "amount": "2000.00",
+            "source_id": "10",
+            "destination_id": "1",
+            "date": "2025-01-10",
+        },
+        {
+            "type": "withdrawal",
+            "amount": "700.00",
+            "source_id": "1",
+            "destination_id": "20",
+            "date": "2025-01-11",
+        },
+        {
+            "type": "transfer",
+            "amount": "300.00",
+            "source_id": "1",
+            "destination_id": "2",
+            "date": "2025-01-12",
+        },  # investing out
+        {
+            "type": "transfer",
+            "amount": "150.00",
+            "source_id": "1",
+            "destination_id": "30",
+            "date": "2025-01-13",
+        },  # financing out
+        {
+            "type": "transfer",
+            "amount": "50.00",
+            "source_id": "1",
+            "destination_id": "3",
+            "date": "2025-01-14",
+        },  # neutral, excluded
     ]
 
     def test_sections(self, period):
         start, end = period
         result = build_cash_flow(
-            self.TXNS, start, end, accounts=self.ACCOUNTS,
+            self.TXNS,
+            start,
+            end,
+            accounts=self.ACCOUNTS,
             liability_accounts=self.LIABILITIES,
         )
         wf = result["waterfall"]
-        assert wf["operating"] == {"in": Decimal("2000.00"), "out": Decimal("700.00"),
-                                   "net": Decimal("1300.00")}
+        assert wf["operating"] == {
+            "in": Decimal("2000.00"),
+            "out": Decimal("700.00"),
+            "net": Decimal("1300.00"),
+        }
         assert wf["investing"]["out"] == Decimal("300.00")
         assert wf["financing"]["out"] == Decimal("150.00")
         assert wf["net_change"] == Decimal("850.00")
@@ -1068,7 +1450,10 @@ class TestCashFlowWaterfall:
     def test_opening_closing_cash(self, period):
         start, end = period
         result = build_cash_flow(
-            self.TXNS, start, end, accounts=self.ACCOUNTS,
+            self.TXNS,
+            start,
+            end,
+            accounts=self.ACCOUNTS,
             liability_accounts=self.LIABILITIES,
         )
         wf = result["waterfall"]
@@ -1089,20 +1474,30 @@ class TestBuildJournal:
     def test_protocol_and_double_entry(self, period):
         start, end = period
         txns = [
-            {"type": "withdrawal", "amount": "-50.00", "date": "2025-01-02",
-             "description": "Groceries", "source_name": "Bank",
-             "destination_name": "Supermarket"},
-            {"type": "deposit", "amount": "100.00", "date": "2025-01-01",
-             "description": "Salary", "source_name": "Employer",
-             "destination_name": "Bank"},
+            {
+                "type": "withdrawal",
+                "amount": "-50.00",
+                "date": "2025-01-02",
+                "description": "Groceries",
+                "source_name": "Bank",
+                "destination_name": "Supermarket",
+            },
+            {
+                "type": "deposit",
+                "amount": "100.00",
+                "date": "2025-01-01",
+                "description": "Salary",
+                "source_name": "Employer",
+                "destination_name": "Bank",
+            },
         ]
         result = build_journal(txns, start, end)
-        assert result["count"] == 2          # 2 journal entries
-        assert len(result["rows"]) == 4      # 2 lines each (debit + credit)
+        assert result["count"] == 2  # 2 journal entries
+        assert len(result["rows"]) == 4  # 2 lines each (debit + credit)
         debit_line, credit_line = result["rows"][:2]  # salary, 2025-01-01
         assert debit_line["n"] == credit_line["n"] == 1
         assert debit_line["date"] == "2025-01-01"
-        assert debit_line["account"] == "Bank"                # deposit: asset debited
+        assert debit_line["account"] == "Bank"  # deposit: asset debited
         assert debit_line["debit"] == Decimal("100.00")
         assert debit_line["credit"] is None
         assert credit_line["account"] == "Employer"
@@ -1115,20 +1510,46 @@ class TestBuildJournal:
     def test_daily_and_grand_totals(self, period):
         start, end = period
         txns = [
-            {"type": "withdrawal", "amount": "30.00", "date": "2025-01-01",
-             "description": "a", "source_name": "B", "destination_name": "X"},
-            {"type": "withdrawal", "amount": "20.00", "date": "2025-01-01",
-             "description": "b", "source_name": "B", "destination_name": "Y"},
-            {"type": "deposit", "amount": "80.00", "date": "2025-01-02",
-             "description": "c", "source_name": "Z", "destination_name": "B"},
-            {"type": "opening balance", "amount": "999.00", "date": "2025-01-01",
-             "description": "ob", "source_name": "B", "destination_name": "B"},
+            {
+                "type": "withdrawal",
+                "amount": "30.00",
+                "date": "2025-01-01",
+                "description": "a",
+                "source_name": "B",
+                "destination_name": "X",
+            },
+            {
+                "type": "withdrawal",
+                "amount": "20.00",
+                "date": "2025-01-01",
+                "description": "b",
+                "source_name": "B",
+                "destination_name": "Y",
+            },
+            {
+                "type": "deposit",
+                "amount": "80.00",
+                "date": "2025-01-02",
+                "description": "c",
+                "source_name": "Z",
+                "destination_name": "B",
+            },
+            {
+                "type": "opening balance",
+                "amount": "999.00",
+                "date": "2025-01-01",
+                "description": "ob",
+                "source_name": "B",
+                "destination_name": "B",
+            },
         ]
         result = build_journal(txns, start, end)
         assert result["count"] == 3  # opening balance excluded
-        assert result["daily_totals"][0] == {"date": "2025-01-01",
-                                             "debit": Decimal("50.00"),
-                                             "credit": Decimal("50.00")}
+        assert result["daily_totals"][0] == {
+            "date": "2025-01-01",
+            "debit": Decimal("50.00"),
+            "credit": Decimal("50.00"),
+        }
         assert result["total_debit"] == result["total_credit"] == Decimal("130.00")
 
     def test_empty(self, period):
@@ -1139,19 +1560,38 @@ class TestBuildJournal:
         assert result["total_debit"] == Decimal("0")
 
 
-
 # ─────────────────────────────────────────────
 # Report 26 — Instance & Period Summary
 # ─────────────────────────────────────────────
 
+
 def test_build_summary(
-    txn_2025, accounts, liabilities, budgets, bills, piggy_banks,
-    about, about_user, period, owner, currency,
+    txn_2025,
+    accounts,
+    liabilities,
+    budgets,
+    bills,
+    piggy_banks,
+    about,
+    about_user,
+    period,
+    owner,
+    currency,
 ):
     start, end = period
     s = build_summary(
-        txn_2025, accounts, liabilities, budgets, bills, piggy_banks,
-        about, about_user, start, end, owner, currency,
+        txn_2025,
+        accounts,
+        liabilities,
+        budgets,
+        bills,
+        piggy_banks,
+        about,
+        about_user,
+        start,
+        end,
+        owner,
+        currency,
     )
     assert s["owner"] == owner
     assert s["currency"] == currency
@@ -1179,12 +1619,30 @@ def test_build_summary(
 
 
 def test_build_summary_missing_instance_info(
-    txn_2025, accounts, liabilities, budgets, bills, piggy_banks, period, owner, currency,
+    txn_2025,
+    accounts,
+    liabilities,
+    budgets,
+    bills,
+    piggy_banks,
+    period,
+    owner,
+    currency,
 ):
     start, end = period
     s = build_summary(
-        txn_2025, accounts, liabilities, budgets, bills, piggy_banks,
-        {}, {}, start, end, owner, currency,
+        txn_2025,
+        accounts,
+        liabilities,
+        budgets,
+        bills,
+        piggy_banks,
+        {},
+        {},
+        start,
+        end,
+        owner,
+        currency,
     )
     assert s["instance"]["firefly_version"] == ""
     assert s["instance"]["user_email"] == ""

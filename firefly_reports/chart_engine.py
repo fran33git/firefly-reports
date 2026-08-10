@@ -12,10 +12,11 @@ import matplotlib
 
 matplotlib.use("Agg")  # Headless backend
 
-import i18n
 import matplotlib.pyplot as plt
-from i18n import T, t
 from matplotlib.ticker import FuncFormatter
+
+from firefly_reports import i18n
+from firefly_reports.i18n import T, t
 
 # ─────────────────────────────────────────────
 # Shared visual identity

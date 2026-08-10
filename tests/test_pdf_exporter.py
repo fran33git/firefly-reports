@@ -1,36 +1,62 @@
 """Smoke tests for PDF render functions — verify no exceptions and non-empty output."""
 
-import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "firefly_reports"))
-
 from datetime import date
 
-import pytest
-
-from data_processor import (
-    build_cash_flow, build_income_expense, build_transaction_register,
+from firefly_reports.data_processor import (
+    build_account_statements,
+    build_all_tags_report,
+    build_audit_log,
+    build_bills_report,
+    build_budget_vs_actual,
+    build_cash_flow,
+    build_category_ledger,
+    build_cumulative_cashflow,
+    build_expense_trend,
+    build_income_concentration,
+    build_income_expense,
     build_journal,
-    build_net_worth, build_account_statements, build_tax_summary,
-    build_expense_trend, build_tagged_report, build_budget_vs_actual,
-    build_bills_report, build_savings_goals, build_liabilities_report,
-    build_kpi_scorecard, build_yoy_comparison, build_cumulative_cashflow,
-    build_income_concentration, build_audit_log, build_performance_forecast,
-    build_category_ledger, build_payee_ledger, build_linkage_report,
-    build_all_tags_report, build_summary,
+    build_kpi_scorecard,
+    build_liabilities_report,
+    build_linkage_report,
+    build_net_worth,
+    build_payee_ledger,
+    build_performance_forecast,
+    build_savings_goals,
+    build_summary,
+    build_tagged_report,
+    build_tax_summary,
+    build_transaction_register,
+    build_yoy_comparison,
 )
-from pdf_exporter import (
-    render_cash_flow_pdf, render_income_expense_pdf, render_transaction_register_pdf,
+from firefly_reports.pdf_exporter import (
+    render_account_statements_pdf,
+    render_all_tags_pdf,
+    render_audit_log_pdf,
+    render_bills_pdf,
+    render_budget_vs_actual_pdf,
+    render_cash_flow_pdf,
+    render_category_ledger_pdf,
+    render_cumulative_cashflow_pdf,
+    render_expense_trend_pdf,
+    render_forecast_pdf,
+    render_historical_report_pdf,
+    render_income_concentration_pdf,
+    render_income_expense_dashboard_pdf,
+    render_income_expense_pdf,
     render_journal_pdf,
-    render_net_worth_pdf, render_account_statements_pdf, render_tax_summary_pdf,
-    render_expense_trend_pdf, render_tagged_report_pdf, render_budget_vs_actual_pdf,
-    render_bills_pdf, render_savings_goals_pdf, render_liabilities_pdf,
-    render_kpi_scorecard_pdf, render_yoy_pdf, render_cumulative_cashflow_pdf,
-    render_income_concentration_pdf, render_income_expense_dashboard_pdf,
-    render_kpi_trend_dashboard_pdf, render_historical_report_pdf,
-    render_liquidity_forecast_pdf, render_audit_log_pdf, render_forecast_pdf,
-    render_category_ledger_pdf, render_payee_ledger_pdf, render_linkage_audit_pdf,
-    render_all_tags_pdf, render_summary_pdf,
+    render_kpi_scorecard_pdf,
+    render_kpi_trend_dashboard_pdf,
+    render_liabilities_pdf,
+    render_linkage_audit_pdf,
+    render_liquidity_forecast_pdf,
+    render_net_worth_pdf,
+    render_payee_ledger_pdf,
+    render_savings_goals_pdf,
+    render_summary_pdf,
+    render_tagged_report_pdf,
+    render_tax_summary_pdf,
+    render_transaction_register_pdf,
+    render_yoy_pdf,
 )
 
 MIN_PDF_BYTES = 1000
@@ -106,7 +132,9 @@ def test_render_tagged_report_pdf(tmp_path, txn_2025, period, owner, currency):
     _check_pdf(p)
 
 
-def test_render_budget_vs_actual_pdf(tmp_path, budgets, budget_limits, txn_2025, period, owner, currency):
+def test_render_budget_vs_actual_pdf(
+    tmp_path, budgets, budget_limits, txn_2025, period, owner, currency
+):
     data = build_budget_vs_actual(budgets, budget_limits, txn_2025, *period, owner, currency)
     p = tmp_path / "budget.pdf"
     render_budget_vs_actual_pdf(data, str(p))
@@ -136,7 +164,9 @@ def test_render_liabilities_pdf(tmp_path, liabilities, period, owner, currency):
     _check_pdf(p)
 
 
-def test_render_kpi_scorecard_pdf(tmp_path, txn_2025, accounts, liabilities, period, owner, currency):
+def test_render_kpi_scorecard_pdf(
+    tmp_path, txn_2025, accounts, liabilities, period, owner, currency
+):
     data = build_kpi_scorecard(txn_2025, accounts, liabilities, *period, owner, currency)
     p = tmp_path / "kpi.pdf"
     render_kpi_scorecard_pdf(data, str(p))
@@ -162,6 +192,7 @@ def test_render_income_concentration_pdf(tmp_path, txn_2025, period, owner, curr
     p = tmp_path / "conc.pdf"
     render_income_concentration_pdf(data, str(p))
     _check_pdf(p)
+
 
 def test_render_income_expense_dashboard_pdf(tmp_path, owner, currency):
     data = {
@@ -191,7 +222,7 @@ def test_render_income_expense_dashboard_pdf(tmp_path, owner, currency):
             {"client": "Client A", "amount": 1500},
             {"client": "Client B", "amount": 1000},
             {"client": "Client C", "amount": 500},
-        ]
+        ],
     }
     p = tmp_path / "ie_dashboard.pdf"
     render_income_expense_dashboard_pdf(data, str(p))
@@ -214,7 +245,7 @@ def test_render_kpi_trend_dashboard_pdf(tmp_path, owner, currency):
         ],
         "savings_rate": 33.3,
         "burn_rate": 2000,
-        "cash_runway": 12.5
+        "cash_runway": 12.5,
     }
     p = tmp_path / "kpi_dashboard.pdf"
     render_kpi_trend_dashboard_pdf(data, str(p))
@@ -253,7 +284,7 @@ def test_render_historical_report_pdf(tmp_path, owner, currency):
                 "expense_growth": 9.4,
                 "net_growth": 15.4,
             },
-        ]
+        ],
     }
     p = tmp_path / "historical.pdf"
     render_historical_report_pdf(data, str(p))
@@ -319,7 +350,7 @@ def test_render_liquidity_forecast_pdf(tmp_path, owner, currency):
                 "variable_outflow": 1500,
                 "balance": 16000,
             },
-        ]
+        ],
     }
     p = tmp_path / "forecast.pdf"
     render_liquidity_forecast_pdf(data, str(p))
@@ -375,8 +406,9 @@ def test_render_journal_pdf(tmp_path, txn_2025, period, owner, currency):
     assert p.exists() and p.stat().st_size > MIN_PDF_BYTES
 
 
-def test_render_cash_flow_pdf_with_waterfall(tmp_path, txn_2025, accounts, liabilities,
-                                             period, owner, currency):
+def test_render_cash_flow_pdf_with_waterfall(
+    tmp_path, txn_2025, accounts, liabilities, period, owner, currency
+):
     """Waterfall page is rendered when accounts/liabilities are provided."""
     data = build_cash_flow(txn_2025, *period, owner, currency, accounts, liabilities)
     assert data["waterfall"]["closing_cash"] is not None
@@ -386,13 +418,33 @@ def test_render_cash_flow_pdf_with_waterfall(tmp_path, txn_2025, accounts, liabi
 
 
 def test_render_summary_pdf(
-    tmp_path, txn_2025, accounts, liabilities, budgets, bills, piggy_banks,
-    about, about_user, period, owner, currency,
+    tmp_path,
+    txn_2025,
+    accounts,
+    liabilities,
+    budgets,
+    bills,
+    piggy_banks,
+    about,
+    about_user,
+    period,
+    owner,
+    currency,
 ):
     start, end = period
     data = build_summary(
-        txn_2025, accounts, liabilities, budgets, bills, piggy_banks,
-        about, about_user, start, end, owner, currency,
+        txn_2025,
+        accounts,
+        liabilities,
+        budgets,
+        bills,
+        piggy_banks,
+        about,
+        about_user,
+        start,
+        end,
+        owner,
+        currency,
     )
     p = tmp_path / "summary.pdf"
     render_summary_pdf(data, str(p))

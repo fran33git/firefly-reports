@@ -2,9 +2,9 @@
 """Demo with mock data — all 26 reports.
 
 Usage:
-  python demo.py [--out ./output] [--lang en|it] [--year YYYY] [--debug]
+  python -m firefly_reports.demo [--out ./output] [--lang en|it] [--year YYYY] [--debug]
 """
-# Run from the firefly_reports/ directory: python demo.py
+# Run from the firefly_reports/ directory: python -m firefly_reports.demo
 
 import argparse
 import logging
@@ -14,8 +14,8 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
-import i18n
-from data_processor import (
+from firefly_reports import i18n
+from firefly_reports.data_processor import (
     build_account_statements,
     build_all_tags_report,
     build_audit_log,
@@ -43,8 +43,8 @@ from data_processor import (
     build_transaction_register,
     build_yoy_comparison,
 )
-from excel_exporter import render_all_xlsx_full
-from pdf_exporter import (
+from firefly_reports.excel_exporter import render_all_xlsx_full
+from firefly_reports.pdf_exporter import (
     render_account_statements_pdf,
     render_all_tags_pdf,
     render_audit_log_pdf,

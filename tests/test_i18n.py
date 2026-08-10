@@ -1,15 +1,9 @@
 """Tests for the i18n loader and t() accessor."""
 
-import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "firefly_reports"))
-
 import tomllib
 from pathlib import Path
 
-import pytest
-import i18n
-
+from firefly_reports import i18n
 
 TRANSLATIONS_DIR = Path(__file__).parent.parent / "firefly_reports" / "translations"
 

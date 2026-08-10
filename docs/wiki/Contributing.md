@@ -42,7 +42,7 @@ The hooks run `ruff check`, `ruff format --check`, and `mypy`. Fix any issues be
 
 ## Pull request checklist
 
-- [ ] `PYTHONPATH=firefly_reports pytest tests/` passes
+- [ ] `pytest tests/` passes
 - [ ] `ruff check firefly_reports/` passes
 - [ ] `mypy firefly_reports/` passes
 - [ ] `CHANGELOG.md` `[Unreleased]` section updated

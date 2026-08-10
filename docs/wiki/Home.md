@@ -6,18 +6,17 @@
 
 Generate **26 financial reports** (PDF + Excel) directly from your [Firefly III](https://www.firefly-iii.org/) instance. Designed for freelancers and small businesses who want a complete annual financial overview without manual data export.
 
-## In 3 commands
+## In 2 commands
 
 ```bash
-git clone https://github.com/fran33git/firefly-reports.git
-cd firefly-reports/firefly_reports && pip install -r requirements.txt
-python main.py --url https://firefly.example.com --start 2025-01-01 --end 2025-12-31
+pip install firefly-iii-reports
+firefly-reports --url https://firefly.example.com --start 2025-01-01 --end 2025-12-31
 ```
 
-No Firefly III instance? Run the demo with built-in mock data:
+No Firefly III instance? Run the demo with built-in mock data (from a source checkout):
 
 ```bash
-python demo.py
+python -m firefly_reports.demo
 ```
 
 ## Navigation

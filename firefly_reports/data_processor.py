@@ -7,7 +7,7 @@ from datetime import date
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
-import i18n
+from firefly_reports import i18n
 
 
 def _d(value: Any) -> Decimal:

@@ -2,10 +2,10 @@
 """
 Firefly III Report Generator
 ─────────────────────────────
-Generates all 25 financial reports (PDF + Excel) from Firefly III data.
+Generates all 26 financial reports (PDF + Excel) from Firefly III data.
 
 Usage:
-  python main.py --url https://firefly.yourdomain.com \\
+  python -m firefly_reports.main --url https://firefly.yourdomain.com \\
                  --token <PAT_TOKEN> \\
                  --start 2025-01-01 --end 2025-12-31 \\
                  --owner "Mario Rossi" --out ./output
@@ -27,9 +27,11 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-import i18n
-from config import load_config
-from data_processor import (
+from dotenv import load_dotenv
+
+from firefly_reports import i18n
+from firefly_reports.config import load_config
+from firefly_reports.data_processor import (
     apply_global_filters,
     build_account_statements,
     build_all_tags_report,
@@ -58,10 +60,9 @@ from data_processor import (
     build_transaction_register,
     build_yoy_comparison,
 )
-from dotenv import load_dotenv
-from excel_exporter import render_all_xlsx_full
-from firefly_client import FireflyClient
-from pdf_exporter import (
+from firefly_reports.excel_exporter import render_all_xlsx_full
+from firefly_reports.firefly_client import FireflyClient
+from firefly_reports.pdf_exporter import (
     render_account_statements_pdf,
     render_all_tags_pdf,
     render_audit_log_pdf,
@@ -410,7 +411,7 @@ def main():
         sys.exit(1)
     if not year and (not args.start or not args.end):
         print("Error: provide --year YYYY (full year, all reports) or both --start and --end.")
-        print("Run 'python main.py init' to create a config file.")
+        print("Run 'firefly-reports init' to create a config file.")
         sys.exit(1)
 
     url, token = _resolve_credentials(args, config)

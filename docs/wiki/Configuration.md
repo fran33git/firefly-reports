@@ -19,7 +19,7 @@ The same chain applies to `--url` / `FIREFLY_URL`.
 Run the interactive wizard to generate `firefly-reports.toml`:
 
 ```bash
-python main.py init
+firefly-reports init
 ```
 
 The wizard prompts for URL, token, owner name, currency, language, output directory, and tags. It writes `firefly-reports.toml` in the current directory. If the file will contain a token and `firefly-reports.toml` is not in `.gitignore`, the wizard prints a warning.

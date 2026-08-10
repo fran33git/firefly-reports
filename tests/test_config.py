@@ -1,14 +1,10 @@
 """Unit tests for config.py."""
 
-import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "firefly_reports"))
+import tomllib
 
 import pytest
-import tomllib
-from pathlib import Path
 
-import config as cfg
+from firefly_reports import config as cfg
 
 
 def test_load_config_returns_empty_when_no_file(tmp_path, monkeypatch):
@@ -27,7 +23,7 @@ def test_load_config_reads_toml_values(tmp_path, monkeypatch):
         'owner = "Test User"\n'
         'currency = "€"\n'
         'lang = "en"\n'
-        'legacy_report = true\n'
+        "legacy_report = true\n"
         'tags = ["tax", "business"]\n',
         encoding="utf-8",
     )

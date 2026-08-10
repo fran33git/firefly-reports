@@ -1,6 +1,7 @@
 # firefly-reports
 
 [![CI](https://github.com/fran33git/firefly-reports/actions/workflows/ci.yml/badge.svg)](https://github.com/fran33git/firefly-reports/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/firefly-iii-reports)](https://pypi.org/project/firefly-iii-reports/)
 [![CodeQL](https://github.com/fran33git/firefly-reports/actions/workflows/codeql.yml/badge.svg)](https://github.com/fran33git/firefly-reports/actions/workflows/codeql.yml)
 [![Coverage](docs/coverage_badge.svg)](https://github.com/fran33git/firefly-reports/actions/workflows/ci.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
@@ -11,15 +12,15 @@ Generate **26 financial reports** (PDF + Excel) from a [Firefly III](https://www
 ## Quick start
 
 ```bash
-git clone https://github.com/fran33git/firefly-reports.git
-cd firefly-reports/firefly_reports
-pip install -r requirements.txt
+pip install firefly-iii-reports
 
-python main.py \
+firefly-reports \
   --url https://your-firefly-instance.example.com \
   --year 2025 \
   --owner "Your Name" --out ./output
 ```
+
+To run from source instead, clone the repo and use `python -m firefly_reports.main` in place of `firefly-reports` (dependencies: `pip install -r firefly_reports/requirements.txt`).
 
 Use `--year YYYY` for a full calendar year (all reports), or `--start`/`--end` for a custom date range — in date-range mode the year-only reports (YoY, Historical Growth, Liquidity Forecast) are skipped.
 
@@ -67,14 +68,13 @@ The token can be provided via `--token`, the `FIREFLY_TOKEN` environment variabl
 ## Demo (no Firefly III required)
 
 ```bash
-cd firefly_reports
-python demo.py --out ./output --year 2025 --lang en
+python -m firefly_reports.demo --out ./output --year 2025 --lang en
 ```
 
 ## Config file
 
 ```bash
-python main.py init     # interactive wizard — creates firefly-reports.toml
+firefly-reports init     # interactive wizard — creates firefly-reports.toml
 ```
 
 ## Documentation
@@ -92,7 +92,7 @@ Full documentation is on the [GitHub Wiki](https://github.com/fran33git/firefly-
 ```bash
 pip install -e ".[dev]"
 pre-commit install
-PYTHONPATH=firefly_reports pytest tests/ -v
+pytest tests/ -v
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) and the [Developer Guide](https://github.com/fran33git/firefly-reports/wiki/Contributing) on the wiki.
