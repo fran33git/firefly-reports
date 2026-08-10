@@ -12,7 +12,7 @@
 From PyPI (recommended):
 
 ```bash
-pip install firefly-reports
+pip install firefly-iii-reports
 ```
 
 This installs the `firefly-reports` command. Alternatively, install from source:

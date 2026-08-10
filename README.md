@@ -1,7 +1,7 @@
 # firefly-reports
 
 [![CI](https://github.com/fran33git/firefly-reports/actions/workflows/ci.yml/badge.svg)](https://github.com/fran33git/firefly-reports/actions/workflows/ci.yml)
-[![PyPI](https://img.shields.io/pypi/v/firefly-reports)](https://pypi.org/project/firefly-reports/)
+[![PyPI](https://img.shields.io/pypi/v/firefly-iii-reports)](https://pypi.org/project/firefly-iii-reports/)
 [![CodeQL](https://github.com/fran33git/firefly-reports/actions/workflows/codeql.yml/badge.svg)](https://github.com/fran33git/firefly-reports/actions/workflows/codeql.yml)
 [![Coverage](docs/coverage_badge.svg)](https://github.com/fran33git/firefly-reports/actions/workflows/ci.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
@@ -12,7 +12,7 @@ Generate **26 financial reports** (PDF + Excel) from a [Firefly III](https://www
 ## Quick start
 
 ```bash
-pip install firefly-reports
+pip install firefly-iii-reports
 
 firefly-reports \
   --url https://your-firefly-instance.example.com \

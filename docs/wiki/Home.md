@@ -9,7 +9,7 @@ Generate **26 financial reports** (PDF + Excel) directly from your [Firefly III]
 ## In 2 commands
 
 ```bash
-pip install firefly-reports
+pip install firefly-iii-reports
 firefly-reports --url https://firefly.example.com --start 2025-01-01 --end 2025-12-31
 ```
 

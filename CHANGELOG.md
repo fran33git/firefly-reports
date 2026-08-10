@@ -7,7 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.0.1] - 2026-08-10
 
 ### Added
-- PyPI packaging: `pip install firefly-reports` with a `firefly-reports` CLI command
+- PyPI packaging: `pip install firefly-iii-reports` with a `firefly-reports` CLI command
+  (the distribution is named `firefly-iii-reports` because `firefly-reports` was
+  already taken on PyPI by an unrelated project)
 - Release workflow: tag `v*` publishes sdist/wheel to PyPI (OIDC Trusted Publishing),
   builds a standalone Windows executable (PyInstaller) and creates a GitHub Release
 - Wiki sync workflow: `docs/wiki/` is the single source of truth, pushed

@@ -105,7 +105,7 @@ pip-audit -r firefly_reports/requirements.txt
 
 - GitHub Actions (`.github/workflows/ci.yml`) runs on pushes to `main`/`develop` and on all PRs: ruff lint + format check, mypy, pytest matrix on Python 3.11/3.12 with coverage threshold, `pip-audit`, and `bandit`.
 - Pre-commit hooks (`.pre-commit-config.yaml`) run ruff (with `--fix`), ruff-format, and mypy on commit.
-- Release workflow (`.github/workflows/release.yml`): pushing a tag `v*` checks the tag matches the package version, runs tests, builds the sdist/wheel, publishes to PyPI via OIDC Trusted Publishing (configure the Trusted Publisher on pypi.org), builds a standalone Windows executable with PyInstaller, and creates a GitHub Release.
+- Release workflow (`.github/workflows/release.yml`): pushing a tag `v*` checks the tag matches the package version, runs tests, builds the sdist/wheel, publishes to PyPI via OIDC Trusted Publishing (configure the Trusted Publisher on pypi.org), builds a standalone Windows executable with PyInstaller, and creates a GitHub Release. The PyPI distribution is named `firefly-iii-reports` (`firefly-reports` was already taken by an unrelated project); the import package stays `firefly_reports` and the CLI command `firefly-reports`.
 - Wiki sync workflow (`.github/workflows/wiki-sync.yml`): a push to `main` touching `docs/wiki/**` pushes the pages to the GitHub Wiki repository automatically.
 
 ## Security considerations

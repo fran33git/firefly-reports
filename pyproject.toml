@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "firefly-reports"
+name = "firefly-iii-reports"
 version = "1.0.1"
 description = "Generate financial reports (PDF + Excel) from a Firefly III instance"
 readme = "README.md"
