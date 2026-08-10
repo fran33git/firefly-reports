@@ -56,7 +56,7 @@ jobs:
       - run: pip install -r firefly_reports/requirements.txt
       - run: pip install pytest pytest-cov responses
       - run: |
-          PYTHONPATH=firefly_reports pytest tests/ \
+          pytest tests/ \
             --cov=firefly_reports \
             --cov-report=xml \
             --cov-fail-under=60 \
@@ -108,7 +108,7 @@ jobs:
           cache-dependency-path: "firefly_reports/requirements.txt"
       - run: pip install -r firefly_reports/requirements.txt
       - run: pip install pytest pytest-cov responses
-      - run: PYTHONPATH=firefly_reports pytest tests/ --cov=firefly_reports -q
+      - run: pytest tests/ --cov=firefly_reports -q
       - name: Generate coverage badge
         run: |
           PCT=$(coverage report --format=total)
@@ -116,11 +116,12 @@ jobs:
                   elif [ "$PCT" -ge 60 ]; then echo yellow; else echo red; fi)
           curl -sf -o docs/coverage_badge.svg \
             "https://img.shields.io/badge/coverage-${PCT}%25-${COLOR}"
-      - run: |
+      - name: Commit coverage badge
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git diff --quiet docs/coverage_badge.svg || (
-            git add docs/coverage_badge.svg &&
+          git add docs/coverage_badge.svg
+          git diff --cached --quiet || (
             git commit -m "chore(ci): update coverage badge" &&
             git push
           )
