@@ -75,6 +75,10 @@ ruff format --check firefly_reports/
 mypy firefly_reports/
 bandit -r firefly_reports/ -l -ii --exclude firefly_reports/demo.py,firefly_reports/.venv
 pip-audit -r firefly_reports/requirements.txt
+
+# Exe packaging smoke test (PyInstaller build + --help, cp1252 and
+# translation-bundle probes). Run before touching the exe build config.
+./tools/test-exe.sh
 ```
 
 ## Code style guidelines
