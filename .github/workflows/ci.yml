@@ -103,7 +103,7 @@ jobs:
           # argparse calls i18n.load(). Expect a connection failure here, but
           # never a missing-translation error. Use cmd /c to capture output
           # without letting the probe's non-zero exit code fail this step.
-          cmd /c ".\dist\firefly-reports.exe --year 2025 --url http://127.0.0.1:9 --token dummy > probe.log 2>&1"
+          cmd /c ".\dist\firefly-reports.exe --year 2025 --url http://127.0.0.1:9 --token dummy > probe.log 2>&1 || exit 0"
           $probe = Get-Content probe.log -Raw
           if ($probe -match "No translation file|FileNotFoundError|_MEI") {
             Write-Error "translations missing from the bundled exe"
