@@ -79,6 +79,38 @@ jobs:
       - run: pip install pip-audit
       - run: pip-audit -r firefly_reports/requirements.txt
 
+  # Builds and smoke-tests the Windows exe on every PR/push, so packaging
+  # regressions surface before merge, not at release tag time.
+  # Mirrors the windows-exe job in release.yml and tools/test-exe.sh —
+  # keep the PyInstaller command and the probes in sync.
+  windows-exe:
+    name: Windows exe smoke test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: "firefly_reports/requirements.txt"
+      - run: pip install -r firefly_reports/requirements.txt pyinstaller
+      - name: Build exe
+        run: pyinstaller --onefile --name firefly-reports --paths . --add-data "firefly_reports/translations;firefly_reports/translations" firefly_reports/main.py
+      - name: Smoke test exe
+        run: |
+          .\dist\firefly-reports.exe --help
+          # Probe translation loading from the bundle: any invocation past
+          # argparse calls i18n.load(). Expect a connection failure here, but
+          # never a missing-translation error. Use cmd /c to capture output
+          # without letting the probe's non-zero exit code fail this step.
+          cmd /c ".\dist\firefly-reports.exe --year 2025 --url http://127.0.0.1:9 --token dummy > probe.log 2>&1 || exit 0"
+          $probe = Get-Content probe.log -Raw
+          if ($probe -match "No translation file|FileNotFoundError|_MEI") {
+            Write-Error "translations missing from the bundled exe"
+            exit 1
+          }
+          Write-Host "translation probe passed (expected connection failure only)"
+
   security:
     name: Security scan (bandit)
     runs-on: ubuntu-latest
