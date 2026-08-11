@@ -5,10 +5,10 @@ Firefly III Report Generator
 Generates all 26 financial reports (PDF + Excel) from Firefly III data.
 
 Usage:
-  python -m firefly_reports.main --url https://firefly.yourdomain.com \\
-                 --token <PAT_TOKEN> \\
-                 --start 2025-01-01 --end 2025-12-31 \\
-                 --owner "Mario Rossi" --out ./output
+  firefly-reports --url https://firefly.yourdomain.com \\
+                  --token <PAT_TOKEN> \\
+                  --start 2025-01-01 --end 2025-12-31 \\
+                  --owner "Mario Rossi" --out ./output
 
 Alternative env vars for --url and --token:
   FIREFLY_URL, FIREFLY_TOKEN
@@ -97,7 +97,7 @@ from firefly_reports.pdf_exporter import (
 def parse_args() -> argparse.Namespace:
     """Parse CLI arguments. Supports the 'init' subcommand and report generation."""
     p = argparse.ArgumentParser(
-        description="Firefly III -> PDF + Excel report generator (25 reports)",
+        description="Firefly III -> PDF + Excel report generator (26 reports)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )

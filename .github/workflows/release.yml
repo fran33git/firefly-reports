@@ -85,9 +85,19 @@ jobs:
           python-version: "3.11"
       - run: pip install -r firefly_reports/requirements.txt pyinstaller
       - name: Build exe
-        run: pyinstaller --onefile --name firefly-reports --paths . --collect-data firefly_reports firefly_reports/main.py
+        run: pyinstaller --onefile --name firefly-reports --paths . --add-data "firefly_reports/translations;firefly_reports/translations" firefly_reports/main.py
       - name: Smoke test exe
-        run: .\dist\firefly-reports.exe --help
+        run: |
+          .\dist\firefly-reports.exe --help
+          # Probe translation loading from the bundle: any invocation past
+          # argparse calls i18n.load(). Expect a connection failure here, but
+          # never a missing-translation error.
+          $probe = .\dist\firefly-reports.exe --year 2025 --url http://127.0.0.1:9 --token dummy 2>&1 | Out-String
+          if ($probe -match "No translation file|FileNotFoundError|_MEI") {
+            Write-Error "translations missing from the bundled exe"
+            exit 1
+          }
+          Write-Host "translation probe passed (expected connection failure only)"
       - uses: actions/upload-artifact@v7
         with:
           name: windows-exe

@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   characters (`€`, `—`): console output now replaces unencodable characters
   instead of crashing. The 1.0.1 PyPI release is affected by this bug on
   cp1252 Windows consoles; 1.0.2 supersedes it.
+- Windows executable was built without the translation files (`--collect-data`
+  silently collects nothing when the package is not installed), crashing with
+  `FileNotFoundError` on any run past `--help`: the bundle now includes
+  `translations/*.toml` via an explicit `--add-data`, and the CI smoke test
+  probes translation loading instead of only `--help`
+- `--help` description still said "25 reports" (now 26) and showed the
+  module-invocation usage line; it now shows the `firefly-reports` command
 
 ## [1.0.1] - 2026-08-10
 
