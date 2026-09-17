@@ -153,7 +153,7 @@ jobs:
       # directly: open (or update) a badge PR instead and try to merge it.
       - name: Create or update badge PR
         id: cpr
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           commit-message: "chore(ci): update coverage badge"
           title: "chore(ci): update coverage badge"
