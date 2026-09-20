@@ -44,7 +44,7 @@ python-dateutil==2.9.0.post0
     #   matplotlib
 python-dotenv==1.2.3
     # via -r requirements.in
-reportlab==4.5.1
+reportlab==5.0.1
     # via -r requirements.in
 requests==2.34.2
     # via -r requirements.in
