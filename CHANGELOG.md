@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+- `firefly-reports export beancount`: export all transactions to a Beancount v3 ledger (Fava-ready) with
+  a neutral intermediate model and pluggable writers (`firefly_reports/ledger/`). Includes a YAML account
+  mapping (`beancount_map.example.yaml`), investment-account support, foreign amounts via `@@`, explicit
+  account-name collision errors, deterministic output, atomic writes, `--dry-run`, `--validate`
+  (`bean-check`), `--init` and `--no-timestamp`. Fully translated (en/it). See
+  `docs/wiki/Beancount-Export.md`
+- Ledger layouts: `--layout yearly` (default: `accounts.beancount` + one `firefly-YYYY.beancount` per year, glob
+  include in `main.beancount`) and `--layout single`; `--out` is a directory; only changed files are rewritten;
+  stale generated files are reported, never deleted
+- Two-pass flow: `--scaffold` drafts `beancount_map.yaml` from the Firefly accounts (collisions as `TODO` lines,
+  never overwrites an existing mapping, then lists only the not-yet-mapped accounts) without writing any ledger file
+- Mermaid diagrams in the wiki for the export flows
+- `FireflyClient.get_transactions()` accepts optional `start`/`end` (default: whole history)
+- New dependency: `pyyaml`; optional extra `beancount` for validation
+
 ## [1.0.2] - 2026-08-10
 
 ### Fixed

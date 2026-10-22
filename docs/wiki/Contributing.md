@@ -49,7 +49,19 @@ The hooks run `ruff check`, `ruff format --check`, and `mypy`. Fix any issues be
 - [ ] Report table in `README.md` updated (if adding a report)
 - [ ] Wiki [[Reports-Reference|Reports Reference]] updated (if adding a report)
 - [ ] No `float` used for monetary values
+- [ ] Diagrams in the wiki are Mermaid (` ```mermaid ` blocks, rendered by GitHub); check new ones with `npx @mermaid-js/mermaid-cli` before pushing
+- [ ] Wiki pages and `README.md` updated if you changed the ledger export, its options or the mapping file
 - [ ] No emojis or filler phrases in source code
+
+## Working on the ledger export
+
+* Keep the layering from [[Ledger-Architecture]]: conversion and writers are pure; only `export.py`,
+  `validate.py`, `atomic_write()` and the config loader touch files or processes.
+* New user-facing strings go to the `[ledger]` section of **both** `en.toml` and `it.toml`; errors use
+  `LedgerError("ledger.err_...", **params)` so they are translated when displayed.
+* Metadata key translations must match `[a-z][a-zA-Z0-9_-]*` (a test enforces it).
+* Install `beancount` locally so the `bean-check` integration tests run instead of being skipped.
+* A new output format is a new writer: see "Adding a new format" in [[Ledger-Architecture]].
 
 ## Adding a report
 

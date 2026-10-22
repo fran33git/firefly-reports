@@ -79,6 +79,15 @@ The log includes:
 
 ---
 
+## Beancount export
+
+Problems with `firefly-reports export beancount` (account collisions, `--scaffold` TODO lines, yearly layout and date filters,
+leftover files, invalid mapping file, `bean-check` errors, exit codes) are listed in the
+[Beancount Export troubleshooting table](Beancount-Export#troubleshooting). Authentication, connection and
+rate-limit errors above apply to it unchanged (it prints `Request to Firefly III failed: ...` and exits 1).
+
+---
+
 ## Compatibility
 
 Tested against Firefly III v6.x. The tool uses the v1 REST API (`/api/v1/`). Firefly III v5.x may work but is not officially supported.

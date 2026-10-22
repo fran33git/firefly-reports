@@ -72,6 +72,8 @@ cp .env.example .env
 
 ## All CLI flags
 
+> The `export beancount` subcommand has its own options and a YAML mapping file: see [[Beancount-Export|Beancount Export]].
+
 | Flag | Type | Default | Description |
 |------|------|---------|-------------|
 | `--url URL` | string | — | Firefly III base URL |
