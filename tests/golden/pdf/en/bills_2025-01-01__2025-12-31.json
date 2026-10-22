@@ -1,0 +1,103 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Bills & Subscriptions Report"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "BILLS AND RECURRING SUBSCRIPTIONS"
+  },
+  {
+   "table": [
+    [
+     "Name",
+     "Frequency",
+     "Expected Amount",
+     "Paid",
+     "No. Payments",
+     "Last Pay."
+    ],
+    [
+     "Office Rent",
+     "Monthly",
+     "€ 280.00",
+     "€ 1,400.00",
+     "5",
+     "2025-05-05"
+    ],
+    [
+     "Accountant",
+     "Quarterly",
+     "325.00",
+     "320.00",
+     "1",
+     "2025-03-15"
+    ],
+    [
+     "Adobe Creative Cloud",
+     "Monthly",
+     "89.00",
+     "267.00",
+     "3",
+     "2025-03-10"
+    ],
+    [
+     "Hosting Hetzner",
+     "Yearly",
+     "200.00",
+     "199.00",
+     "1",
+     "2025-04-22"
+    ],
+    [
+     "Total",
+     "",
+     "€ 894.00",
+     "€ 2,186.00",
+     "",
+     ""
+    ]
+   ],
+   "colWidths": [
+    155.91,
+    62.36,
+    70.87,
+    70.87,
+    70.87,
+    76.54
+   ]
+  },
+  {
+   "spacer": 11.34
+  },
+  {
+   "p": "small",
+   "text": "Expected Amount: average of the configured minimum and maximum amounts. Only active bills are included."
+  }
+ ],
+ "strings": [
+  "BILLS & SUBSCRIPTIONS REPORT",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1"
+ ],
+ "pages": 1
+}
