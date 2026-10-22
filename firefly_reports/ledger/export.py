@@ -44,6 +44,7 @@ from firefly_reports.ledger.writers import (
 INVESTMENTS_FILE = "investments.beancount"
 PRICES_FILE = "prices.beancount"
 MAIN_FILE = "main.beancount"
+FAVA_OPTION_DATE = "1970-01-01"
 
 LAYOUT_YEARLY = "yearly"
 LAYOUT_SINGLE = "single"
@@ -142,8 +143,9 @@ def render_main_beancount(
     lines = [
         f"; {t('ledger.init_note')}",
         f'option "title" "{t("ledger.init_title")}"',
-        f'option "language" "{i18n.CURRENT_LANG}"',
         *(f'option "operating_currency" "{cur}"' for cur in operating),
+        # Beancount rejects unknown options; Fava reads its own settings from custom directives.
+        f'{FAVA_OPTION_DATE} custom "fava-option" "language" "{i18n.CURRENT_LANG}"',
         "",
         *(f'include "{name}"' for name in generated),
         f'include "{INVESTMENTS_FILE}"',
