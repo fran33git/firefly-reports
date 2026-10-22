@@ -54,7 +54,7 @@ jobs:
           cache: "pip"
           cache-dependency-path: "firefly_reports/requirements.txt"
       - run: pip install -r firefly_reports/requirements.txt
-      - run: pip install pytest pytest-cov responses
+      - run: pip install pytest pytest-cov responses beancount
       - run: |
           pytest tests/ \
             --cov=firefly_reports \
@@ -140,7 +140,7 @@ jobs:
           cache: "pip"
           cache-dependency-path: "firefly_reports/requirements.txt"
       - run: pip install -r firefly_reports/requirements.txt
-      - run: pip install pytest pytest-cov responses
+      - run: pip install pytest pytest-cov responses beancount
       - run: pytest tests/ --cov=firefly_reports -q
       - name: Generate coverage badge
         run: |

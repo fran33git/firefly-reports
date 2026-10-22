@@ -51,7 +51,6 @@ The hooks run `ruff check`, `ruff format --check`, and `mypy`. Fix any issues be
 - [ ] No `float` used for monetary values
 - [ ] Diagrams in the wiki are Mermaid (` ```mermaid ` blocks, rendered by GitHub); check new ones with `npx @mermaid-js/mermaid-cli` before pushing
 - [ ] Wiki pages and `README.md` updated if you changed the ledger export, its options or the mapping file
-- [ ] No emojis or filler phrases in source code
 
 ## Working on the ledger export
 
