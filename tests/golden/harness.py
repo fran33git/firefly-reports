@@ -3,12 +3,18 @@
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import io
+import json
+import os
+import re
 import sys
+from dataclasses import dataclass
 from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
+from unittest import mock
 
 from firefly_reports import clock, i18n
 from firefly_reports.data_processor import (
@@ -41,6 +47,7 @@ from firefly_reports.data_processor import (
 )
 from firefly_reports.demo import data as demo
 from firefly_reports.demo.__main__ import main as demo_main
+from firefly_reports.demo.client import DemoClient
 
 DEMO_CLOCK = datetime(2026, 1, 15, 12, 0)
 YEAR = 2025
@@ -158,3 +165,94 @@ def render_demo_suite(out_dir: Path, lang: str) -> list[Path]:
         sys.argv = old_argv
         i18n.load("en")
     return sorted(out_dir.iterdir())
+
+
+# ---- CLI pipeline ------------------------------------------------------------------------
+
+CLIENT_PATCH_TARGET = "firefly_reports.main.FireflyClient"
+_ENV_VARS = ("FIREFLY_URL", "FIREFLY_TOKEN", "FIREFLY_LANG", "FIREFLY_LEGACY_REPORT")
+
+
+@dataclass
+class PipelineRun:
+    files: list[str]
+    stdout: list[str]
+    digests: dict[str, str]
+    exit_code: int = 0
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "exit_code": self.exit_code,
+            "files": self.files,
+            "stdout": self.stdout,
+            "digests": self.digests,
+        }
+
+
+def normalize_stdout(text: str, out_dir: Path) -> list[str]:
+    """Stable console text: paths, timings and the order of the ``OK`` lines neutralized."""
+    for variant in {str(out_dir.resolve()), str(out_dir)}:
+        text = text.replace(variant, "<OUT>")
+    text = re.sub(r"\d+(\.\d+)?s\b", "<T>", text)
+    lines = text.splitlines()
+    ok_positions = [i for i, line in enumerate(lines) if line.startswith("    OK ")]
+    for pos, line in zip(ok_positions, sorted(lines[i] for i in ok_positions), strict=True):
+        lines[pos] = line
+    return lines
+
+
+def _digest(payload: object) -> str:
+    text = json.dumps(payload, ensure_ascii=False, sort_keys=False)
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def run_main(argv: list[str], cwd: Path, client: Any = None) -> tuple[int, str, str]:
+    """Run ``main()`` offline: DemoClient (or *client*) instead of the API, no .env, clean env."""
+    from firefly_reports.main import main
+
+    cwd.mkdir(parents=True, exist_ok=True)
+    out, err = io.StringIO(), io.StringIO()
+    old_cwd, old_argv = os.getcwd(), sys.argv
+    env = {k: v for k, v in os.environ.items() if k not in _ENV_VARS}
+    code = 0
+    try:
+        os.chdir(cwd)
+        sys.argv = ["firefly-reports", *argv]
+        with (
+            mock.patch.dict(os.environ, env, clear=True),
+            mock.patch(CLIENT_PATCH_TARGET, side_effect=lambda *a, **k: client or DemoClient()),
+            mock.patch("firefly_reports.main.load_dotenv", lambda *a, **k: None),
+            clock.frozen(DEMO_CLOCK),
+            contextlib.redirect_stdout(out),
+            contextlib.redirect_stderr(err),
+        ):
+            try:
+                main()
+            except SystemExit as exc:
+                code = exc.code if isinstance(exc.code, int) else 1
+    finally:
+        os.chdir(old_cwd)
+        sys.argv = old_argv
+        i18n.load("en")
+    return code, out.getvalue(), err.getvalue()
+
+
+def run_pipeline(out_dir: Path, argv: list[str]) -> PipelineRun:
+    """One report run through ``main()``; files and per-file digests of what was produced."""
+    from tests.golden.snapshot import story_recorder, xlsx_snapshot
+
+    with story_recorder() as stories:
+        code, stdout, _ = run_main([*argv, "--out", str(out_dir)], out_dir.parent)
+    by_stem = {s.stem: s for s in stories}
+    digests: dict[str, str] = {}
+    for path in sorted(out_dir.iterdir()):
+        if path.suffix == ".pdf":
+            digests[path.name] = _digest(by_stem[path.stem].as_dict())
+        elif path.suffix == ".xlsx":
+            digests[path.name] = _digest(xlsx_snapshot(path))
+    return PipelineRun(
+        files=sorted(p.name for p in out_dir.iterdir()),
+        stdout=normalize_stdout(stdout, out_dir),
+        digests=digests,
+        exit_code=code,
+    )
