@@ -1,6 +1,6 @@
 import io
 
-from firefly_reports.chart_engine import (
+from firefly_reports.render.charts import (
     create_area_chart,
     create_bar_chart,
     create_cashflow_combo,

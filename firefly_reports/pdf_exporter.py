@@ -4,7 +4,6 @@ Each public render_*_pdf(data, path) function accepts the dict returned by
 the corresponding build_* function in data_processor and writes a PDF to path.
 """
 
-from datetime import date as dt_date
 from decimal import Decimal
 from typing import Any
 
@@ -13,23 +12,19 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
-from reportlab.lib.utils import ImageReader
 from reportlab.platypus import (
-    BaseDocTemplate,
-    Frame,
-    HRFlowable,
     Image,
     KeepTogether,
     PageBreak,
-    PageTemplate,
     Paragraph,
     Spacer,
     Table,
     TableStyle,
 )
 
-from firefly_reports import clock, i18n
-from firefly_reports.chart_engine import (
+from firefly_reports import i18n
+from firefly_reports.i18n import T, t
+from firefly_reports.render.charts import (
     create_area_chart,
     create_bar_chart,
     create_cashflow_combo,
@@ -38,541 +33,21 @@ from firefly_reports.chart_engine import (
     create_line_chart,
     create_pie_chart,
 )
-from firefly_reports.i18n import T, t
-
-# ─────────────────────────────────────────────────
-# Strict monochrome palette
-# ─────────────────────────────────────────────────
-BLACK = colors.HexColor("#000000")
-DARK = colors.HexColor("#1A1A1A")
-MID = colors.HexColor("#4A4A4A")
-LIGHT = colors.HexColor("#888888")
-RULE = colors.HexColor("#CCCCCC")  # thin rule line
-TOTAL_BG = colors.HexColor("#F2F2F2")  # total row background (very light grey)
-WHITE = colors.white
-PAGE_BG = colors.white
-
-
-def _fmt_date(d: Any) -> str:
-    """Locale-aware date format: DD/MM/YYYY for Italian, ISO YYYY-MM-DD otherwise."""
-    if not hasattr(d, "strftime"):
-        return str(d)
-    fmt = "%d/%m/%Y" if i18n.CURRENT_LANG == "it" else "%Y-%m-%d"
-    return str(d.strftime(fmt))
-
-
-def _period_str(start: dt_date, end: dt_date) -> str:
-    months_it = T.get("months", {})
-    if start.year == end.year and start.month == end.month:
-        m_key = f"{start.month:02d}"
-        month_label = months_it.get(m_key, str(start.month))
-        return f"{month_label.lower()} {start.year}"
-    return f"{_fmt_date(start)} – {_fmt_date(end)}"
-
-
-def _fmt_num(
-    value: Decimal, show_sym: bool = False, sym: str = "€", parens_neg: bool = True
-) -> str:
-    """
-    Accounting number format:
-      - thousands/decimal separators follow i18n.CURRENT_LANG
-        (it: "1.234,56" — other languages: "1,234.56")
-      - negative values in parentheses
-      - optional currency symbol
-    """
-    abs_val = abs(value)
-    s = f"{abs_val:,.2f}"
-    if i18n.CURRENT_LANG == "it":
-        s = s.replace(",", "X").replace(".", ",").replace("X", ".")
-    if show_sym:
-        s = f"{sym} {s}"
-    if value < 0 and parens_neg:
-        s = f"({s})"
-    return s
-
-
-def _flatten_rows(grouped_rows: list[dict]) -> list[dict]:
-    """Helper to flatten grouped transactions for legacy renderers."""
-    flat = []
-    # In grouped_rows, running_balance is at the parent level.
-    # To restore legacy behavior (running balance per split),
-    # we need to track it based on the parent's starting balance.
-
-    # Actually, the processor calculates running_balance after sorting groups.
-    # We can just use the parent's running_balance for the last split of the group,
-    # but for intermediate splits we'd need to subtract.
-    # SIMPLER: Just use the parent's running_balance for ALL splits of that group
-    # (this is slightly different from old legacy but close enough for "Grouped" context)
-    # OR better: recalculate here.
-
-    for group in grouped_rows:
-        splits = group.get("splits", [])
-        if not splits:
-            flat.append(group)
-            continue
-
-        for split in splits:
-            item = split.copy()
-            item["date"] = group.get("date")
-            item["description"] = group.get("description")
-            item["type"] = group.get("type", "Standard")
-            # If the group has a running_balance (from processor),
-            # we use it as the 'final' balance for this group.
-            # For simplicity in legacy, we attach the group's running_balance to all its splits.
-            item["running_balance"] = group.get("running_balance", Decimal("0"))
-            flat.append(item)
-    return flat
-
-
-# ─────────────────────────────────────────────────
-# Typography styles
-# ─────────────────────────────────────────────────
-def _styles() -> dict:
-    st = {}
-
-    # Report title (first line, large)
-    st["title"] = ParagraphStyle(
-        "title",
-        fontName="Times-Bold",
-        fontSize=14,
-        textColor=DARK,
-        leading=18,
-        spaceBefore=0,
-        spaceAfter=2,
-        alignment=TA_LEFT,
-    )
-
-    # Subtitle / entity name
-    st["entity"] = ParagraphStyle(
-        "entity",
-        fontName="Times-Roman",
-        fontSize=10,
-        textColor=DARK,
-        leading=14,
-        spaceAfter=1,
-        alignment=TA_LEFT,
-    )
-
-    # Info row (period, generation date)
-    st["meta"] = ParagraphStyle(
-        "meta",
-        fontName="Helvetica",
-        fontSize=8.5,
-        textColor=LIGHT,
-        leading=12,
-        spaceAfter=0,
-        alignment=TA_LEFT,
-    )
-
-    # Section heading (uppercase, bold)
-    st["section"] = ParagraphStyle(
-        "section",
-        fontName="Helvetica-Bold",
-        fontSize=9,
-        textColor=DARK,
-        leading=12,
-        spaceBefore=14,
-        spaceAfter=4,
-        alignment=TA_LEFT,
-        textTransform="uppercase",
-    )  # textTransform not supported in RL; apply manually
-
-    # Normal entry (left cell label)
-    st["cell_l"] = ParagraphStyle(
-        "cell_l", fontName="Helvetica", fontSize=9, textColor=DARK, leading=12, alignment=TA_LEFT
-    )
-
-    st["cell_c"] = ParagraphStyle(
-        "cell_c", fontName="Helvetica", fontSize=9, textColor=DARK, leading=12, alignment=TA_CENTER
-    )
-
-    # Indented entry
-    st["cell_l_ind"] = ParagraphStyle(
-        "cell_l_ind",
-        fontName="Helvetica",
-        fontSize=9,
-        textColor=DARK,
-        leading=12,
-        alignment=TA_LEFT,
-        leftIndent=12,
-    )
-
-    # Right-aligned number
-    st["cell_r"] = ParagraphStyle(
-        "cell_r", fontName="Helvetica", fontSize=9, textColor=DARK, leading=12, alignment=TA_RIGHT
-    )
-
-    # Subtotal bold
-    st["total_l"] = ParagraphStyle(
-        "total_l",
-        fontName="Helvetica-Bold",
-        fontSize=9,
-        textColor=DARK,
-        leading=12,
-        alignment=TA_LEFT,
-    )
-
-    st["total_r"] = ParagraphStyle(
-        "total_r",
-        fontName="Helvetica-Bold",
-        fontSize=9,
-        textColor=DARK,
-        leading=12,
-        alignment=TA_RIGHT,
-    )
-
-    # Grand total (slightly larger)
-    st["grand_l"] = ParagraphStyle(
-        "grand_l",
-        fontName="Helvetica-Bold",
-        fontSize=9.5,
-        textColor=DARK,
-        leading=13,
-        alignment=TA_LEFT,
-    )
-
-    st["grand_r"] = ParagraphStyle(
-        "grand_r",
-        fontName="Helvetica-Bold",
-        fontSize=9.5,
-        textColor=DARK,
-        leading=13,
-        alignment=TA_RIGHT,
-    )
-
-    st["small"] = ParagraphStyle(
-        "small", fontName="Helvetica", fontSize=7.5, textColor=LIGHT, leading=10, alignment=TA_LEFT
-    )
-
-    st["col_header"] = ParagraphStyle(
-        "col_header",
-        fontName="Helvetica-Bold",
-        fontSize=8.5,
-        textColor=DARK,
-        leading=11,
-        alignment=TA_RIGHT,
-    )
-
-    st["col_header_l"] = ParagraphStyle(
-        "col_header_l",
-        fontName="Helvetica-Bold",
-        fontSize=8.5,
-        textColor=DARK,
-        leading=11,
-        alignment=TA_LEFT,
-    )
-
-    return st
-
-
-# ─────────────────────────────────────────────────
-# Corporate (Modern) Typography styles
-# ─────────────────────────────────────────────────
-def _corporate_styles() -> dict:
-    st = {}
-
-    # Modern palette uses more greys
-    st["title"] = ParagraphStyle(
-        "title",
-        fontName="Helvetica-Bold",
-        fontSize=18,
-        textColor=BLACK,
-        leading=22,
-        spaceBefore=0,
-        spaceAfter=4,
-        alignment=TA_LEFT,
-    )
-
-    st["entity"] = ParagraphStyle(
-        "entity",
-        fontName="Helvetica",
-        fontSize=11,
-        textColor=MID,
-        leading=15,
-        spaceAfter=2,
-        alignment=TA_LEFT,
-    )
-
-    st["meta"] = ParagraphStyle(
-        "meta",
-        fontName="Helvetica",
-        fontSize=8,
-        textColor=LIGHT,
-        leading=11,
-        spaceAfter=0,
-        alignment=TA_LEFT,
-    )
-
-    st["section"] = ParagraphStyle(
-        "section",
-        fontName="Helvetica-Bold",
-        fontSize=10,
-        textColor=BLACK,
-        leading=13,
-        spaceBefore=18,
-        spaceAfter=6,
-        alignment=TA_LEFT,
-    )
-
-    # Smaller, cleaner cell styles for corporate look
-    st["cell_l"] = ParagraphStyle(
-        "cell_l", fontName="Helvetica", fontSize=8.5, textColor=DARK, leading=11, alignment=TA_LEFT
-    )
-
-    st["cell_l_grey"] = ParagraphStyle(
-        "cell_l_grey",
-        fontName="Helvetica",
-        fontSize=8.5,
-        textColor=MID,
-        leading=11,
-        alignment=TA_LEFT,
-    )
-
-    st["cell_c"] = ParagraphStyle(
-        "cell_c",
-        fontName="Helvetica",
-        fontSize=8.5,
-        textColor=DARK,
-        leading=11,
-        alignment=TA_CENTER,
-    )
-
-    st["cell_l_ind"] = ParagraphStyle(
-        "cell_l_ind",
-        fontName="Helvetica",
-        fontSize=8.5,
-        textColor=DARK,
-        leading=11,
-        alignment=TA_LEFT,
-        leftIndent=12,
-    )
-
-    st["split_indent"] = ParagraphStyle(
-        "split_indent",
-        fontName="Helvetica",
-        fontSize=8.5,
-        textColor=DARK,
-        leading=11,
-        alignment=TA_LEFT,
-        leftIndent=24,
-    )
-
-    st["cell_r"] = ParagraphStyle(
-        "cell_r", fontName="Helvetica", fontSize=8.5, textColor=DARK, leading=11, alignment=TA_RIGHT
-    )
-
-    st["cell_r_bold"] = ParagraphStyle(
-        "cell_r_bold",
-        fontName="Helvetica-Bold",
-        fontSize=8.5,
-        textColor=BLACK,
-        leading=11,
-        alignment=TA_RIGHT,
-    )
-
-    st["total_l"] = ParagraphStyle(
-        "total_l",
-        fontName="Helvetica-Bold",
-        fontSize=8.5,
-        textColor=BLACK,
-        leading=11,
-        alignment=TA_LEFT,
-    )
-
-    st["total_r"] = ParagraphStyle(
-        "total_r",
-        fontName="Helvetica-Bold",
-        fontSize=8.5,
-        textColor=BLACK,
-        leading=11,
-        alignment=TA_RIGHT,
-    )
-
-    st["grand_l"] = ParagraphStyle(
-        "grand_l",
-        fontName="Helvetica-Bold",
-        fontSize=9,
-        textColor=BLACK,
-        leading=11,
-        alignment=TA_LEFT,
-    )
-
-    st["grand_r"] = ParagraphStyle(
-        "grand_r",
-        fontName="Helvetica-Bold",
-        fontSize=9,
-        textColor=BLACK,
-        leading=11,
-        alignment=TA_RIGHT,
-    )
-
-    st["small"] = ParagraphStyle(
-        "small", fontName="Helvetica", fontSize=7, textColor=LIGHT, leading=11, alignment=TA_LEFT
-    )
-
-    st["col_header"] = ParagraphStyle(
-        "col_header",
-        fontName="Helvetica-Bold",
-        fontSize=8,
-        textColor=MID,
-        leading=11,
-        alignment=TA_RIGHT,
-    )
-
-    st["col_header_l"] = ParagraphStyle(
-        "col_header_l",
-        fontName="Helvetica-Bold",
-        fontSize=8,
-        textColor=MID,
-        leading=11,
-        alignment=TA_LEFT,
-    )
-
-    return st
-
-
-# ─────────────────────────────────────────────────
-# Page header / footer — accounting report style
-# ─────────────────────────────────────────────────
-def _page_fn(owner: str, report_title: str, period: str, landscape_mode=False):
-    pagesize = landscape(A4) if landscape_mode else A4
-    generated = _fmt_date(clock.now())
-
-    def draw(canvas, doc):
-        canvas.saveState()
-        w, h = pagesize
-
-        # ── HEADER: text only + thin rule
-        canvas.setFont("Helvetica-Bold", 9)
-        canvas.setFillColor(DARK)
-        canvas.drawString(1.8 * cm, h - 1.3 * cm, report_title.upper())
-
-        canvas.setFont("Helvetica", 8)
-        canvas.setFillColor(LIGHT)
-        canvas.drawRightString(w - 1.8 * cm, h - 1.3 * cm, owner)
-
-        # thin horizontal rule below header
-        canvas.setStrokeColor(RULE)
-        canvas.setLineWidth(0.5)
-        canvas.line(1.8 * cm, h - 1.6 * cm, w - 1.8 * cm, h - 1.6 * cm)
-
-        # ── FOOTER: rule + text
-        canvas.setStrokeColor(RULE)
-        canvas.line(1.8 * cm, 1.4 * cm, w - 1.8 * cm, 1.4 * cm)
-
-        canvas.setFont("Helvetica", 7.5)
-        canvas.setFillColor(LIGHT)
-        canvas.drawString(
-            1.8 * cm, 0.9 * cm, t("pdf.footer_period").format(period=period, generated=generated)
-        )
-        canvas.drawRightString(w - 1.8 * cm, 0.9 * cm, t("pdf.footer_page").format(page=doc.page))
-
-        canvas.restoreState()
-
-    return draw
-
-
-# ─────────────────────────────────────────────────
-# Helper: accounting table with thin rules
-# ─────────────────────────────────────────────────
-def _rule_line(col_widths: list) -> Table:
-    """Full-width thin separator line."""
-    tbl = Table([[""] * len(col_widths)], colWidths=col_widths)
-    tbl.setStyle(
-        TableStyle(
-            [
-                ("TOPPADDING", (0, 0), (-1, -1), 0),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
-                ("LINEABOVE", (0, 0), (-1, -1), 0.5, RULE),
-            ]
-        )
-    )
-    return tbl
-
-
-def _accounting_table(
-    rows: list, col_widths: list, total_rows: list | None = None, grand_rows: list | None = None
-) -> Table:
-    """
-    Build a Table with accounting style:
-    - no visible grid
-    - thin rule above subtotals
-    - very light grey background + bold on totals
-    - double rule below grand total
-    """
-    tbl = Table(rows, colWidths=col_widths)
-    total_rows = total_rows or []
-    grand_rows = grand_rows or []
-
-    cmds = [
-        ("TOPPADDING", (0, 0), (-1, -1), 3),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
-        ("LEFTPADDING", (0, 0), (-1, -1), 4),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 4),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        # No grid by default
-        ("LINEBELOW", (0, 0), (-1, 0), 0.5, RULE),  # thin rule below column headers
-    ]
-
-    for r in total_rows:
-        cmds += [
-            ("LINEABOVE", (0, r), (-1, r), 0.5, RULE),
-            ("BACKGROUND", (0, r), (-1, r), TOTAL_BG),
-            ("FONTNAME", (0, r), (-1, r), "Helvetica-Bold"),
-        ]
-
-    for r in grand_rows:
-        cmds += [
-            ("LINEABOVE", (0, r), (-1, r), 1.0, DARK),
-            ("LINEBELOW", (0, r), (-1, r), 0.5, DARK),
-            ("BACKGROUND", (0, r), (-1, r), TOTAL_BG),
-            ("FONTNAME", (0, r), (-1, r), "Helvetica-Bold"),
-            ("FONTSIZE", (0, r), (-1, r), 9.5),
-        ]
-
-    tbl.setStyle(TableStyle(cmds))
-    return tbl
-
-
-def _doc(output_path: str, page_fn, landscape_mode=False) -> BaseDocTemplate:
-    pagesize = landscape(A4) if landscape_mode else A4
-    doc = BaseDocTemplate(
-        output_path,
-        pagesize=pagesize,
-        leftMargin=1.8 * cm,
-        rightMargin=1.8 * cm,
-        topMargin=2.4 * cm,
-        bottomMargin=2.2 * cm,
-    )
-    frame = Frame(
-        doc.leftMargin,
-        doc.bottomMargin,
-        doc.width,
-        doc.height,
-        id="main",
-    )
-    doc.addPageTemplates([PageTemplate(id="main", frames=[frame], onPage=page_fn)])
-    return doc
-
-
-# ─────────────────────────────────────────────────
-# In-document page title block (not the page header)
-# ─────────────────────────────────────────────────
-def _page_title_block(
-    report_title: str, owner: str, period: str, subtitle: str | None, st: dict
-) -> list:
-    """Return a list of flowables for the title block."""
-    items = []
-    items.append(Spacer(1, 0.3 * cm))
-    items.append(Paragraph(report_title, st["title"]))
-    items.append(Paragraph(owner, st["entity"]))
-    items.append(Paragraph(t("pdf.period_ref").format(period=period), st["meta"]))
-    items.append(Spacer(1, 0.15 * cm))
-    items.append(HRFlowable(width="100%", thickness=1, color=DARK, spaceAfter=6, spaceBefore=2))
-    if subtitle:
-        items.append(Paragraph(subtitle.upper(), st["section"]))
-    return items
-
+from firefly_reports.render.fmt import flatten_rows, fmt_date, fmt_num, period_str
+from firefly_reports.render.pdf.page import make_doc, page_decorator, title_block
+from firefly_reports.render.pdf.palette import (
+    C_EXPENSE,
+    C_INCOME,
+    C_INK,
+    DARK,
+    LIGHT,
+    MID,
+    RULE,
+    TOTAL_BG,
+)
+from firefly_reports.render.pdf.styles import classic_styles, corporate_styles
+from firefly_reports.render.pdf.tables import accounting_table
+from firefly_reports.render.pdf.widgets import chart_image, kpi_strip
 
 # ═══════════════════════════════════════════════════
 # REPORT 1 — Cash Flow Statement
@@ -581,21 +56,19 @@ def _page_title_block(
 
 
 def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = classic_styles()
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
     owner = data["owner"]
 
-    fn = _page_fn(owner, t("titles.cash_flow"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(owner, t("titles.cash_flow"), period)
+    doc = make_doc(output_path, fn)
     story = []
 
     # ═══ PAGE 0 — Waterfall by activity (R-INT-03), only when account data available
     wf = data.get("waterfall") or {}
     if wf.get("closing_cash") is not None:
-        story += _page_title_block(
-            t("titles.cash_flow"), owner, period, t("pdf.section_waterfall"), st
-        )
+        story += title_block(t("titles.cash_flow"), owner, period, t("pdf.section_waterfall"), st)
         CW0 = [7.4 * cm, 3.4 * cm, 3.4 * cm, 3.2 * cm]
         hdr0 = [
             [
@@ -616,13 +89,13 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
                 [
                     Paragraph(t(label_key), st["cell_l"]),
                     Paragraph(
-                        _fmt_num(sec["in"], show_sym=sec_key == "operating", sym=sym), st["cell_r"]
+                        fmt_num(sec["in"], show_sym=sec_key == "operating", sym=sym), st["cell_r"]
                     ),
                     Paragraph(
-                        _fmt_num(sec["out"], show_sym=sec_key == "operating", sym=sym), st["cell_r"]
+                        fmt_num(sec["out"], show_sym=sec_key == "operating", sym=sym), st["cell_r"]
                     ),
                     Paragraph(
-                        _fmt_num(
+                        fmt_num(
                             sec["net"], parens_neg=True, show_sym=sec_key == "operating", sym=sym
                         ),
                         st["cell_r"],
@@ -635,7 +108,7 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
                 Paragraph("", st["total_r"]),
                 Paragraph("", st["total_r"]),
                 Paragraph(
-                    _fmt_num(wf["net_change"], parens_neg=True, show_sym=True, sym=sym),
+                    fmt_num(wf["net_change"], parens_neg=True, show_sym=True, sym=sym),
                     st["total_r"],
                 ),
             ]
@@ -645,7 +118,7 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
                 Paragraph(t("pdf.wf_opening"), st["cell_l"]),
                 Paragraph("", st["cell_r"]),
                 Paragraph("", st["cell_r"]),
-                Paragraph(_fmt_num(wf["opening_cash"], parens_neg=True, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(wf["opening_cash"], parens_neg=True, sym=sym), st["cell_r"]),
             ]
         )
         rows0.append(
@@ -654,13 +127,13 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
                 Paragraph("", st["grand_r"]),
                 Paragraph("", st["grand_r"]),
                 Paragraph(
-                    _fmt_num(wf["closing_cash"], parens_neg=True, show_sym=True, sym=sym),
+                    fmt_num(wf["closing_cash"], parens_neg=True, show_sym=True, sym=sym),
                     st["grand_r"],
                 ),
             ]
         )
         story.append(
-            _accounting_table(rows0, CW0, total_rows=[len(rows0) - 3], grand_rows=[len(rows0) - 1])
+            accounting_table(rows0, CW0, total_rows=[len(rows0) - 3], grand_rows=[len(rows0) - 1])
         )
         story.append(Spacer(1, 0.4 * cm))
         story.append(Paragraph(t("pdf.wf_note"), st["small"]))
@@ -670,7 +143,7 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
     CW = [13.5 * cm, 4.4 * cm]  # [description, amount]
 
     # ═══ PAGE 1 — Inflows
-    story += _page_title_block(t("titles.cash_flow"), owner, period, t("pdf.section_inflows"), st)
+    story += title_block(t("titles.cash_flow"), owner, period, t("pdf.section_inflows"), st)
 
     # column headers
     hdr = [
@@ -679,7 +152,7 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
     rows = list(hdr)
     for i, item in enumerate(data["inflows"]):
         is_first = i == 0
-        num_str = _fmt_num(item["amount"], show_sym=is_first, sym=sym)
+        num_str = fmt_num(item["amount"], show_sym=is_first, sym=sym)
         rows.append(
             [
                 Paragraph(item["category"], st["cell_l_ind"]),
@@ -687,7 +160,7 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
             ]
         )
 
-    total_str = _fmt_num(data["total_in"], show_sym=True, sym=sym)
+    total_str = fmt_num(data["total_in"], show_sym=True, sym=sym)
     rows.append(
         [
             Paragraph(t("common.total_income"), st["total_l"]),
@@ -696,7 +169,7 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
     )
     total_idx = len(rows) - 1
 
-    tbl = _accounting_table(rows, CW, total_rows=[total_idx], grand_rows=[])
+    tbl = accounting_table(rows, CW, total_rows=[total_idx], grand_rows=[])
     story.append(tbl)
     story.append(Spacer(1, 0.5 * cm))
 
@@ -710,7 +183,7 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
 
     # ═══ PAGE 2 — Outflows
     story.append(PageBreak())
-    story += _page_title_block(t("titles.cash_flow"), owner, period, t("pdf.section_outflows"), st)
+    story += title_block(t("titles.cash_flow"), owner, period, t("pdf.section_outflows"), st)
 
     hdr2 = [
         [Paragraph(t("common.category_item"), st["col_header_l"]), Paragraph(sym, st["col_header"])]
@@ -718,14 +191,14 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
     rows2 = list(hdr2)
     for i, item in enumerate(data["outflows"]):
         is_first = i == 0
-        num_str = _fmt_num(item["amount"], show_sym=is_first, sym=sym)
+        num_str = fmt_num(item["amount"], show_sym=is_first, sym=sym)
         rows2.append(
             [
                 Paragraph(item["category"], st["cell_l_ind"]),
                 Paragraph(num_str, st["cell_r"]),
             ]
         )
-    total_str2 = _fmt_num(data["total_out"], show_sym=True, sym=sym)
+    total_str2 = fmt_num(data["total_out"], show_sym=True, sym=sym)
     rows2.append(
         [
             Paragraph(t("common.total_expense"), st["total_l"]),
@@ -733,7 +206,7 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
         ]
     )
     t2_idx = len(rows2) - 1
-    tbl2 = _accounting_table(rows2, CW, total_rows=[t2_idx])
+    tbl2 = accounting_table(rows2, CW, total_rows=[t2_idx])
     story.append(tbl2)
     story.append(Spacer(1, 0.5 * cm))
     story.append(
@@ -745,7 +218,7 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
 
     # ═══ PAGE 3 — Monthly cash flow + final summary
     story.append(PageBreak())
-    story += _page_title_block(t("titles.cash_flow"), owner, period, t("pdf.section_monthly"), st)
+    story += title_block(t("titles.cash_flow"), owner, period, t("pdf.section_monthly"), st)
 
     months_it = T.get("months", {})
 
@@ -766,16 +239,16 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
             month_label = f"{months_it.get(m, m)} {y}"
             is_first = i == 0
             net = vals["net"]
-            net_str = _fmt_num(net, show_sym=is_first, sym=sym, parens_neg=True)
+            net_str = fmt_num(net, show_sym=is_first, sym=sym, parens_neg=True)
             rows3.append(
                 [
                     Paragraph(month_label, st["cell_l"]),
-                    Paragraph(_fmt_num(vals["in"], show_sym=is_first, sym=sym), st["cell_r"]),
-                    Paragraph(_fmt_num(vals["out"], show_sym=is_first, sym=sym), st["cell_r"]),
+                    Paragraph(fmt_num(vals["in"], show_sym=is_first, sym=sym), st["cell_r"]),
+                    Paragraph(fmt_num(vals["out"], show_sym=is_first, sym=sym), st["cell_r"]),
                     Paragraph(net_str, st["cell_r"]),
                 ]
             )
-        tbl3 = _accounting_table(rows3, CW3)
+        tbl3 = accounting_table(rows3, CW3)
         story.append(tbl3)
         story.append(Spacer(1, 0.8 * cm))
 
@@ -786,20 +259,18 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
     sum_rows = [
         [
             Paragraph(t("pdf.total_income_period"), st["cell_l"]),
-            Paragraph(_fmt_num(data["total_in"], show_sym=True, sym=sym), st["cell_r"]),
+            Paragraph(fmt_num(data["total_in"], show_sym=True, sym=sym), st["cell_r"]),
         ],
         [
             Paragraph(t("pdf.total_expense_period"), st["cell_l"]),
-            Paragraph(f"({_fmt_num(data['total_out'], show_sym=True, sym=sym)})", st["cell_r"]),
+            Paragraph(f"({fmt_num(data['total_out'], show_sym=True, sym=sym)})", st["cell_r"]),
         ],
         [
             Paragraph(t("pdf.net_flow_period"), st["grand_l"]),
-            Paragraph(
-                _fmt_num(data["net"], show_sym=True, sym=sym, parens_neg=True), st["grand_r"]
-            ),
+            Paragraph(fmt_num(data["net"], show_sym=True, sym=sym, parens_neg=True), st["grand_r"]),
         ],
     ]
-    sum_tbl = _accounting_table(sum_rows, CW_sum, total_rows=[1], grand_rows=[2])
+    sum_tbl = accounting_table(sum_rows, CW_sum, total_rows=[1], grand_rows=[2])
     story.append(sum_tbl)
 
     doc.build(story)
@@ -812,19 +283,19 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
 
 
 def _render_legacy_income_expense(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = classic_styles()
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
     owner = data["owner"]
 
-    fn = _page_fn(owner, t("titles.income_expense_summary"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(owner, t("titles.income_expense_summary"), period)
+    doc = make_doc(output_path, fn)
     story = []
 
     CW = [10.5 * cm, 3.5 * cm, 3.9 * cm]  # label | amount | % share
 
     # ═══ PAGE 1 — Income by category
-    story += _page_title_block(
+    story += title_block(
         t("titles.income_expense_summary"), owner, period, t("pdf.section_income_cat"), st
     )
 
@@ -841,25 +312,25 @@ def _render_legacy_income_expense(data: dict[str, Any], output_path: str) -> Non
         rows.append(
             [
                 Paragraph(r["category"], st["cell_l_ind"]),
-                Paragraph(_fmt_num(r["amount"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(r["amount"], show_sym=is_first, sym=sym), st["cell_r"]),
                 Paragraph(f"{r['pct']} %", st["cell_r"]),
             ]
         )
     rows.append(
         [
             Paragraph(t("common.total_income"), st["total_l"]),
-            Paragraph(_fmt_num(data["total_income"], show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(data["total_income"], show_sym=True, sym=sym), st["total_r"]),
             Paragraph("100,0 %" if i18n.CURRENT_LANG == "it" else "100.0 %", st["total_r"]),
         ]
     )
     t_idx = len(rows) - 1
-    story.append(_accounting_table(rows, CW, total_rows=[t_idx]))
+    story.append(accounting_table(rows, CW, total_rows=[t_idx]))
     story.append(Spacer(1, 0.5 * cm))
     story.append(Paragraph(t("pdf.share_note_income"), st["small"]))
 
     # ═══ PAGE 2 — Expenses by category
     story.append(PageBreak())
-    story += _page_title_block(
+    story += title_block(
         t("titles.income_expense_summary"), owner, period, t("pdf.section_expense_cat"), st
     )
 
@@ -876,19 +347,19 @@ def _render_legacy_income_expense(data: dict[str, Any], output_path: str) -> Non
         rows2.append(
             [
                 Paragraph(r["category"], st["cell_l_ind"]),
-                Paragraph(_fmt_num(r["amount"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(r["amount"], show_sym=is_first, sym=sym), st["cell_r"]),
                 Paragraph(f"{r['pct']} %", st["cell_r"]),
             ]
         )
     rows2.append(
         [
             Paragraph(t("common.total_expense"), st["total_l"]),
-            Paragraph(_fmt_num(data["total_expense"], show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(data["total_expense"], show_sym=True, sym=sym), st["total_r"]),
             Paragraph("100,0 %" if i18n.CURRENT_LANG == "it" else "100.0 %", st["total_r"]),
         ]
     )
     t2_idx = len(rows2) - 1
-    story.append(_accounting_table(rows2, CW, total_rows=[t2_idx]))
+    story.append(accounting_table(rows2, CW, total_rows=[t2_idx]))
     story.append(Spacer(1, 0.5 * cm))
 
     # Budget breakdown (if present) — same page
@@ -906,17 +377,17 @@ def _render_legacy_income_expense(data: dict[str, Any], output_path: str) -> Non
             rows_b.append(
                 [
                     Paragraph(b["budget"], st["cell_l_ind"]),
-                    Paragraph(_fmt_num(b["spent"], show_sym=(i == 0), sym=sym), st["cell_r"]),
+                    Paragraph(fmt_num(b["spent"], show_sym=(i == 0), sym=sym), st["cell_r"]),
                 ]
             )
-        story.append(_accounting_table(rows_b, CW_b))
+        story.append(accounting_table(rows_b, CW_b))
         story.append(Spacer(1, 0.4 * cm))
 
     story.append(Paragraph(t("pdf.share_note"), st["small"]))
 
     # ═══ PAGE 3 — Summary
     story.append(PageBreak())
-    story += _page_title_block(
+    story += title_block(
         t("titles.income_expense_summary"), owner, period, t("pdf.section_summary_analysis"), st
     )
 
@@ -924,21 +395,21 @@ def _render_legacy_income_expense(data: dict[str, Any], output_path: str) -> Non
     sum_rows = [
         [
             Paragraph(t("pdf.total_income_period"), st["cell_l"]),
-            Paragraph(_fmt_num(data["total_income"], show_sym=True, sym=sym), st["cell_r"]),
+            Paragraph(fmt_num(data["total_income"], show_sym=True, sym=sym), st["cell_r"]),
         ],
         [
             Paragraph(t("pdf.total_expense_period"), st["cell_l"]),
-            Paragraph(f"({_fmt_num(data['total_expense'], show_sym=True, sym=sym)})", st["cell_r"]),
+            Paragraph(f"({fmt_num(data['total_expense'], show_sym=True, sym=sym)})", st["cell_r"]),
         ],
         [
             Paragraph(t("common.net_savings"), st["grand_l"]),
             Paragraph(
-                _fmt_num(data["net_savings"], show_sym=True, sym=sym, parens_neg=True),
+                fmt_num(data["net_savings"], show_sym=True, sym=sym, parens_neg=True),
                 st["grand_r"],
             ),
         ],
     ]
-    story.append(_accounting_table(sum_rows, CW_s, total_rows=[1], grand_rows=[2]))
+    story.append(accounting_table(sum_rows, CW_s, total_rows=[1], grand_rows=[2]))
     story.append(Spacer(1, 0.6 * cm))
 
     # Savings rate breakdown
@@ -949,15 +420,15 @@ def _render_legacy_income_expense(data: dict[str, Any], output_path: str) -> Non
         ],
         [
             Paragraph(t("common.income"), st["cell_l"]),
-            Paragraph(_fmt_num(data["total_income"], show_sym=True, sym=sym), st["cell_r"]),
+            Paragraph(fmt_num(data["total_income"], show_sym=True, sym=sym), st["cell_r"]),
         ],
         [
             Paragraph(t("common.expense"), st["cell_l"]),
-            Paragraph(_fmt_num(data["total_expense"], show_sym=True, sym=sym), st["cell_r"]),
+            Paragraph(fmt_num(data["total_expense"], show_sym=True, sym=sym), st["cell_r"]),
         ],
     ]
     story.append(Paragraph(t("pdf.section_indicators"), st["section"]))
-    story.append(_accounting_table(rate_rows, CW_s))
+    story.append(accounting_table(rate_rows, CW_s))
 
     doc.build(story)
 
@@ -968,16 +439,16 @@ def _render_legacy_income_expense(data: dict[str, Any], output_path: str) -> Non
 
 
 def _render_legacy_transaction_register(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = classic_styles()
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
     owner = data["owner"]
 
-    fn = _page_fn(owner, t("titles.transaction_register"), period, landscape_mode=True)
-    doc = _doc(output_path, fn, landscape_mode=True)
+    fn = page_decorator(owner, t("titles.transaction_register"), period, landscape_mode=True)
+    doc = make_doc(output_path, fn, landscape_mode=True)
 
     story = []
-    story += _page_title_block(
+    story += title_block(
         t("titles.transaction_register"),
         owner,
         period,
@@ -1002,7 +473,7 @@ def _render_legacy_transaction_register(data: dict[str, Any], output_path: str) 
     rows = list(hdr)
 
     # Flatten grouped data for legacy rendering
-    flat_rows = _flatten_rows(data["rows"])
+    flat_rows = flatten_rows(data["rows"])
 
     # Group rows by month
     current_month = None
@@ -1031,8 +502,8 @@ def _render_legacy_transaction_register(data: dict[str, Any], output_path: str) 
 
         amt = r["amount"]
         bal = r["running_balance"]
-        amt_str = _fmt_num(amt, show_sym=False, parens_neg=True)
-        bal_str = _fmt_num(bal, show_sym=False, parens_neg=True)
+        amt_str = fmt_num(amt, show_sym=False, parens_neg=True)
+        bal_str = fmt_num(bal, show_sym=False, parens_neg=True)
 
         desc = r["description"]
         if len(desc) > 75:
@@ -1061,7 +532,7 @@ def _render_legacy_transaction_register(data: dict[str, Any], output_path: str) 
             Paragraph("", st["cell_l"]),
             Paragraph("", st["cell_r"]),
             Paragraph(
-                _fmt_num(
+                fmt_num(
                     data["rows"][-1]["running_balance"] if data["rows"] else Decimal(0),
                     show_sym=True,
                     sym=sym,
@@ -1108,16 +579,16 @@ def _render_modern_transaction_register(data: dict[str, Any], output_path: str) 
     One master row per transaction group; split sub-rows only for groups with
     more than one split. Notes appear as small gray lines under their row.
     """
-    st = _corporate_styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = corporate_styles()
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
     owner = data["owner"]
 
-    fn = _page_fn(owner, t("titles.transaction_register"), period, landscape_mode=True)
-    doc = _doc(output_path, fn, landscape_mode=True)
+    fn = page_decorator(owner, t("titles.transaction_register"), period, landscape_mode=True)
+    doc = make_doc(output_path, fn, landscape_mode=True)
 
     story = []
-    story += _page_title_block(
+    story += title_block(
         t("titles.transaction_register"),
         owner,
         period,
@@ -1151,13 +622,13 @@ def _render_modern_transaction_register(data: dict[str, Any], output_path: str) 
     }
 
     def _amount_cells(amount: Decimal, split: dict | None, bold: bool) -> list:
-        amt_str = _fmt_num(amount, show_sym=False, parens_neg=True)
+        amt_str = fmt_num(amount, show_sym=False, parens_neg=True)
         cells = [Paragraph(f"<b>{amt_str}</b>" if bold else amt_str, st["cell_r"])]
         if split:
             f_amt = split.get("foreign_amount")
             f_curr = split.get("foreign_currency_code")
             if f_amt and f_curr:
-                f_str = f"{f_curr} {_fmt_num(Decimal(str(f_amt)), show_sym=False)}"
+                f_str = f"{f_curr} {fmt_num(Decimal(str(f_amt)), show_sym=False)}"
                 cells.append(Paragraph(f_str, st["small"]))
         return cells
 
@@ -1192,13 +663,13 @@ def _render_modern_transaction_register(data: dict[str, Any], output_path: str) 
 
         amount = group["total_abs"] if group["type"] == "transfer" else group["total"]
 
-        date_cells = [Paragraph(_fmt_date(group["date"]), st["cell_l"])]
+        date_cells = [Paragraph(fmt_date(group["date"]), st["cell_l"])]
         first_split = splits[0] if splits else {}
         if single:
             book = first_split.get("book_date") or ""
             if book and book != group["date"]:
                 date_cells.append(
-                    Paragraph(f"{t('common.book_date')}: {_fmt_date(book)}", st["small"])
+                    Paragraph(f"{t('common.book_date')}: {fmt_date(book)}", st["small"])
                 )
 
         rows.append(
@@ -1256,9 +727,9 @@ def _render_modern_transaction_register(data: dict[str, Any], output_path: str) 
     if totals:
         story.append(Spacer(1, 0.4 * cm))
         parts = [
-            f"{t('common.total_income')}: {_fmt_num(totals.get('deposit', Decimal(0)), show_sym=True, sym=sym)}",
-            f"{t('common.total_expense')}: {_fmt_num(totals.get('withdrawal', Decimal(0)), show_sym=True, sym=sym)}",
-            f"{t('pdf.total_transfers')}: {_fmt_num(totals.get('transfer', Decimal(0)), show_sym=True, sym=sym)}",
+            f"{t('common.total_income')}: {fmt_num(totals.get('deposit', Decimal(0)), show_sym=True, sym=sym)}",
+            f"{t('common.total_expense')}: {fmt_num(totals.get('withdrawal', Decimal(0)), show_sym=True, sym=sym)}",
+            f"{t('pdf.total_transfers')}: {fmt_num(totals.get('transfer', Decimal(0)), show_sym=True, sym=sym)}",
         ]
         story.append(Paragraph(" &nbsp;·&nbsp; ".join(parts), st["cell_l"]))
 
@@ -1274,17 +745,17 @@ def _render_modern_transaction_register(data: dict[str, Any], output_path: str) 
 
 
 def _render_legacy_net_worth(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    as_of = _fmt_date(data["as_of_date"])
+    st = classic_styles()
+    as_of = fmt_date(data["as_of_date"])
     period_label = t("pdf.as_of").format(date=as_of)
     sym = data["currency"]
     owner = data["owner"]
 
-    fn = _page_fn(owner, t("titles.net_worth"), period_label)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(owner, t("titles.net_worth"), period_label)
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(
+    story += title_block(
         t("titles.net_worth"),
         owner,
         period_label,
@@ -1317,7 +788,7 @@ def _render_legacy_net_worth(data: dict[str, Any], output_path: str) -> None:
                     Paragraph(acc["iban_masked"], st["cell_l"]),
                     Paragraph(acc["currency_code"], st["cell_r"]),
                     Paragraph(
-                        _fmt_num(acc["balance"], show_sym=(i == 0), sym=sym, parens_neg=True),
+                        fmt_num(acc["balance"], show_sym=(i == 0), sym=sym, parens_neg=True),
                         st["cell_r"],
                     ),
                 ]
@@ -1328,13 +799,13 @@ def _render_legacy_net_worth(data: dict[str, Any], output_path: str) -> None:
                 Paragraph("", st["cell_l"]),
                 Paragraph("", st["cell_r"]),
                 Paragraph(
-                    _fmt_num(group["subtotal"], show_sym=True, sym=sym, parens_neg=True),
+                    fmt_num(group["subtotal"], show_sym=True, sym=sym, parens_neg=True),
                     st["total_r"],
                 ),
             ]
         )
         t_idx = len(rows) - 1
-        story.append(KeepTogether([_accounting_table(rows, CW, total_rows=[t_idx])]))
+        story.append(KeepTogether([accounting_table(rows, CW, total_rows=[t_idx])]))
 
     # ── Final summary
     story.append(Spacer(1, 0.8 * cm))
@@ -1344,23 +815,23 @@ def _render_legacy_net_worth(data: dict[str, Any], output_path: str) -> None:
     sum_rows = [
         [
             Paragraph(t("common.total_assets"), st["cell_l"]),
-            Paragraph(_fmt_num(data["total_assets"], show_sym=True, sym=sym), st["cell_r"]),
+            Paragraph(fmt_num(data["total_assets"], show_sym=True, sym=sym), st["cell_r"]),
         ],
         [
             Paragraph(t("common.total_liabilities"), st["cell_l"]),
             Paragraph(
-                f"({_fmt_num(abs(data['total_liabilities']), show_sym=True, sym=sym)})",
+                f"({fmt_num(abs(data['total_liabilities']), show_sym=True, sym=sym)})",
                 st["cell_r"],
             ),
         ],
         [
             Paragraph(t("common.net_worth"), st["grand_l"]),
             Paragraph(
-                _fmt_num(data["net_worth"], show_sym=True, sym=sym, parens_neg=True), st["grand_r"]
+                fmt_num(data["net_worth"], show_sym=True, sym=sym, parens_neg=True), st["grand_r"]
             ),
         ],
     ]
-    story.append(_accounting_table(sum_rows, CW_s, total_rows=[1], grand_rows=[2]))
+    story.append(accounting_table(sum_rows, CW_s, total_rows=[1], grand_rows=[2]))
     story.append(Spacer(1, 0.4 * cm))
     story.append(
         Paragraph(
@@ -1374,17 +845,17 @@ def _render_legacy_net_worth(data: dict[str, Any], output_path: str) -> None:
 
 def _render_modern_net_worth(data: dict[str, Any], output_path: str) -> None:
     """Modern portrait net worth statement with update tracking."""
-    st = _corporate_styles()
-    as_of = _fmt_date(data["as_of_date"])
+    st = corporate_styles()
+    as_of = fmt_date(data["as_of_date"])
     period_label = t("pdf.as_of").format(date=as_of)
     sym = data["currency"]
     owner = data["owner"]
 
-    fn = _page_fn(owner, t("titles.net_worth"), period_label)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(owner, t("titles.net_worth"), period_label)
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(
+    story += title_block(
         t("titles.net_worth"),
         owner,
         period_label,
@@ -1423,7 +894,7 @@ def _render_modern_net_worth(data: dict[str, Any], output_path: str) -> None:
                     Paragraph(acc["iban_masked"], st["cell_l"]),
                     Paragraph(updated_at, st["cell_r"]),
                     Paragraph(
-                        _fmt_num(acc["balance"], show_sym=(i == 0), sym=sym, parens_neg=True),
+                        fmt_num(acc["balance"], show_sym=(i == 0), sym=sym, parens_neg=True),
                         st["cell_r"],
                     ),
                 ]
@@ -1434,13 +905,13 @@ def _render_modern_net_worth(data: dict[str, Any], output_path: str) -> None:
                 Paragraph("", st["cell_l"]),
                 Paragraph("", st["cell_r"]),
                 Paragraph(
-                    _fmt_num(group["subtotal"], show_sym=True, sym=sym, parens_neg=True),
+                    fmt_num(group["subtotal"], show_sym=True, sym=sym, parens_neg=True),
                     st["total_r"],
                 ),
             ]
         )
         t_idx = len(rows) - 1
-        story.append(KeepTogether([_accounting_table(rows, CW, total_rows=[t_idx])]))
+        story.append(KeepTogether([accounting_table(rows, CW, total_rows=[t_idx])]))
 
     # ── Final summary
     story.append(Spacer(1, 1.0 * cm))
@@ -1450,23 +921,23 @@ def _render_modern_net_worth(data: dict[str, Any], output_path: str) -> None:
     sum_rows = [
         [
             Paragraph(t("common.total_assets"), st["cell_l"]),
-            Paragraph(_fmt_num(data["total_assets"], show_sym=True, sym=sym), st["cell_r"]),
+            Paragraph(fmt_num(data["total_assets"], show_sym=True, sym=sym), st["cell_r"]),
         ],
         [
             Paragraph(t("common.total_liabilities"), st["cell_l"]),
             Paragraph(
-                f"({_fmt_num(abs(data['total_liabilities']), show_sym=True, sym=sym)})",
+                f"({fmt_num(abs(data['total_liabilities']), show_sym=True, sym=sym)})",
                 st["cell_r"],
             ),
         ],
         [
             Paragraph(t("common.net_worth"), st["grand_l"]),
             Paragraph(
-                _fmt_num(data["net_worth"], show_sym=True, sym=sym, parens_neg=True), st["grand_r"]
+                fmt_num(data["net_worth"], show_sym=True, sym=sym, parens_neg=True), st["grand_r"]
             ),
         ],
     ]
-    story.append(_accounting_table(sum_rows, CW_s, total_rows=[1], grand_rows=[2]))
+    story.append(accounting_table(sum_rows, CW_s, total_rows=[1], grand_rows=[2]))
     story.append(Spacer(1, 0.5 * cm))
     story.append(
         Paragraph(
@@ -1488,14 +959,14 @@ def _render_legacy_account_statements(statements: list[dict[str, Any]], output_p
     if not statements:
         return
 
-    st = _styles()
+    st = classic_styles()
     # Use the first statement for the period (all share the same period)
-    period = _period_str(statements[0]["period_start"], statements[0]["period_end"])
+    period = period_str(statements[0]["period_start"], statements[0]["period_end"])
     owner = statements[0]["owner"]
 
     # Landscape: 6 columns with comfortable spacing (29.7 × 21.0 cm)
-    fn = _page_fn(owner, t("titles.account_statement"), period, landscape_mode=True)
-    doc = _doc(output_path, fn, landscape_mode=True)
+    fn = page_decorator(owner, t("titles.account_statement"), period, landscape_mode=True)
+    doc = make_doc(output_path, fn, landscape_mode=True)
     story = []
 
     for idx, stmt in enumerate(statements):
@@ -1504,7 +975,7 @@ def _render_legacy_account_statements(statements: list[dict[str, Any]], output_p
 
         sym = stmt["currency"]
 
-        story += _page_title_block(
+        story += title_block(
             t("titles.account_statement"),
             owner,
             period,
@@ -1525,7 +996,7 @@ def _render_legacy_account_statements(statements: list[dict[str, Any]], output_p
             [
                 Paragraph(t("pdf.opening_balance_period"), st["col_header_l"]),
                 Paragraph(
-                    _fmt_num(stmt["opening_balance"], show_sym=True, sym=sym, parens_neg=True),
+                    fmt_num(stmt["opening_balance"], show_sym=True, sym=sym, parens_neg=True),
                     st["cell_r"],
                 ),
             ],
@@ -1561,7 +1032,7 @@ def _render_legacy_account_statements(statements: list[dict[str, Any]], output_p
         rows = list(hdr)
 
         # Flatten grouped data for legacy rendering
-        flat_stmt_rows = _flatten_rows(stmt["rows"])
+        flat_stmt_rows = flatten_rows(stmt["rows"])
 
         for r in flat_stmt_rows:
             amt = r["amount"]
@@ -1577,8 +1048,8 @@ def _render_legacy_account_statements(statements: list[dict[str, Any]], output_p
                     Paragraph(desc, st["cell_l"]),
                     Paragraph(r["type"][:3].upper(), st["cell_r"]),
                     Paragraph(cpart, st["cell_l"]),
-                    Paragraph(_fmt_num(amt, parens_neg=True), st["cell_r"]),
-                    Paragraph(_fmt_num(r["running_balance"], parens_neg=True), st["cell_r"]),
+                    Paragraph(fmt_num(amt, parens_neg=True), st["cell_r"]),
+                    Paragraph(fmt_num(r["running_balance"], parens_neg=True), st["cell_r"]),
                 ]
             )
 
@@ -1590,7 +1061,7 @@ def _render_legacy_account_statements(statements: list[dict[str, Any]], output_p
                 Paragraph("", st["cell_l"]),
                 Paragraph("", st["cell_r"]),
                 Paragraph(
-                    _fmt_num(stmt["closing_balance"], show_sym=True, sym=sym, parens_neg=True),
+                    fmt_num(stmt["closing_balance"], show_sym=True, sym=sym, parens_neg=True),
                     st["total_r"],
                 ),
             ]
@@ -1626,7 +1097,7 @@ def _render_legacy_account_statements(statements: list[dict[str, Any]], output_p
                 Paragraph("", st["cell_l"]),
                 Paragraph("", st["cell_l"]),
                 Paragraph(
-                    _fmt_num(stmt["opening_balance"], show_sym=True, sym=sym, parens_neg=True),
+                    fmt_num(stmt["opening_balance"], show_sym=True, sym=sym, parens_neg=True),
                     st["cell_r"],
                 ),
             ],
@@ -1634,14 +1105,14 @@ def _render_legacy_account_statements(statements: list[dict[str, Any]], output_p
                 Paragraph(t("pdf.stmt_income_period"), st["cell_l_ind"]),
                 Paragraph("", st["cell_l"]),
                 Paragraph("", st["cell_l"]),
-                Paragraph(_fmt_num(stmt["total_in"], show_sym=True, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(stmt["total_in"], show_sym=True, sym=sym), st["cell_r"]),
             ],
             [
                 Paragraph(t("pdf.stmt_expense_period"), st["cell_l_ind"]),
                 Paragraph("", st["cell_l"]),
                 Paragraph("", st["cell_l"]),
                 Paragraph(
-                    f"({_fmt_num(abs(stmt['total_out']), show_sym=True, sym=sym)})", st["cell_r"]
+                    f"({fmt_num(abs(stmt['total_out']), show_sym=True, sym=sym)})", st["cell_r"]
                 ),
             ],
             [
@@ -1649,12 +1120,12 @@ def _render_legacy_account_statements(statements: list[dict[str, Any]], output_p
                 Paragraph("", st["cell_l"]),
                 Paragraph("", st["cell_l"]),
                 Paragraph(
-                    _fmt_num(stmt["closing_balance"], show_sym=True, sym=sym, parens_neg=True),
+                    fmt_num(stmt["closing_balance"], show_sym=True, sym=sym, parens_neg=True),
                     st["grand_r"],
                 ),
             ],
         ]
-        recap_tbl = _accounting_table(recap, CW_s, total_rows=[2], grand_rows=[3])
+        recap_tbl = accounting_table(recap, CW_s, total_rows=[2], grand_rows=[3])
         story.append(recap_tbl)
 
     doc.build(story)
@@ -1666,17 +1137,17 @@ def _render_legacy_account_statements(statements: list[dict[str, Any]], output_p
 
 
 def _render_legacy_tax_summary(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
+    st = classic_styles()
     period_label = t("pdf.fiscal_year").format(year=data["year"])
     sym = data["currency"]
     owner = data["owner"]
 
-    fn = _page_fn(owner, t("titles.tax_summary"), period_label)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(owner, t("titles.tax_summary"), period_label)
+    doc = make_doc(output_path, fn)
     story = []
 
     # ═══ PAGE 1 — Professional income
-    story += _page_title_block(
+    story += title_block(
         t("titles.tax_summary"), owner, period_label, t("pdf.section_tax_income"), st
     )
 
@@ -1698,18 +1169,18 @@ def _render_legacy_tax_summary(data: dict[str, Any], output_path: str) -> None:
         rows_c.append(
             [
                 Paragraph(r["category"], st["cell_l_ind"]),
-                Paragraph(_fmt_num(r["amount"], show_sym=(i == 0), sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(r["amount"], show_sym=(i == 0), sym=sym), st["cell_r"]),
                 Paragraph(f"{pct} %", st["cell_r"]),
             ]
         )
     rows_c.append(
         [
             Paragraph(t("common.total_income"), st["total_l"]),
-            Paragraph(_fmt_num(total_in, show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(total_in, show_sym=True, sym=sym), st["total_r"]),
             Paragraph("100,0 %" if i18n.CURRENT_LANG == "it" else "100.0 %", st["total_r"]),
         ]
     )
-    story.append(_accounting_table(rows_c, CW2, total_rows=[len(rows_c) - 1]))
+    story.append(accounting_table(rows_c, CW2, total_rows=[len(rows_c) - 1]))
     story.append(Spacer(1, 0.6 * cm))
 
     # By client / counterpart
@@ -1727,15 +1198,15 @@ def _render_legacy_tax_summary(data: dict[str, Any], output_path: str) -> None:
         rows_cl.append(
             [
                 Paragraph(r["client"], st["cell_l_ind"]),
-                Paragraph(_fmt_num(r["amount"], show_sym=(i == 0), sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(r["amount"], show_sym=(i == 0), sym=sym), st["cell_r"]),
                 Paragraph(f"{pct} %", st["cell_r"]),
             ]
         )
-    story.append(_accounting_table(rows_cl, CW2, total_rows=[]))
+    story.append(accounting_table(rows_cl, CW2, total_rows=[]))
 
     # ═══ PAGE 2 — Deductible expenses
     story.append(PageBreak())
-    story += _page_title_block(
+    story += title_block(
         t("titles.tax_summary"), owner, period_label, t("pdf.section_tax_deductible"), st
     )
 
@@ -1751,16 +1222,16 @@ def _render_legacy_tax_summary(data: dict[str, Any], output_path: str) -> None:
         rows_d.append(
             [
                 Paragraph(r["category"], st["cell_l_ind"]),
-                Paragraph(_fmt_num(r["amount"], show_sym=(i == 0), sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(r["amount"], show_sym=(i == 0), sym=sym), st["cell_r"]),
             ]
         )
     rows_d.append(
         [
             Paragraph(t("common.total_deductible"), st["total_l"]),
-            Paragraph(_fmt_num(data["total_deductible"], show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(data["total_deductible"], show_sym=True, sym=sym), st["total_r"]),
         ]
     )
-    story.append(_accounting_table(rows_d, CW1, total_rows=[len(rows_d) - 1]))
+    story.append(accounting_table(rows_d, CW1, total_rows=[len(rows_d) - 1]))
     story.append(Spacer(1, 0.5 * cm))
 
     story.append(Paragraph(t("pdf.non_deductible"), st["section"]))
@@ -1775,10 +1246,10 @@ def _render_legacy_tax_summary(data: dict[str, Any], output_path: str) -> None:
         rows_nd.append(
             [
                 Paragraph(r["category"], st["cell_l_ind"]),
-                Paragraph(_fmt_num(r["amount"], show_sym=(i == 0), sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(r["amount"], show_sym=(i == 0), sym=sym), st["cell_r"]),
             ]
         )
-    story.append(_accounting_table(rows_nd, CW1))
+    story.append(accounting_table(rows_nd, CW1))
     story.append(Spacer(1, 0.4 * cm))
     story.append(
         Paragraph(
@@ -1789,30 +1260,30 @@ def _render_legacy_tax_summary(data: dict[str, Any], output_path: str) -> None:
 
     # ═══ PAGE 3 — Tax summary
     story.append(PageBreak())
-    story += _page_title_block(
+    story += title_block(
         t("titles.tax_summary"), owner, period_label, t("pdf.section_tax_summary"), st
     )
 
     sum_rows = [
         [
             Paragraph(t("pdf.income_in_period"), st["cell_l"]),
-            Paragraph(_fmt_num(data["total_income"], show_sym=True, sym=sym), st["cell_r"]),
+            Paragraph(fmt_num(data["total_income"], show_sym=True, sym=sym), st["cell_r"]),
         ],
         [
             Paragraph(t("common.total_deductible"), st["cell_l_ind"]),
             Paragraph(
-                f"({_fmt_num(data['total_deductible'], show_sym=True, sym=sym)})", st["cell_r"]
+                f"({fmt_num(data['total_deductible'], show_sym=True, sym=sym)})", st["cell_r"]
             ),
         ],
         [
             Paragraph(t("common.taxable_estimate"), st["grand_l"]),
             Paragraph(
-                _fmt_num(data["taxable_estimate"], show_sym=True, sym=sym, parens_neg=True),
+                fmt_num(data["taxable_estimate"], show_sym=True, sym=sym, parens_neg=True),
                 st["grand_r"],
             ),
         ],
     ]
-    story.append(_accounting_table(sum_rows, CW1, total_rows=[1], grand_rows=[2]))
+    story.append(accounting_table(sum_rows, CW1, total_rows=[1], grand_rows=[2]))
     story.append(Spacer(1, 0.6 * cm))
     story.append(Paragraph(t("pdf.taxable_note"), st["small"]))
 
@@ -1825,17 +1296,17 @@ def _render_legacy_tax_summary(data: dict[str, Any], output_path: str) -> None:
 
 
 def _render_legacy_expense_trend(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = classic_styles()
+    period = period_str(data["period_start"], data["period_end"])
     owner = data["owner"]
     months = data["months"]
 
     # Landscape: the category × month matrix is too wide for portrait
-    fn = _page_fn(owner, t("titles.expense_trend"), period, landscape_mode=True)
-    doc = _doc(output_path, fn, landscape_mode=True)
+    fn = page_decorator(owner, t("titles.expense_trend"), period, landscape_mode=True)
+    doc = make_doc(output_path, fn, landscape_mode=True)
 
     story = []
-    story += _page_title_block(
+    story += title_block(
         t("titles.expense_trend"),
         owner,
         period,
@@ -1850,7 +1321,7 @@ def _render_legacy_expense_trend(data: dict[str, Any], output_path: str) -> None
         return f"{months_abbr.get(m, m)}\n{y[-2:]}"
 
     n_months = len(months)
-    # Landscape: 29.7 cm width. Margins 1.8cm each side (default in _doc)
+    # Landscape: 29.7 cm width. Margins 1.8cm each side (default in make_doc)
     cat_w = 6.0 * cm
     tot_w = 2.8 * cm
     avail = (landscape(A4)[0]) - 1.8 * cm - 1.8 * cm - cat_w - tot_w
@@ -1888,7 +1359,7 @@ def _render_legacy_expense_trend(data: dict[str, Any], output_path: str) -> None
         for val in r["monthly"]:
             row_cells.append(
                 Paragraph(
-                    _fmt_num(val) if val > 0 else "—",
+                    fmt_num(val) if val > 0 else "—",
                     ParagraphStyle(
                         "nr", fontName="Helvetica", fontSize=8, textColor=DARK, alignment=TA_RIGHT
                     ),
@@ -1896,7 +1367,7 @@ def _render_legacy_expense_trend(data: dict[str, Any], output_path: str) -> None
             )
         row_cells.append(
             Paragraph(
-                _fmt_num(r["total"]),
+                fmt_num(r["total"]),
                 ParagraphStyle(
                     "tr", fontName="Helvetica-Bold", fontSize=8, textColor=DARK, alignment=TA_RIGHT
                 ),
@@ -1909,13 +1380,13 @@ def _render_legacy_expense_trend(data: dict[str, Any], output_path: str) -> None
     for val in data["totals_by_month"]:
         tot_cells.append(
             Paragraph(
-                _fmt_num(val),
+                fmt_num(val),
                 ParagraphStyle(
                     "tb", fontName="Helvetica-Bold", fontSize=8, textColor=DARK, alignment=TA_RIGHT
                 ),
             )
         )
-    tot_cells.append(Paragraph(_fmt_num(data["grand_total"]), st["total_r"]))
+    tot_cells.append(Paragraph(fmt_num(data["grand_total"]), st["total_r"]))
     rows.append(tot_cells)
 
     # Monthly income row (reference comparison)
@@ -1923,7 +1394,7 @@ def _render_legacy_expense_trend(data: dict[str, Any], output_path: str) -> None
     for val in data["income_by_month"]:
         inc_cells.append(
             Paragraph(
-                _fmt_num(val) if val > 0 else "—",
+                fmt_num(val) if val > 0 else "—",
                 ParagraphStyle(
                     "ib", fontName="Helvetica", fontSize=8, textColor=MID, alignment=TA_RIGHT
                 ),
@@ -1931,7 +1402,7 @@ def _render_legacy_expense_trend(data: dict[str, Any], output_path: str) -> None
         )
     inc_cells.append(
         Paragraph(
-            _fmt_num(sum(data["income_by_month"], Decimal(0))),
+            fmt_num(sum(data["income_by_month"], Decimal(0))),
             ParagraphStyle(
                 "ib2", fontName="Helvetica", fontSize=8, textColor=MID, alignment=TA_RIGHT
             ),
@@ -1977,20 +1448,20 @@ def _render_legacy_expense_trend(data: dict[str, Any], output_path: str) -> None
 
 
 def _render_legacy_tagged_report(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = classic_styles()
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
     owner = data["owner"]
     tags = data["tags"]
     logic = t("pdf.tagged_all_logic") if data["match_all"] else t("pdf.tagged_any_logic")
     tag_label = "  ·  ".join(f"[{t}]" for t in tags)
 
-    fn = _page_fn(owner, t("titles.tagged_report"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(owner, t("titles.tagged_report"), period)
+    doc = make_doc(output_path, fn)
     story = []
 
     # ═══ PAGE 1 — Transaction list
-    story += _page_title_block(
+    story += title_block(
         t("titles.tagged_report"),
         owner,
         period,
@@ -2035,8 +1506,8 @@ def _render_legacy_tagged_report(data: dict[str, Any], output_path: str) -> None
                 Paragraph(desc, st["cell_l"]),
                 Paragraph(r["type"][:3].upper(), st["cell_r"]),
                 Paragraph(cat, st["cell_l"]),
-                Paragraph(_fmt_num(amt, parens_neg=True), st["cell_r"]),
-                Paragraph(_fmt_num(r["running_balance"], parens_neg=True), st["cell_r"]),
+                Paragraph(fmt_num(amt, parens_neg=True), st["cell_r"]),
+                Paragraph(fmt_num(r["running_balance"], parens_neg=True), st["cell_r"]),
             ]
         )
 
@@ -2047,9 +1518,7 @@ def _render_legacy_tagged_report(data: dict[str, Any], output_path: str) -> None
             Paragraph(t("pdf.total_net_filtered"), st["total_l"]),
             Paragraph("", st["cell_r"]),
             Paragraph("", st["cell_l"]),
-            Paragraph(
-                _fmt_num(data["net"], show_sym=True, sym=sym, parens_neg=True), st["total_r"]
-            ),
+            Paragraph(fmt_num(data["net"], show_sym=True, sym=sym, parens_neg=True), st["total_r"]),
             Paragraph("", st["cell_r"]),
         ]
     )
@@ -2084,7 +1553,7 @@ def _render_legacy_tagged_report(data: dict[str, Any], output_path: str) -> None
 
     # ═══ PAGE 2 — Breakdown by category
     story.append(PageBreak())
-    story += _page_title_block(
+    story += title_block(
         t("titles.tagged_report"),
         owner,
         period,
@@ -2109,18 +1578,18 @@ def _render_legacy_tagged_report(data: dict[str, Any], output_path: str) -> None
             rows_i.append(
                 [
                     Paragraph(r["category"], st["cell_l_ind"]),
-                    Paragraph(_fmt_num(r["amount"], show_sym=(i == 0), sym=sym), st["cell_r"]),
+                    Paragraph(fmt_num(r["amount"], show_sym=(i == 0), sym=sym), st["cell_r"]),
                     Paragraph(f"{r['pct']} %", st["cell_r"]),
                 ]
             )
         rows_i.append(
             [
                 Paragraph(t("common.total_income"), st["total_l"]),
-                Paragraph(_fmt_num(data["total_in"], show_sym=True, sym=sym), st["total_r"]),
+                Paragraph(fmt_num(data["total_in"], show_sym=True, sym=sym), st["total_r"]),
                 Paragraph("100,0 %" if i18n.CURRENT_LANG == "it" else "100.0 %", st["total_r"]),
             ]
         )
-        story.append(_accounting_table(rows_i, CW2, total_rows=[len(rows_i) - 1]))
+        story.append(accounting_table(rows_i, CW2, total_rows=[len(rows_i) - 1]))
         story.append(Spacer(1, 0.6 * cm))
 
     # Expenses
@@ -2138,18 +1607,18 @@ def _render_legacy_tagged_report(data: dict[str, Any], output_path: str) -> None
             rows_e.append(
                 [
                     Paragraph(r["category"], st["cell_l_ind"]),
-                    Paragraph(_fmt_num(r["amount"], show_sym=(i == 0), sym=sym), st["cell_r"]),
+                    Paragraph(fmt_num(r["amount"], show_sym=(i == 0), sym=sym), st["cell_r"]),
                     Paragraph(f"{r['pct']} %", st["cell_r"]),
                 ]
             )
         rows_e.append(
             [
                 Paragraph(t("common.total_expense"), st["total_l"]),
-                Paragraph(_fmt_num(data["total_out"], show_sym=True, sym=sym), st["total_r"]),
+                Paragraph(fmt_num(data["total_out"], show_sym=True, sym=sym), st["total_r"]),
                 Paragraph("100,0 %" if i18n.CURRENT_LANG == "it" else "100.0 %", st["total_r"]),
             ]
         )
-        story.append(_accounting_table(rows_e, CW2, total_rows=[len(rows_e) - 1]))
+        story.append(accounting_table(rows_e, CW2, total_rows=[len(rows_e) - 1]))
         story.append(Spacer(1, 0.5 * cm))
 
     # Final summary
@@ -2158,20 +1627,18 @@ def _render_legacy_tagged_report(data: dict[str, Any], output_path: str) -> None
     sum_rows = [
         [
             Paragraph(t("pdf.total_income_tagged"), st["cell_l"]),
-            Paragraph(_fmt_num(data["total_in"], show_sym=True, sym=sym), st["cell_r"]),
+            Paragraph(fmt_num(data["total_in"], show_sym=True, sym=sym), st["cell_r"]),
         ],
         [
             Paragraph(t("pdf.total_expense_tagged"), st["cell_l"]),
-            Paragraph(f"({_fmt_num(data['total_out'], show_sym=True, sym=sym)})", st["cell_r"]),
+            Paragraph(f"({fmt_num(data['total_out'], show_sym=True, sym=sym)})", st["cell_r"]),
         ],
         [
             Paragraph(t("common.net"), st["grand_l"]),
-            Paragraph(
-                _fmt_num(data["net"], show_sym=True, sym=sym, parens_neg=True), st["grand_r"]
-            ),
+            Paragraph(fmt_num(data["net"], show_sym=True, sym=sym, parens_neg=True), st["grand_r"]),
         ],
     ]
-    story.append(_accounting_table(sum_rows, CW1, total_rows=[1], grand_rows=[2]))
+    story.append(accounting_table(sum_rows, CW1, total_rows=[1], grand_rows=[2]))
 
     doc.build(story)
 
@@ -2182,14 +1649,14 @@ def _render_legacy_tagged_report(data: dict[str, Any], output_path: str) -> None
 
 
 def _render_legacy_budget_vs_actual(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = classic_styles()
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
-    fn = _page_fn(data["owner"], t("titles.budget_vs_actual_report"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(data["owner"], t("titles.budget_vs_actual_report"), period)
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(
+    story += title_block(
         t("titles.budget_vs_actual_report"),
         data["owner"],
         period,
@@ -2216,9 +1683,9 @@ def _render_legacy_budget_vs_actual(data: dict[str, Any], output_path: str) -> N
         rows_tbl.append(
             [
                 Paragraph(r["budget_name"], st["cell_l"]),
-                Paragraph(_fmt_num(r["limit"], show_sym=is_first, sym=sym), st["cell_r"]),
-                Paragraph(_fmt_num(r["actual"], show_sym=is_first, sym=sym), st["cell_r"]),
-                Paragraph(_fmt_num(var, parens_neg=True, show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(r["limit"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(r["actual"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(var, parens_neg=True, show_sym=is_first, sym=sym), st["cell_r"]),
                 Paragraph(f"{r['variance_pct']} %", st["cell_r"]),
             ]
         )
@@ -2226,10 +1693,10 @@ def _render_legacy_budget_vs_actual(data: dict[str, Any], output_path: str) -> N
     rows_tbl.append(
         [
             Paragraph(t("pdf.budgeted_total"), st["total_l"]),
-            Paragraph(_fmt_num(data["total_limit"], show_sym=True, sym=sym), st["total_r"]),
-            Paragraph(_fmt_num(data["total_actual"], show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(data["total_limit"], show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(data["total_actual"], show_sym=True, sym=sym), st["total_r"]),
             Paragraph(
-                _fmt_num(data["total_variance"], parens_neg=True, show_sym=True, sym=sym),
+                fmt_num(data["total_variance"], parens_neg=True, show_sym=True, sym=sym),
                 st["total_r"],
             ),
             Paragraph("", st["cell_r"]),
@@ -2237,7 +1704,7 @@ def _render_legacy_budget_vs_actual(data: dict[str, Any], output_path: str) -> N
     )
     tot_idx = len(rows_tbl) - 1
 
-    tbl = _accounting_table(rows_tbl, CW, total_rows=[tot_idx])
+    tbl = accounting_table(rows_tbl, CW, total_rows=[tot_idx])
     story.append(tbl)
 
     if data["unbudgeted_spending"] > 0:
@@ -2247,11 +1714,11 @@ def _render_legacy_budget_vs_actual(data: dict[str, Any], output_path: str) -> N
             [
                 Paragraph(t("pdf.unbudgeted"), st["cell_l"]),
                 Paragraph(
-                    _fmt_num(data["unbudgeted_spending"], show_sym=True, sym=sym), st["cell_r"]
+                    fmt_num(data["unbudgeted_spending"], show_sym=True, sym=sym), st["cell_r"]
                 ),
             ],
         ]
-        story.append(_accounting_table(ub_rows, [13.5 * cm, 4.4 * cm]))
+        story.append(accounting_table(ub_rows, [13.5 * cm, 4.4 * cm]))
 
     story.append(Spacer(1, 0.4 * cm))
     story.append(Paragraph(t("pdf.expected_note"), st["small"]))
@@ -2261,16 +1728,16 @@ def _render_legacy_budget_vs_actual(data: dict[str, Any], output_path: str) -> N
 
 def _render_modern_budget_vs_actual(data: dict[str, Any], output_path: str) -> None:
     """Modern portrait budget analysis with pace tracking."""
-    st = _corporate_styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = corporate_styles()
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
     owner = data["owner"]
 
-    fn = _page_fn(owner, t("titles.budget_vs_actual_analysis"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(owner, t("titles.budget_vs_actual_analysis"), period)
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(
+    story += title_block(
         t("titles.budget_vs_actual_analysis"), owner, period, t("excel.sheet_budget").upper(), st
     )
 
@@ -2313,10 +1780,10 @@ def _render_modern_budget_vs_actual(data: dict[str, Any], output_path: str) -> N
         rows.append(
             [
                 Paragraph(r["budget_name"], st["cell_l"]),
-                Paragraph(_fmt_num(r["limit"], show_sym=is_first, sym=sym), st["cell_r"]),
-                Paragraph(_fmt_num(r["actual"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(r["limit"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(r["actual"], show_sym=is_first, sym=sym), st["cell_r"]),
                 Paragraph(
-                    _fmt_num(r["variance"], parens_neg=True, show_sym=is_first, sym=sym),
+                    fmt_num(r["variance"], parens_neg=True, show_sym=is_first, sym=sym),
                     st["cell_r"],
                 ),
                 pace_para,
@@ -2327,17 +1794,17 @@ def _render_modern_budget_vs_actual(data: dict[str, Any], output_path: str) -> N
     rows.append(
         [
             Paragraph(t("pdf.budgeted_total"), st["total_l"]),
-            Paragraph(_fmt_num(data["total_limit"], show_sym=True, sym=sym), st["total_r"]),
-            Paragraph(_fmt_num(data["total_actual"], show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(data["total_limit"], show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(data["total_actual"], show_sym=True, sym=sym), st["total_r"]),
             Paragraph(
-                _fmt_num(data["total_variance"], parens_neg=True, show_sym=True, sym=sym),
+                fmt_num(data["total_variance"], parens_neg=True, show_sym=True, sym=sym),
                 st["total_r"],
             ),
             Paragraph(f"{data['elapsed_pct']}% ELAPSED", st["cell_r_bold"]),
         ]
     )
 
-    story.append(_accounting_table(rows, CW, total_rows=[len(rows) - 1]))
+    story.append(accounting_table(rows, CW, total_rows=[len(rows) - 1]))
 
     if data.get("unbudgeted_spending", 0) > 0:
         story.append(Spacer(1, 0.6 * cm))
@@ -2346,11 +1813,11 @@ def _render_modern_budget_vs_actual(data: dict[str, Any], output_path: str) -> N
             [
                 Paragraph(t("pdf.unbudgeted"), st["cell_l"]),
                 Paragraph(
-                    _fmt_num(data["unbudgeted_spending"], show_sym=True, sym=sym), st["cell_r"]
+                    fmt_num(data["unbudgeted_spending"], show_sym=True, sym=sym), st["cell_r"]
                 ),
             ],
         ]
-        story.append(_accounting_table(ub_rows, [13.0 * cm, 4.4 * cm]))
+        story.append(accounting_table(ub_rows, [13.0 * cm, 4.4 * cm]))
 
     doc.build(story)
 
@@ -2361,16 +1828,14 @@ def _render_modern_budget_vs_actual(data: dict[str, Any], output_path: str) -> N
 
 
 def _render_legacy_bills(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = classic_styles()
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
-    fn = _page_fn(data["owner"], t("titles.bills"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(data["owner"], t("titles.bills"), period)
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(
-        t("titles.bills"), data["owner"], period, t("pdf.section_bills_sub"), st
-    )
+    story += title_block(t("titles.bills"), data["owner"], period, t("pdf.section_bills_sub"), st)
 
     CW = [5.5 * cm, 2.2 * cm, 2.5 * cm, 2.5 * cm, 2.5 * cm, 2.7 * cm]
     hdr = [
@@ -2390,8 +1855,8 @@ def _render_legacy_bills(data: dict[str, Any], output_path: str) -> None:
             [
                 Paragraph(r["name"], st["cell_l"]),
                 Paragraph(r["frequency"], st["cell_r"]),
-                Paragraph(_fmt_num(r["expected"], show_sym=is_first, sym=sym), st["cell_r"]),
-                Paragraph(_fmt_num(r["paid_amount"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(r["expected"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(r["paid_amount"], show_sym=is_first, sym=sym), st["cell_r"]),
                 Paragraph(str(r["times_paid"]), st["cell_r"]),
                 Paragraph(r["last_paid"] or "—", st["cell_r"]),
             ]
@@ -2401,14 +1866,14 @@ def _render_legacy_bills(data: dict[str, Any], output_path: str) -> None:
         [
             Paragraph(t("common.total"), st["total_l"]),
             Paragraph("", st["cell_r"]),
-            Paragraph(_fmt_num(data["total_expected"], show_sym=True, sym=sym), st["total_r"]),
-            Paragraph(_fmt_num(data["total_paid"], show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(data["total_expected"], show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(data["total_paid"], show_sym=True, sym=sym), st["total_r"]),
             Paragraph("", st["cell_r"]),
             Paragraph("", st["cell_r"]),
         ]
     )
     tot_idx = len(rows_tbl) - 1
-    story.append(_accounting_table(rows_tbl, CW, total_rows=[tot_idx]))
+    story.append(accounting_table(rows_tbl, CW, total_rows=[tot_idx]))
 
     story.append(Spacer(1, 0.4 * cm))
     story.append(Paragraph(t("pdf.expected_note_bills"), st["small"]))
@@ -2422,19 +1887,19 @@ def _render_legacy_bills(data: dict[str, Any], output_path: str) -> None:
 
 
 def _render_legacy_savings_goals(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    as_of = _fmt_date(data["as_of_date"])
+    st = classic_styles()
+    as_of = fmt_date(data["as_of_date"])
     sym = data["currency"]
-    fn = _page_fn(
+    fn = page_decorator(
         data["owner"],
         t("titles.savings_goals"),
         t("pdf.as_of").format(date=as_of),
         landscape_mode=True,
     )
-    doc = _doc(output_path, fn, landscape_mode=True)
+    doc = make_doc(output_path, fn, landscape_mode=True)
     story = []
 
-    story += _page_title_block(
+    story += title_block(
         t("titles.savings_goals"),
         data["owner"],
         t("pdf.as_of").format(date=as_of),
@@ -2460,13 +1925,13 @@ def _render_legacy_savings_goals(data: dict[str, Any], output_path: str) -> None
         rows_tbl.append(
             [
                 Paragraph(g["name"], st["cell_l"]),
-                Paragraph(_fmt_num(g["target"], show_sym=is_first, sym=sym), st["cell_r"]),
-                Paragraph(_fmt_num(g["current"], show_sym=is_first, sym=sym), st["cell_r"]),
-                Paragraph(_fmt_num(g["remaining"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(g["target"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(g["current"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(g["remaining"], show_sym=is_first, sym=sym), st["cell_r"]),
                 Paragraph(f"{g['pct']} %", st["cell_r"]),
                 Paragraph(g["target_date"] or "—", st["cell_r"]),
                 Paragraph(
-                    _fmt_num(g["monthly_needed"], show_sym=is_first, sym=sym)
+                    fmt_num(g["monthly_needed"], show_sym=is_first, sym=sym)
                     if g["monthly_needed"] > 0
                     else "—",
                     st["cell_r"],
@@ -2477,10 +1942,10 @@ def _render_legacy_savings_goals(data: dict[str, Any], output_path: str) -> None
     rows_tbl.append(
         [
             Paragraph(t("pdf.total_goals"), st["total_l"]),
-            Paragraph(_fmt_num(data["total_target"], show_sym=True, sym=sym), st["total_r"]),
-            Paragraph(_fmt_num(data["total_saved"], show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(data["total_target"], show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(data["total_saved"], show_sym=True, sym=sym), st["total_r"]),
             Paragraph(
-                _fmt_num(data["total_target"] - data["total_saved"], show_sym=True, sym=sym),
+                fmt_num(data["total_target"] - data["total_saved"], show_sym=True, sym=sym),
                 st["total_r"],
             ),
             Paragraph(f"{data['overall_pct']} %", st["total_r"]),
@@ -2489,7 +1954,7 @@ def _render_legacy_savings_goals(data: dict[str, Any], output_path: str) -> None
         ]
     )
     tot_idx = len(rows_tbl) - 1
-    story.append(_accounting_table(rows_tbl, CW, total_rows=[tot_idx]))
+    story.append(accounting_table(rows_tbl, CW, total_rows=[tot_idx]))
 
     story.append(Spacer(1, 0.4 * cm))
     story.append(Paragraph(t("pdf.savings_monthly_note"), st["small"]))
@@ -2503,15 +1968,15 @@ def _render_legacy_savings_goals(data: dict[str, Any], output_path: str) -> None
 
 
 def _render_legacy_liabilities(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    as_of = _fmt_date(data["as_of_date"])
-    period = _period_str(data["period_start"], data["period_end"])
+    st = classic_styles()
+    as_of = fmt_date(data["as_of_date"])
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
-    fn = _page_fn(data["owner"], t("titles.liabilities"), t("pdf.as_of").format(date=as_of))
-    doc = _doc(output_path, fn)
+    fn = page_decorator(data["owner"], t("titles.liabilities"), t("pdf.as_of").format(date=as_of))
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(
+    story += title_block(
         t("titles.liabilities"),
         data["owner"],
         t("pdf.as_of").format(date=as_of),
@@ -2542,11 +2007,11 @@ def _render_legacy_liabilities(data: dict[str, Any], output_path: str) -> None:
             [
                 Paragraph(r["name"], st["cell_l"]),
                 Paragraph(r["type"], st["cell_r"]),
-                Paragraph(_fmt_num(r["debt_amount"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(r["debt_amount"], show_sym=is_first, sym=sym), st["cell_r"]),
                 Paragraph(f"{r['interest_rate']} %" if r["interest_rate"] else "—", st["cell_r"]),
                 Paragraph(r["currency_code"], st["cell_r"]),
                 Paragraph(
-                    _fmt_num(r["period_payments"], show_sym=is_first, sym=sym)
+                    fmt_num(r["period_payments"], show_sym=is_first, sym=sym)
                     if r["period_payments"]
                     else "—",
                     st["cell_r"],
@@ -2558,14 +2023,14 @@ def _render_legacy_liabilities(data: dict[str, Any], output_path: str) -> None:
         [
             Paragraph(t("common.total_liabilities"), st["grand_l"]),
             Paragraph("", st["cell_r"]),
-            Paragraph(_fmt_num(data["total_debt"], show_sym=True, sym=sym), st["grand_r"]),
+            Paragraph(fmt_num(data["total_debt"], show_sym=True, sym=sym), st["grand_r"]),
             Paragraph("", st["cell_r"]),
             Paragraph("", st["cell_r"]),
-            Paragraph(_fmt_num(data["total_payments"], show_sym=True, sym=sym), st["grand_r"]),
+            Paragraph(fmt_num(data["total_payments"], show_sym=True, sym=sym), st["grand_r"]),
         ]
     )
     grand_idx = len(rows_tbl) - 1
-    story.append(_accounting_table(rows_tbl, CW, grand_rows=[grand_idx]))
+    story.append(accounting_table(rows_tbl, CW, grand_rows=[grand_idx]))
 
     story.append(Spacer(1, 0.4 * cm))
     story.append(Paragraph(t("pdf.liabilities_note"), st["small"]))
@@ -2579,16 +2044,14 @@ def _render_legacy_liabilities(data: dict[str, Any], output_path: str) -> None:
 
 
 def _render_legacy_kpi_scorecard(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = classic_styles()
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
-    fn = _page_fn(data["owner"], t("titles.kpi_scorecard"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(data["owner"], t("titles.kpi_scorecard"), period)
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(
-        t("titles.kpi_scorecard"), data["owner"], period, t("pdf.section_kpi"), st
-    )
+    story += title_block(t("titles.kpi_scorecard"), data["owner"], period, t("pdf.section_kpi"), st)
 
     # ── Section 1: Key KPIs in a two-column table
     def _kpi_row(label, value, note=""):
@@ -2615,7 +2078,7 @@ def _render_legacy_kpi_scorecard(data: dict[str, Any], output_path: str) -> None
         ),
         _kpi_row(
             t("pdf.kpi_burn_rate"),
-            _fmt_num(data["burn_rate"], show_sym=True, sym=sym),
+            fmt_num(data["burn_rate"], show_sym=True, sym=sym),
             t("pdf.kpi_burn_rate_note"),
         ),
         _kpi_row(
@@ -2625,23 +2088,23 @@ def _render_legacy_kpi_scorecard(data: dict[str, Any], output_path: str) -> None
         ),
         _kpi_row(
             t("pdf.kpi_net_worth"),
-            _fmt_num(data["net_worth"], show_sym=True, sym=sym, parens_neg=True),
+            fmt_num(data["net_worth"], show_sym=True, sym=sym, parens_neg=True),
             t("pdf.kpi_net_worth_note"),
         ),
         _kpi_row(t("pdf.kpi_liquidity"), liquidity_str, "Liquid Assets / Total Liabilities"),
         _kpi_row(
             t("pdf.kpi_net_cash_flow"),
-            _fmt_num(data["net_cash_flow"], show_sym=True, sym=sym, parens_neg=True),
+            fmt_num(data["net_cash_flow"], show_sym=True, sym=sym, parens_neg=True),
             t("pdf.kpi_net_cash_flow_note"),
         ),
         _kpi_row(
             t("pdf.kpi_avg_monthly_in"),
-            _fmt_num(data["avg_monthly_in"], show_sym=True, sym=sym),
+            fmt_num(data["avg_monthly_in"], show_sym=True, sym=sym),
             t("pdf.kpi_months_note").format(n_months=data["n_months"]),
         ),
         _kpi_row(
             t("pdf.kpi_avg_monthly_out"),
-            _fmt_num(data["avg_monthly_out"], show_sym=True, sym=sym),
+            fmt_num(data["avg_monthly_out"], show_sym=True, sym=sym),
             t("pdf.kpi_months_note").format(n_months=data["n_months"]),
         ),
         _kpi_row(t("pdf.kpi_hhi"), f"{data['hhi']:.0f} / 10.000", t("pdf.kpi_hhi_note")),
@@ -2652,7 +2115,7 @@ def _render_legacy_kpi_scorecard(data: dict[str, Any], output_path: str) -> None
         ),
     ]
 
-    tbl = _accounting_table(kpi_rows, CW_kpi, total_rows=[])
+    tbl = accounting_table(kpi_rows, CW_kpi, total_rows=[])
     story.append(tbl)
 
     # ── Section 2: Monthly trend
@@ -2685,13 +2148,13 @@ def _render_legacy_kpi_scorecard(data: dict[str, Any], output_path: str) -> None
             trend_rows.append(
                 [
                     Paragraph(label, st["cell_l"]),
-                    Paragraph(_fmt_num(m["income"]), st["cell_r"]),
-                    Paragraph(_fmt_num(m["expense"]), st["cell_r"]),
-                    Paragraph(_fmt_num(m["net"], parens_neg=True), st["cell_r"]),
+                    Paragraph(fmt_num(m["income"]), st["cell_r"]),
+                    Paragraph(fmt_num(m["expense"]), st["cell_r"]),
+                    Paragraph(fmt_num(m["net"], parens_neg=True), st["cell_r"]),
                     Paragraph(var_str, st["cell_r"]),
                 ]
             )
-        story.append(_accounting_table(trend_rows, CW_t))
+        story.append(accounting_table(trend_rows, CW_t))
 
     doc.build(story)
 
@@ -2702,15 +2165,15 @@ def _render_legacy_kpi_scorecard(data: dict[str, Any], output_path: str) -> None
 
 
 def _render_legacy_yoy(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
+    st = classic_styles()
     sym = data["currency"]
     la = data["period_a"]["label"]
     lb = data["period_b"]["label"]
-    fn = _page_fn(data["owner"], t("titles.yoy_comparison"), f"{lb} vs {la}")
-    doc = _doc(output_path, fn)
+    fn = page_decorator(data["owner"], t("titles.yoy_comparison"), f"{lb} vs {la}")
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(
+    story += title_block(
         t("titles.yoy_comparison"),
         data["owner"],
         f"{lb} vs. {la}",
@@ -2737,10 +2200,10 @@ def _render_legacy_yoy(data: dict[str, Any], output_path: str) -> None:
             rows_tbl.append(
                 [
                     Paragraph(r["category"], st["cell_l_ind"]),
-                    Paragraph(_fmt_num(r["amount_a"], show_sym=is_first, sym=sym), st["cell_r"]),
-                    Paragraph(_fmt_num(r["amount_b"], show_sym=is_first, sym=sym), st["cell_r"]),
+                    Paragraph(fmt_num(r["amount_a"], show_sym=is_first, sym=sym), st["cell_r"]),
+                    Paragraph(fmt_num(r["amount_b"], show_sym=is_first, sym=sym), st["cell_r"]),
                     Paragraph(
-                        _fmt_num(r["delta"], parens_neg=True, show_sym=is_first, sym=sym),
+                        fmt_num(r["delta"], parens_neg=True, show_sym=is_first, sym=sym),
                         st["cell_r"],
                     ),
                     Paragraph(f"{r['delta_pct']} %" if r["amount_b"] else "—", st["cell_r"]),
@@ -2751,15 +2214,15 @@ def _render_legacy_yoy(data: dict[str, Any], output_path: str) -> None:
         rows_tbl.append(
             [
                 Paragraph(t("common.total"), st["total_l"]),
-                Paragraph(_fmt_num(total_a, show_sym=True, sym=sym), st["total_r"]),
-                Paragraph(_fmt_num(total_b, show_sym=True, sym=sym), st["total_r"]),
+                Paragraph(fmt_num(total_a, show_sym=True, sym=sym), st["total_r"]),
+                Paragraph(fmt_num(total_b, show_sym=True, sym=sym), st["total_r"]),
                 Paragraph(
-                    _fmt_num(delta_tot, parens_neg=True, show_sym=True, sym=sym), st["total_r"]
+                    fmt_num(delta_tot, parens_neg=True, show_sym=True, sym=sym), st["total_r"]
                 ),
                 Paragraph(f"{dpct} %", st["total_r"]),
             ]
         )
-        story.append(_accounting_table(rows_tbl, CW, total_rows=[len(rows_tbl) - 1]))
+        story.append(accounting_table(rows_tbl, CW, total_rows=[len(rows_tbl) - 1]))
         story.append(Spacer(1, 0.5 * cm))
 
     _section(
@@ -2789,10 +2252,10 @@ def _render_legacy_yoy(data: dict[str, Any], output_path: str) -> None:
         ],
         [
             Paragraph(t("common.total_income"), st["cell_l"]),
-            Paragraph(_fmt_num(data["total_in_a"], show_sym=True, sym=sym), st["cell_r"]),
-            Paragraph(_fmt_num(data["total_in_b"], show_sym=True, sym=sym), st["cell_r"]),
+            Paragraph(fmt_num(data["total_in_a"], show_sym=True, sym=sym), st["cell_r"]),
+            Paragraph(fmt_num(data["total_in_b"], show_sym=True, sym=sym), st["cell_r"]),
             Paragraph(
-                _fmt_num(
+                fmt_num(
                     data["total_in_a"] - data["total_in_b"], parens_neg=True, show_sym=True, sym=sym
                 ),
                 st["cell_r"],
@@ -2801,10 +2264,10 @@ def _render_legacy_yoy(data: dict[str, Any], output_path: str) -> None:
         ],
         [
             Paragraph(t("common.total_expense"), st["cell_l"]),
-            Paragraph(_fmt_num(data["total_out_a"], show_sym=True, sym=sym), st["cell_r"]),
-            Paragraph(_fmt_num(data["total_out_b"], show_sym=True, sym=sym), st["cell_r"]),
+            Paragraph(fmt_num(data["total_out_a"], show_sym=True, sym=sym), st["cell_r"]),
+            Paragraph(fmt_num(data["total_out_b"], show_sym=True, sym=sym), st["cell_r"]),
             Paragraph(
-                _fmt_num(
+                fmt_num(
                     data["total_out_a"] - data["total_out_b"],
                     parens_neg=True,
                     show_sym=True,
@@ -2817,19 +2280,19 @@ def _render_legacy_yoy(data: dict[str, Any], output_path: str) -> None:
         [
             Paragraph(t("common.net_flow"), st["grand_l"]),
             Paragraph(
-                _fmt_num(data["net_a"], parens_neg=True, show_sym=True, sym=sym), st["grand_r"]
+                fmt_num(data["net_a"], parens_neg=True, show_sym=True, sym=sym), st["grand_r"]
             ),
             Paragraph(
-                _fmt_num(data["net_b"], parens_neg=True, show_sym=True, sym=sym), st["grand_r"]
+                fmt_num(data["net_b"], parens_neg=True, show_sym=True, sym=sym), st["grand_r"]
             ),
             Paragraph(
-                _fmt_num(data["net_a"] - data["net_b"], parens_neg=True, show_sym=True, sym=sym),
+                fmt_num(data["net_a"] - data["net_b"], parens_neg=True, show_sym=True, sym=sym),
                 st["grand_r"],
             ),
             Paragraph("", st["cell_r"]),
         ],
     ]
-    story.append(_accounting_table(summary, CW_s, total_rows=[2], grand_rows=[3]))
+    story.append(accounting_table(summary, CW_s, total_rows=[2], grand_rows=[3]))
     story.append(Spacer(1, 0.3 * cm))
     story.append(Paragraph(t("pdf.yoy_note").format(la=la, lb=lb), st["small"]))
 
@@ -2842,14 +2305,14 @@ def _render_legacy_yoy(data: dict[str, Any], output_path: str) -> None:
 
 
 def _render_legacy_cumulative_cashflow(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = classic_styles()
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
-    fn = _page_fn(data["owner"], t("titles.cumulative_cash_flow"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(data["owner"], t("titles.cumulative_cash_flow"), period)
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(
+    story += title_block(
         t("titles.cumulative_cash_flow"), data["owner"], period, t("pdf.section_cumulative_cf"), st
     )
 
@@ -2869,13 +2332,13 @@ def _render_legacy_cumulative_cashflow(data: dict[str, Any], output_path: str) -
         rows_tbl.append(
             [
                 Paragraph(m["month_label"], st["cell_l"]),
-                Paragraph(_fmt_num(m["income"], show_sym=is_first, sym=sym), st["cell_r"]),
-                Paragraph(_fmt_num(m["expense"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(m["income"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(m["expense"], show_sym=is_first, sym=sym), st["cell_r"]),
                 Paragraph(
-                    _fmt_num(m["net"], parens_neg=True, show_sym=is_first, sym=sym), st["cell_r"]
+                    fmt_num(m["net"], parens_neg=True, show_sym=is_first, sym=sym), st["cell_r"]
                 ),
                 Paragraph(
-                    _fmt_num(m["cumulative"], parens_neg=True, show_sym=is_first, sym=sym),
+                    fmt_num(m["cumulative"], parens_neg=True, show_sym=is_first, sym=sym),
                     st["cell_r"],
                 ),
             ]
@@ -2888,12 +2351,12 @@ def _render_legacy_cumulative_cashflow(data: dict[str, Any], output_path: str) -
             Paragraph("", st["cell_r"]),
             Paragraph("", st["cell_r"]),
             Paragraph(
-                _fmt_num(data["final_cumulative"], parens_neg=True, show_sym=True, sym=sym),
+                fmt_num(data["final_cumulative"], parens_neg=True, show_sym=True, sym=sym),
                 st["grand_r"],
             ),
         ]
     )
-    story.append(_accounting_table(rows_tbl, CW, grand_rows=[len(rows_tbl) - 1]))
+    story.append(accounting_table(rows_tbl, CW, grand_rows=[len(rows_tbl) - 1]))
 
     # Notes on peak and low months
     story.append(Spacer(1, 0.5 * cm))
@@ -2902,14 +2365,14 @@ def _render_legacy_cumulative_cashflow(data: dict[str, Any], output_path: str) -
         p = data["peak_month"]
         notes.append(
             t("pdf.cumulative_peak_note").format(
-                val=_fmt_num(p["cumulative"], show_sym=True, sym=sym), month=p["month_label"]
+                val=fmt_num(p["cumulative"], show_sym=True, sym=sym), month=p["month_label"]
             )
         )
     if data["low_month"]:
         low = data["low_month"]
         notes.append(
             t("pdf.cumulative_low_note").format(
-                val=_fmt_num(low["cumulative"], parens_neg=True, show_sym=True, sym=sym),
+                val=fmt_num(low["cumulative"], parens_neg=True, show_sym=True, sym=sym),
                 month=low["month_label"],
             )
         )
@@ -2925,14 +2388,14 @@ def _render_legacy_cumulative_cashflow(data: dict[str, Any], output_path: str) -
 
 
 def _render_legacy_income_concentration(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = classic_styles()
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
-    fn = _page_fn(data["owner"], t("titles.income_by_client"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(data["owner"], t("titles.income_by_client"), period)
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(
+    story += title_block(
         t("titles.income_by_client"),
         data["owner"],
         period,
@@ -2956,22 +2419,22 @@ def _render_legacy_income_concentration(data: dict[str, Any], output_path: str) 
         rows_tbl.append(
             [
                 Paragraph(r["client"], st["cell_l"]),
-                Paragraph(_fmt_num(r["amount"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(r["amount"], show_sym=is_first, sym=sym), st["cell_r"]),
                 Paragraph(f"{r['pct']} %", st["cell_r"]),
                 Paragraph(str(r["count"]), st["cell_r"]),
-                Paragraph(_fmt_num(r["avg_per_tx"], show_sym=is_first, sym=sym), st["cell_r"]),
+                Paragraph(fmt_num(r["avg_per_tx"], show_sym=is_first, sym=sym), st["cell_r"]),
             ]
         )
     rows_tbl.append(
         [
             Paragraph(t("common.total"), st["total_l"]),
-            Paragraph(_fmt_num(data["total_income"], show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(data["total_income"], show_sym=True, sym=sym), st["total_r"]),
             Paragraph("100,0 %" if i18n.CURRENT_LANG == "it" else "100.0 %", st["total_r"]),
             Paragraph("", st["cell_r"]),
             Paragraph("", st["cell_r"]),
         ]
     )
-    story.append(_accounting_table(rows_tbl, CW, total_rows=[len(rows_tbl) - 1]))
+    story.append(accounting_table(rows_tbl, CW, total_rows=[len(rows_tbl) - 1]))
 
     doc.build(story)
 
@@ -2982,13 +2445,13 @@ def _render_legacy_income_concentration(data: dict[str, Any], output_path: str) 
 
 
 def _render_legacy_income_expense_dashboard(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    period = _period_str(data["period_start"], data["period_end"])
-    fn = _page_fn(data["owner"], t("titles.dashboard_income_expense"), period)
-    doc = _doc(output_path, fn)
+    st = classic_styles()
+    period = period_str(data["period_start"], data["period_end"])
+    fn = page_decorator(data["owner"], t("titles.dashboard_income_expense"), period)
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(
+    story += title_block(
         t("titles.dashboard_income_expense"), data["owner"], period, t("charts.spending_by_cat"), st
     )
 
@@ -3032,14 +2495,14 @@ def _render_legacy_income_expense_dashboard(data: dict[str, Any], output_path: s
 
 
 def _render_legacy_kpi_trend_dashboard(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = classic_styles()
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
-    fn = _page_fn(data["owner"], t("titles.dashboard_kpi_trend"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(data["owner"], t("titles.dashboard_kpi_trend"), period)
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(
+    story += title_block(
         t("titles.dashboard_kpi_trend"),
         data["owner"],
         period,
@@ -3068,7 +2531,7 @@ def _render_legacy_kpi_trend_dashboard(data: dict[str, Any], output_path: str) -
 
     kpi_row = [
         _card(t("charts.savings_rate_card"), f"{data['savings_rate']}%"),
-        _card(t("charts.burn_rate_card"), _fmt_num(data["burn_rate"], sym=sym, show_sym=True)),
+        _card(t("charts.burn_rate_card"), fmt_num(data["burn_rate"], sym=sym, show_sym=True)),
         _card(t("charts.runway_card"), f"{data['cash_runway']} {t('pdf.kpi_runway_unit')}"),
     ]
 
@@ -3098,103 +2561,37 @@ def _render_legacy_kpi_trend_dashboard(data: dict[str, Any], output_path: str) -
 # DASHBOARDS — Modern variants
 # ═══════════════════════════════════════════════════
 
-# Semantic chart colours (kept in sync with chart_engine)
-_C_INCOME = "#2E7D5B"
-_C_EXPENSE = "#B3564B"
-_C_INK = "#1A1A1A"
-
-
-def _img(buf, width: float) -> Image:
-    """Chart image at a fixed width, aspect ratio preserved."""
-    pw, ph = ImageReader(buf).getSize()
-    buf.seek(0)
-    return Image(buf, width=width, height=width * ph / pw)
-
-
-def _kpi_strip(cards: list) -> Table:
-    """Render a strip of boxed KPI cards.
-
-    Each card is a ``(label, value, value_hex_color)`` tuple.
-    """
-    n = len(cards)
-    gap = 0.4 * cm
-    card_w = (17.4 * cm - gap * (n - 1)) / n
-    lbl_st = ParagraphStyle(
-        "kpi_lbl",
-        fontName="Helvetica",
-        fontSize=7,
-        textColor=LIGHT,
-        leading=9,
-        alignment=TA_CENTER,
-    )
-    val_st = ParagraphStyle(
-        "kpi_val",
-        fontName="Helvetica-Bold",
-        fontSize=13,
-        textColor=DARK,
-        leading=16,
-        alignment=TA_CENTER,
-    )
-
-    row: list = []
-    widths: list = []
-    for i, (label, value, vcolor) in enumerate(cards):
-        card = Table(
-            [
-                [Paragraph(label.upper(), lbl_st)],
-                [Paragraph(f"<font color='{vcolor}'>{value}</font>", val_st)],
-            ],
-            colWidths=[card_w],
-            style=TableStyle(
-                [
-                    ("BACKGROUND", (0, 0), (-1, -1), TOTAL_BG),
-                    ("BOX", (0, 0), (-1, -1), 0.5, RULE),
-                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                    ("TOPPADDING", (0, 0), (0, 0), 5),
-                    ("BOTTOMPADDING", (0, 1), (0, 1), 5),
-                ]
-            ),
-        )
-        row.append(card)
-        widths.append(card_w)
-        if i < n - 1:
-            row.append("")
-            widths.append(gap)
-    return Table([row], colWidths=widths)
-
 
 def _render_modern_income_expense_dashboard(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = classic_styles()
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
-    fn = _page_fn(data["owner"], t("titles.dashboard_income_expense"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(data["owner"], t("titles.dashboard_income_expense"), period)
+    doc = make_doc(output_path, fn)
     story: list = []
 
-    story += _page_title_block(
-        t("titles.dashboard_income_expense"), data["owner"], period, None, st
-    )
+    story += title_block(t("titles.dashboard_income_expense"), data["owner"], period, None, st)
 
     net = data["net_savings"]
     story.append(
-        _kpi_strip(
+        kpi_strip(
             [
                 (
                     t("charts.total_income"),
-                    _fmt_num(data["total_income"], sym=sym, show_sym=True),
-                    _C_INCOME,
+                    fmt_num(data["total_income"], sym=sym, show_sym=True),
+                    C_INCOME,
                 ),
                 (
                     t("charts.total_expense"),
-                    _fmt_num(data["total_expense"], sym=sym, show_sym=True),
-                    _C_EXPENSE,
+                    fmt_num(data["total_expense"], sym=sym, show_sym=True),
+                    C_EXPENSE,
                 ),
                 (
                     t("charts.net_savings"),
-                    _fmt_num(net, sym=sym, show_sym=True),
-                    _C_INCOME if net >= 0 else _C_EXPENSE,
+                    fmt_num(net, sym=sym, show_sym=True),
+                    C_INCOME if net >= 0 else C_EXPENSE,
                 ),
-                (t("charts.savings_rate_card"), f"{data['savings_rate']}%", _C_INK),
+                (t("charts.savings_rate_card"), f"{data['savings_rate']}%", C_INK),
             ]
         )
     )
@@ -3203,7 +2600,7 @@ def _render_modern_income_expense_dashboard(data: dict[str, Any], output_path: s
     trend = data.get("monthly_trend") or []
     if trend:
         story.append(Paragraph(t("charts.monthly_income_expense").upper(), st["section"]))
-        story.append(_img(create_cashflow_combo(trend, ""), 17.2 * cm))
+        story.append(chart_image(create_cashflow_combo(trend, ""), 17.2 * cm))
         story.append(Spacer(1, 0.2 * cm))
 
     exp_rows = data.get("expense_rows") or data.get("expense_by_cat") or []
@@ -3215,7 +2612,7 @@ def _render_modern_income_expense_dashboard(data: dict[str, Any], output_path: s
         KeepTogether(
             [
                 Paragraph(t("charts.spending_by_cat").upper(), st["section"]),
-                _img(create_donut_chart(exp_data, ""), 17.2 * cm),
+                chart_image(create_donut_chart(exp_data, ""), 17.2 * cm),
             ]
         )
     )
@@ -3224,7 +2621,7 @@ def _render_modern_income_expense_dashboard(data: dict[str, Any], output_path: s
         KeepTogether(
             [
                 Paragraph(t("charts.top_income_sources").upper(), st["section"]),
-                _img(create_horizontal_bar_chart(src_data, ""), 17.2 * cm),
+                chart_image(create_horizontal_bar_chart(src_data, ""), 17.2 * cm),
             ]
         )
     )
@@ -3233,44 +2630,44 @@ def _render_modern_income_expense_dashboard(data: dict[str, Any], output_path: s
 
 
 def _render_modern_kpi_trend_dashboard(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = classic_styles()
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
-    fn = _page_fn(data["owner"], t("titles.dashboard_kpi_trend"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(data["owner"], t("titles.dashboard_kpi_trend"), period)
+    doc = make_doc(output_path, fn)
     story: list = []
 
-    story += _page_title_block(t("titles.dashboard_kpi_trend"), data["owner"], period, None, st)
+    story += title_block(t("titles.dashboard_kpi_trend"), data["owner"], period, None, st)
 
     nw = data.get("net_worth")
     cards = [
-        (t("charts.savings_rate_card"), f"{data['savings_rate']}%", _C_INK),
+        (t("charts.savings_rate_card"), f"{data['savings_rate']}%", C_INK),
         (
             t("charts.burn_rate_card"),
-            _fmt_num(data["burn_rate"], sym=sym, show_sym=True),
-            _C_EXPENSE,
+            fmt_num(data["burn_rate"], sym=sym, show_sym=True),
+            C_EXPENSE,
         ),
         (
             t("charts.runway_card"),
             f"{data['cash_runway']} {t('pdf.kpi_runway_unit')}",
-            _C_INK,
+            C_INK,
         ),
     ]
     if nw is not None:
         cards.append(
             (
                 t("charts.net_worth"),
-                _fmt_num(nw, sym=sym, show_sym=True),
-                _C_INCOME if nw >= 0 else _C_EXPENSE,
+                fmt_num(nw, sym=sym, show_sym=True),
+                C_INCOME if nw >= 0 else C_EXPENSE,
             )
         )
-    story.append(_kpi_strip(cards))
+    story.append(kpi_strip(cards))
     story.append(Spacer(1, 0.4 * cm))
 
     trend = data.get("monthly_trend") or []
     trend_data = {m["month"]: float(m["net"]) for m in trend}
     story.append(Paragraph(t("charts.net_cash_flow_trend").upper(), st["section"]))
-    story.append(_img(create_line_chart(trend_data, ""), 17.2 * cm))
+    story.append(chart_image(create_line_chart(trend_data, ""), 17.2 * cm))
 
     story.append(Spacer(1, 0.2 * cm))
     story.append(Paragraph(t("charts.cumulative_net").upper(), st["section"]))
@@ -3279,7 +2676,7 @@ def _render_modern_kpi_trend_dashboard(data: dict[str, Any], output_path: str) -
     for m in trend:
         running += float(m["net"])
         cumulative[m["month"]] = running
-    story.append(_img(create_area_chart(cumulative, ""), 17.2 * cm))
+    story.append(chart_image(create_area_chart(cumulative, ""), 17.2 * cm))
 
     doc.build(story)
 
@@ -3291,15 +2688,15 @@ def _render_modern_kpi_trend_dashboard(data: dict[str, Any], output_path: str) -
 
 def _render_modern_audit_log(data: dict[str, Any], output_path: str) -> None:
     """Technical Audit Log (Modern only)."""
-    st = _corporate_styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = corporate_styles()
+    period = period_str(data["period_start"], data["period_end"])
     owner = data["owner"]
 
-    fn = _page_fn(owner, t("titles.audit_log"), period, landscape_mode=True)
-    doc = _doc(output_path, fn, landscape_mode=True)
+    fn = page_decorator(owner, t("titles.audit_log"), period, landscape_mode=True)
+    doc = make_doc(output_path, fn, landscape_mode=True)
     story = []
 
-    story += _page_title_block(
+    story += title_block(
         t("titles.audit_log"),
         owner,
         period,
@@ -3335,7 +2732,7 @@ def _render_modern_audit_log(data: dict[str, Any], output_path: str) -> None:
                 Paragraph(r["description"][:50], st["cell_l"]),
                 Paragraph(r["source"][:30], st["cell_l_grey"]),
                 Paragraph(r["destination"][:30], st["cell_l_grey"]),
-                Paragraph(_fmt_num(r["amount"], show_sym=False), st["cell_r"]),
+                Paragraph(fmt_num(r["amount"], show_sym=False), st["cell_r"]),
                 Paragraph(r["reconciled_tag"], st["cell_c"]),
                 Paragraph(doc_marker, st["cell_c"]),
                 Paragraph(f"G:{r['group_id']} | E:{r['external_id']}", st["small"]),
@@ -3362,16 +2759,16 @@ def _render_modern_audit_log(data: dict[str, Any], output_path: str) -> None:
 
 def _render_modern_summary(data: dict[str, Any], output_path: str) -> None:
     """Instance & period summary (Modern only)."""
-    st = _corporate_styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = corporate_styles()
+    period = period_str(data["period_start"], data["period_end"])
     owner = data["owner"]
     sym = data["currency"]
 
-    fn = _page_fn(owner, t("titles.summary"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(owner, t("titles.summary"), period)
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(t("titles.summary"), owner, period, None, st)
+    story += title_block(t("titles.summary"), owner, period, None, st)
 
     CW = [7.0 * cm, 8.0 * cm]
     inst = data["instance"]
@@ -3415,11 +2812,11 @@ def _render_modern_summary(data: dict[str, Any], output_path: str) -> None:
                 (t("summary.tags_used"), str(p["tags_used"])),
                 (
                     t("summary.avg_daily_income"),
-                    _fmt_num(p["avg_daily_income"], show_sym=True, sym=sym),
+                    fmt_num(p["avg_daily_income"], show_sym=True, sym=sym),
                 ),
                 (
                     t("summary.avg_daily_expense"),
-                    _fmt_num(p["avg_daily_expense"], show_sym=True, sym=sym),
+                    fmt_num(p["avg_daily_expense"], show_sym=True, sym=sym),
                 ),
             ],
         ),
@@ -3431,7 +2828,7 @@ def _render_modern_summary(data: dict[str, Any], output_path: str) -> None:
             [Paragraph(label, st["cell_l"]), Paragraph(value or "—", st["cell_r"])]
             for label, value in items
         ]
-        story.append(_accounting_table(rows, CW))
+        story.append(accounting_table(rows, CW))
         story.append(Spacer(1, 0.5 * cm))
 
     doc.build(story)
@@ -3439,16 +2836,16 @@ def _render_modern_summary(data: dict[str, Any], output_path: str) -> None:
 
 def _render_modern_category_ledger(data: dict[str, Any], output_path: str) -> None:
     """Category Detail Ledger (Modern)."""
-    st = _corporate_styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = corporate_styles()
+    period = period_str(data["period_start"], data["period_end"])
     owner = data["owner"]
     sym = data["currency"]
 
-    fn = _page_fn(owner, t("reports_extra.section_category_ledger"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(owner, t("reports_extra.section_category_ledger"), period)
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(t("reports_extra.section_category_ledger"), owner, period, None, st)
+    story += title_block(t("reports_extra.section_category_ledger"), owner, period, None, st)
 
     # date | description | counterpart | amount
     CW = [2.2 * cm, 8.2 * cm, 4.0 * cm, 3.0 * cm]
@@ -3471,7 +2868,7 @@ def _render_modern_category_ledger(data: dict[str, Any], output_path: str) -> No
                     Paragraph(r["date"], st["cell_l"]),
                     Paragraph(r["description"], st["cell_l"]),
                     Paragraph(r["counterpart"] or "—", st["cell_l"]),
-                    Paragraph(_fmt_num(r["amount"], show_sym=False), st["cell_r"]),
+                    Paragraph(fmt_num(r["amount"], show_sym=False), st["cell_r"]),
                 ]
             )
 
@@ -3480,11 +2877,11 @@ def _render_modern_category_ledger(data: dict[str, Any], output_path: str) -> No
                 Paragraph(t("common.total"), st["total_l"]),
                 Paragraph("", st["cell_l"]),
                 Paragraph("", st["cell_l"]),
-                Paragraph(_fmt_num(section["total"], show_sym=True, sym=sym), st["total_r"]),
+                Paragraph(fmt_num(section["total"], show_sym=True, sym=sym), st["total_r"]),
             ]
         )
 
-        story.append(_accounting_table(rows, CW, total_rows=[len(rows) - 1]))
+        story.append(accounting_table(rows, CW, total_rows=[len(rows) - 1]))
         story.append(Spacer(1, 0.5 * cm))
 
     # Grand total if multiple sections
@@ -3493,26 +2890,26 @@ def _render_modern_category_ledger(data: dict[str, Any], output_path: str) -> No
         gt_rows = [
             [
                 Paragraph(t("common.total").upper(), st["grand_l"]),
-                Paragraph(_fmt_num(data["grand_total"], show_sym=True, sym=sym), st["grand_r"]),
+                Paragraph(fmt_num(data["grand_total"], show_sym=True, sym=sym), st["grand_r"]),
             ]
         ]
-        story.append(_accounting_table(gt_rows, [14.4 * cm, 3.0 * cm], grand_rows=[0]))
+        story.append(accounting_table(gt_rows, [14.4 * cm, 3.0 * cm], grand_rows=[0]))
 
     doc.build(story)
 
 
 def _render_modern_payee_ledger(data: dict[str, Any], output_path: str) -> None:
     """Payee Detail Ledger (Modern)."""
-    st = _corporate_styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = corporate_styles()
+    period = period_str(data["period_start"], data["period_end"])
     owner = data["owner"]
     sym = data["currency"]
 
-    fn = _page_fn(owner, t("reports_extra.section_payee_ledger"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(owner, t("reports_extra.section_payee_ledger"), period)
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(t("reports_extra.section_payee_ledger"), owner, period, None, st)
+    story += title_block(t("reports_extra.section_payee_ledger"), owner, period, None, st)
 
     # date | description | category | amount
     CW = [2.2 * cm, 8.2 * cm, 4.0 * cm, 3.0 * cm]
@@ -3535,7 +2932,7 @@ def _render_modern_payee_ledger(data: dict[str, Any], output_path: str) -> None:
                     Paragraph(r["date"], st["cell_l"]),
                     Paragraph(r["description"], st["cell_l"]),
                     Paragraph(r["category"] or "—", st["cell_l"]),
-                    Paragraph(_fmt_num(r["amount"], show_sym=False), st["cell_r"]),
+                    Paragraph(fmt_num(r["amount"], show_sym=False), st["cell_r"]),
                 ]
             )
 
@@ -3544,11 +2941,11 @@ def _render_modern_payee_ledger(data: dict[str, Any], output_path: str) -> None:
                 Paragraph(t("common.total"), st["total_l"]),
                 Paragraph("", st["cell_l"]),
                 Paragraph("", st["cell_l"]),
-                Paragraph(_fmt_num(section["total"], show_sym=True, sym=sym), st["total_r"]),
+                Paragraph(fmt_num(section["total"], show_sym=True, sym=sym), st["total_r"]),
             ]
         )
 
-        story.append(_accounting_table(rows, CW, total_rows=[len(rows) - 1]))
+        story.append(accounting_table(rows, CW, total_rows=[len(rows) - 1]))
         story.append(Spacer(1, 0.5 * cm))
 
     # Grand total if multiple sections
@@ -3557,10 +2954,10 @@ def _render_modern_payee_ledger(data: dict[str, Any], output_path: str) -> None:
         gt_rows = [
             [
                 Paragraph(t("common.total").upper(), st["grand_l"]),
-                Paragraph(_fmt_num(data["grand_total"], show_sym=True, sym=sym), st["grand_r"]),
+                Paragraph(fmt_num(data["grand_total"], show_sym=True, sym=sym), st["grand_r"]),
             ]
         ]
-        story.append(_accounting_table(gt_rows, [14.4 * cm, 3.0 * cm], grand_rows=[0]))
+        story.append(accounting_table(gt_rows, [14.4 * cm, 3.0 * cm], grand_rows=[0]))
 
     doc.build(story)
 
@@ -3572,16 +2969,16 @@ def _render_modern_payee_ledger(data: dict[str, Any], output_path: str) -> None:
 
 def _render_modern_forecast(data: dict[str, Any], output_path: str) -> None:
     """Budget Performance Forecast (Modern only)."""
-    st = _corporate_styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = corporate_styles()
+    period = period_str(data["period_start"], data["period_end"])
     owner = data["owner"]
     sym = data["currency"]
 
-    fn = _page_fn(owner, t("titles.budget_forecast"), period, landscape_mode=True)
-    doc = _doc(output_path, fn, landscape_mode=True)
+    fn = page_decorator(owner, t("titles.budget_forecast"), period, landscape_mode=True)
+    doc = make_doc(output_path, fn, landscape_mode=True)
     story = []
 
-    story += _page_title_block(
+    story += title_block(
         t("titles.budget_forecast"),
         owner,
         period,
@@ -3617,11 +3014,11 @@ def _render_modern_forecast(data: dict[str, Any], output_path: str) -> None:
         rows.append(
             [
                 Paragraph(r["budget_name"], st["cell_l"]),
-                Paragraph(_fmt_num(r["limit"], show_sym=False), st["cell_r"]),
-                Paragraph(_fmt_num(r["actual"], show_sym=False), st["cell_r"]),
-                Paragraph(_fmt_num(r["daily_avg"], show_sym=False), st["cell_r"]),
-                Paragraph(f"<b>{_fmt_num(r['forecast'], show_sym=False)}</b>", st["cell_r"]),
-                Paragraph(_fmt_num(r["variance"], show_sym=False, parens_neg=True), st["cell_r"]),
+                Paragraph(fmt_num(r["limit"], show_sym=False), st["cell_r"]),
+                Paragraph(fmt_num(r["actual"], show_sym=False), st["cell_r"]),
+                Paragraph(fmt_num(r["daily_avg"], show_sym=False), st["cell_r"]),
+                Paragraph(f"<b>{fmt_num(r['forecast'], show_sym=False)}</b>", st["cell_r"]),
+                Paragraph(fmt_num(r["variance"], show_sym=False, parens_neg=True), st["cell_r"]),
                 Paragraph(f"<font color={status_color}>{r['status'].upper()}</font>", st["cell_r"]),
             ]
         )
@@ -3630,12 +3027,12 @@ def _render_modern_forecast(data: dict[str, Any], output_path: str) -> None:
     rows.append(
         [
             Paragraph(t("common.total").upper(), st["total_l"]),
-            Paragraph(_fmt_num(data["total_limit"], show_sym=True, sym=sym), st["total_r"]),
-            Paragraph(_fmt_num(data["total_actual"], show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(data["total_limit"], show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(data["total_actual"], show_sym=True, sym=sym), st["total_r"]),
             Paragraph("", st["cell_r"]),
-            Paragraph(_fmt_num(data["total_forecast"], show_sym=True, sym=sym), st["total_r"]),
+            Paragraph(fmt_num(data["total_forecast"], show_sym=True, sym=sym), st["total_r"]),
             Paragraph(
-                _fmt_num(
+                fmt_num(
                     data["total_limit"] - data["total_forecast"],
                     show_sym=True,
                     sym=sym,
@@ -3647,22 +3044,22 @@ def _render_modern_forecast(data: dict[str, Any], output_path: str) -> None:
         ]
     )
 
-    story.append(_accounting_table(rows, CW, total_rows=[len(rows) - 1]))
+    story.append(accounting_table(rows, CW, total_rows=[len(rows) - 1]))
 
     doc.build(story)
 
 
 def _render_modern_linkage_audit(data: dict[str, Any], output_path: str) -> None:
     """Linkage & Reimbursement Audit (Modern)."""
-    st = _corporate_styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = corporate_styles()
+    period = period_str(data["period_start"], data["period_end"])
     owner = data["owner"]
 
-    fn = _page_fn(owner, t("pdf.section_linkage_audit"), period, landscape_mode=True)
-    doc = _doc(output_path, fn, landscape_mode=True)
+    fn = page_decorator(owner, t("pdf.section_linkage_audit"), period, landscape_mode=True)
+    doc = make_doc(output_path, fn, landscape_mode=True)
     story = []
 
-    story += _page_title_block(t("pdf.section_linkage_audit"), owner, period, None, st)
+    story += title_block(t("pdf.section_linkage_audit"), owner, period, None, st)
 
     # Date | Description | Category | Link Type | Amount | Linked % | Audit IDs
     CW = [2.2 * cm, 7.6 * cm, 3.6 * cm, 3.6 * cm, 3.0 * cm, 2.5 * cm, 3.6 * cm]
@@ -3693,7 +3090,7 @@ def _render_modern_linkage_audit(data: dict[str, Any], output_path: str) -> None
                 Paragraph(f"<b>{src['description']}</b>", st["cell_l"]),
                 Paragraph(src.get("category") or "—", st["cell_l"]),
                 Paragraph(group.get("link_types") or "—", st["cell_l"]),
-                Paragraph(f"<b>{_fmt_num(src['amount'], show_sym=False)}</b>", st["cell_r"]),
+                Paragraph(f"<b>{fmt_num(src['amount'], show_sym=False)}</b>", st["cell_r"]),
                 Paragraph("", st["cell_r"]),
                 Paragraph(f"S:#{src['id']}", st["small"]),
             ]
@@ -3709,7 +3106,7 @@ def _render_modern_linkage_audit(data: dict[str, Any], output_path: str) -> None
                     Paragraph(lnk["description"], st["split_indent"]),
                     Paragraph(lnk.get("category") or "—", st["cell_l"]),
                     Paragraph("", st["cell_l"]),
-                    Paragraph(_fmt_num(lnk["amount"], show_sym=False), st["cell_r"]),
+                    Paragraph(fmt_num(lnk["amount"], show_sym=False), st["cell_r"]),
                     Paragraph("", st["cell_r"]),
                     Paragraph(f"L:#{lnk['id']}", st["small"]),
                 ]
@@ -3727,29 +3124,29 @@ def _render_modern_linkage_audit(data: dict[str, Any], output_path: str) -> None
                 Paragraph(t("pdf.subtotal").format(role=t("pdf.linked_role")), st["total_l"]),
                 Paragraph("", st["cell_l"]),
                 Paragraph("", st["cell_l"]),
-                Paragraph(_fmt_num(total_linked, show_sym=False), st["total_r"]),
+                Paragraph(fmt_num(total_linked, show_sym=False), st["total_r"]),
                 Paragraph(f"{linked_pct}%", st["total_r"]),
                 Paragraph("", st["cell_l"]),
             ]
         )
         total_rows.append(len(rows) - 1)
 
-    story.append(_accounting_table(rows, CW, total_rows=total_rows))
+    story.append(accounting_table(rows, CW, total_rows=total_rows))
     doc.build(story)
 
 
 def _render_modern_all_tags(data: dict, path: str) -> None:
     """Comprehensive Tag Ledger (Modern only)."""
-    st = _corporate_styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = corporate_styles()
+    period = period_str(data["period_start"], data["period_end"])
     owner = data["owner"]
     sym = data["currency"]
 
-    fn = _page_fn(owner, t("pdf.section_all_tags"), period)
-    doc = _doc(path, fn)
+    fn = page_decorator(owner, t("pdf.section_all_tags"), period)
+    doc = make_doc(path, fn)
     story = []
 
-    story += _page_title_block(t("pdf.section_all_tags"), owner, period, None, st)
+    story += title_block(t("pdf.section_all_tags"), owner, period, None, st)
 
     # Date | Description | Category | Amount
     CW = [2.5 * cm, 8.4 * cm, 3.5 * cm, 3.0 * cm]
@@ -3775,7 +3172,7 @@ def _render_modern_all_tags(data: dict, path: str) -> None:
                     Paragraph(r["date"], st["cell_l"]),
                     Paragraph(r["description"], st["cell_l"]),
                     Paragraph(r.get("category") or "—", st["cell_l"]),
-                    Paragraph(_fmt_num(r["amount"], show_sym=False), st["cell_r"]),
+                    Paragraph(fmt_num(r["amount"], show_sym=False), st["cell_r"]),
                 ]
             )
 
@@ -3784,11 +3181,11 @@ def _render_modern_all_tags(data: dict, path: str) -> None:
                 Paragraph(t("common.total"), st["total_l"]),
                 Paragraph("", st["cell_l"]),
                 Paragraph("", st["cell_l"]),
-                Paragraph(_fmt_num(tag_data["total"], show_sym=True, sym=sym), st["total_r"]),
+                Paragraph(fmt_num(tag_data["total"], show_sym=True, sym=sym), st["total_r"]),
             ]
         )
 
-        story.append(_accounting_table(rows, CW, total_rows=[len(rows) - 1]))
+        story.append(accounting_table(rows, CW, total_rows=[len(rows) - 1]))
         story.append(Spacer(1, 0.5 * cm))
 
     doc.build(story)
@@ -3796,7 +3193,7 @@ def _render_modern_all_tags(data: dict, path: str) -> None:
 
 def _render_modern_historical_report(data: dict[str, Any], output_path: str) -> None:
     """Historical Growth Analysis (Modern)."""
-    st = _corporate_styles()
+    st = corporate_styles()
     # Data processor uses 'rows' for years
     years = data["rows"]
     if not years:
@@ -3805,13 +3202,11 @@ def _render_modern_historical_report(data: dict[str, Any], output_path: str) -> 
     period = f"{years[0]['year']} – {years[-1]['year']}"
     owner = data["owner"]
 
-    fn = _page_fn(owner, t("reports_extra.section_historical_growth"), period)
-    doc = _doc(output_path, fn)
+    fn = page_decorator(owner, t("reports_extra.section_historical_growth"), period)
+    doc = make_doc(output_path, fn)
     story = []
 
-    story += _page_title_block(
-        t("reports_extra.section_historical_growth"), owner, period, None, st
-    )
+    story += title_block(t("reports_extra.section_historical_growth"), owner, period, None, st)
 
     # Years as columns
     n_years = len(years)
@@ -3834,7 +3229,7 @@ def _render_modern_historical_report(data: dict[str, Any], output_path: str) -> 
             else:
                 val = Decimal(str(y.get(key, 0)))
 
-            val_str = f"{val:.1f}%" if show_pct else _fmt_num(val, show_sym=False)
+            val_str = f"{val:.1f}%" if show_pct else fmt_num(val, show_sym=False)
             row.append(Paragraph(val_str, st["total_r"] if is_total else st["cell_r"]))
         return row
 
@@ -3869,7 +3264,7 @@ def _render_modern_historical_report(data: dict[str, Any], output_path: str) -> 
     # 4. Savings Rate
     rows.append(_metric_row(t("common.savings_rate"), None, show_pct=True, calc_savings_rate=True))
 
-    story.append(_accounting_table(rows, CW, total_rows=[5]))
+    story.append(accounting_table(rows, CW, total_rows=[5]))
 
     # Footnote
     story.append(Spacer(1, 0.5 * cm))
@@ -3885,7 +3280,7 @@ def _render_modern_historical_report(data: dict[str, Any], output_path: str) -> 
 
 def _render_modern_liquidity_forecast(data: dict[str, Any], output_path: str) -> None:
     """Proactive Liquidity Forecast (Modern)."""
-    st = _corporate_styles()
+    st = corporate_styles()
     # Data processor uses 'forecast_months'
     months = data["forecast_months"]
     if not months:
@@ -3894,13 +3289,13 @@ def _render_modern_liquidity_forecast(data: dict[str, Any], output_path: str) ->
     period = f"{months[0]['month_label']} – {months[-1]['month_label']}"
     owner = data["owner"]
 
-    fn = _page_fn(owner, t("reports_extra.section_liquidity_forecast"), period, landscape_mode=True)
-    doc = _doc(output_path, fn, landscape_mode=True)
+    fn = page_decorator(
+        owner, t("reports_extra.section_liquidity_forecast"), period, landscape_mode=True
+    )
+    doc = make_doc(output_path, fn, landscape_mode=True)
     story = []
 
-    story += _page_title_block(
-        t("reports_extra.section_liquidity_forecast"), owner, period, None, st
-    )
+    story += title_block(t("reports_extra.section_liquidity_forecast"), owner, period, None, st)
 
     # 6 Months as columns
     n_months = len(months)
@@ -3919,7 +3314,7 @@ def _render_modern_liquidity_forecast(data: dict[str, Any], output_path: str) ->
                 val = m.get("inflow", Decimal("0")) - m.get("outflow", Decimal("0"))
             else:
                 val = m.get(key, Decimal("0"))
-            row.append(Paragraph(_fmt_num(val, show_sym=False), st[val_style_key]))
+            row.append(Paragraph(fmt_num(val, show_sym=False), st[val_style_key]))
         return row
 
     hdr = [Paragraph(t("common.category_item"), st["col_header_l"])]
@@ -3945,9 +3340,7 @@ def _render_modern_liquidity_forecast(data: dict[str, Any], output_path: str) ->
         _proj_row(t("reports_extra.col_projected_balance"), "balance", "grand_l", "grand_r")
     )
 
-    story.append(
-        _accounting_table(rows, CW, total_rows=[len(rows) - 2], grand_rows=[len(rows) - 1])
-    )
+    story.append(accounting_table(rows, CW, total_rows=[len(rows) - 2], grand_rows=[len(rows) - 1]))
 
     # Footnote
     story.append(Spacer(1, 0.5 * cm))
@@ -3967,16 +3360,14 @@ def _render_modern_liquidity_forecast(data: dict[str, Any], output_path: str) ->
 
 
 def _render_modern_journal(data: dict[str, Any], output_path: str) -> None:
-    st = _styles()
-    period = _period_str(data["period_start"], data["period_end"])
+    st = classic_styles()
+    period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]
-    fn = _page_fn(data["owner"], t("titles.journal"), period, landscape_mode=True)
-    doc = _doc(output_path, fn, landscape_mode=True)
+    fn = page_decorator(data["owner"], t("titles.journal"), period, landscape_mode=True)
+    doc = make_doc(output_path, fn, landscape_mode=True)
     story = []
 
-    story += _page_title_block(
-        t("titles.journal"), data["owner"], period, t("pdf.section_journal"), st
-    )
+    story += title_block(t("titles.journal"), data["owner"], period, t("pdf.section_journal"), st)
 
     daily = {d["date"]: d for d in data["daily_totals"]}
 
@@ -4000,15 +3391,15 @@ def _render_modern_journal(data: dict[str, Any], output_path: str) -> None:
         rows_tbl.append(
             [
                 Paragraph(str(r["n"]) if r["debit"] is not None else "", st["cell_r"]),
-                Paragraph(_fmt_date(r["date"]) if r["debit"] is not None else "", st["cell_c"]),
+                Paragraph(fmt_date(r["date"]) if r["debit"] is not None else "", st["cell_c"]),
                 Paragraph(r["description"], st["cell_l"]),
                 Paragraph(r["account"], st["cell_l"]),
                 Paragraph(
-                    _fmt_num(r["debit"], show_sym=is_first, sym=sym) if r["debit"] else "",
+                    fmt_num(r["debit"], show_sym=is_first, sym=sym) if r["debit"] else "",
                     st["cell_r"],
                 ),
                 Paragraph(
-                    _fmt_num(r["credit"], show_sym=is_first, sym=sym) if r["credit"] else "",
+                    fmt_num(r["credit"], show_sym=is_first, sym=sym) if r["credit"] else "",
                     st["cell_r"],
                 ),
             ]
@@ -4022,12 +3413,12 @@ def _render_modern_journal(data: dict[str, Any], output_path: str) -> None:
                     Paragraph("", st["total_r"]),
                     Paragraph("", st["total_r"]),
                     Paragraph(
-                        t("pdf.journal_daily_total").format(date=_fmt_date(r["date"])),
+                        t("pdf.journal_daily_total").format(date=fmt_date(r["date"])),
                         st["total_l"],
                     ),
                     Paragraph("", st["total_r"]),
-                    Paragraph(_fmt_num(d["debit"], sym=sym), st["total_r"]),
-                    Paragraph(_fmt_num(d["credit"], sym=sym), st["total_r"]),
+                    Paragraph(fmt_num(d["debit"], sym=sym), st["total_r"]),
+                    Paragraph(fmt_num(d["credit"], sym=sym), st["total_r"]),
                 ]
             )
             total_idx_rows.append(len(rows_tbl) - 1)
@@ -4038,12 +3429,12 @@ def _render_modern_journal(data: dict[str, Any], output_path: str) -> None:
             Paragraph("", st["grand_r"]),
             Paragraph(t("common.total"), st["grand_l"]),
             Paragraph("", st["grand_r"]),
-            Paragraph(_fmt_num(data["total_debit"], show_sym=True, sym=sym), st["grand_r"]),
-            Paragraph(_fmt_num(data["total_credit"], show_sym=True, sym=sym), st["grand_r"]),
+            Paragraph(fmt_num(data["total_debit"], show_sym=True, sym=sym), st["grand_r"]),
+            Paragraph(fmt_num(data["total_credit"], show_sym=True, sym=sym), st["grand_r"]),
         ]
     )
     story.append(
-        _accounting_table(rows_tbl, CW, total_rows=total_idx_rows, grand_rows=[len(rows_tbl) - 1])
+        accounting_table(rows_tbl, CW, total_rows=total_idx_rows, grand_rows=[len(rows_tbl) - 1])
     )
 
     doc.build(story)
