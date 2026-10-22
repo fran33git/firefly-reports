@@ -1,0 +1,94 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Budget Performance Forecast"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "PROJECTION FOR MONTH-END (DAYS ELAPSED: 365/365)"
+  },
+  {
+   "table": [
+    [
+     "Budget",
+     "Limit",
+     "Actual",
+     "Daily Avg",
+     "Forecast",
+     "Variance",
+     "Status"
+    ],
+    [
+     "Tax & Social Security",
+     "1,500.00",
+     "1,850.00",
+     "5.07",
+     "1,850.00",
+     "(350.00)",
+     "CRITICAL"
+    ],
+    [
+     "Operating Expenses",
+     "800.00",
+     "1,418.00",
+     "3.88",
+     "1,418.00",
+     "(618.00)",
+     "CRITICAL"
+    ],
+    [
+     "Fixed Costs",
+     "320.00",
+     "1,400.00",
+     "3.84",
+     "1,400.00",
+     "(1,080.00)",
+     "CRITICAL"
+    ],
+    [
+     "TOTAL",
+     "€ 2,620.00",
+     "€ 4,668.00",
+     "",
+     "€ 4,668.00",
+     "(€ 2,048.00)",
+     ""
+    ]
+   ],
+   "colWidths": [
+    155.91,
+    85.04,
+    85.04,
+    85.04,
+    99.21,
+    99.21,
+    130.39
+   ]
+  }
+ ],
+ "strings": [
+  "BUDGET PERFORMANCE FORECAST",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1"
+ ],
+ "pages": 1
+}

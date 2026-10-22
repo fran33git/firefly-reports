@@ -1,0 +1,226 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Asset & Net Worth Statement"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: As of 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "WEALTH & LIQUIDITY REPORT"
+  },
+  {
+   "spacer": 11.34
+  },
+  {
+   "p": "section",
+   "text": "CHECKING ACCOUNT"
+  },
+  {
+   "keep": [
+    {
+     "table": [
+      [
+       "Account",
+       "IBAN",
+       "Last Update",
+       "Balance"
+      ],
+      [
+       "BankX Checking",
+       "***********************3456",
+       "—",
+       "€ 8,432.50"
+      ],
+      [
+       "Subtotal — Checking Account",
+       "",
+       "",
+       "€ 8,432.50"
+      ]
+     ],
+     "colWidths": [
+      198.43,
+      113.39,
+      96.38,
+      85.04
+     ]
+    }
+   ]
+  },
+  {
+   "spacer": 11.34
+  },
+  {
+   "p": "section",
+   "text": "SAVINGS ACCOUNT"
+  },
+  {
+   "keep": [
+    {
+     "table": [
+      [
+       "Account",
+       "IBAN",
+       "Last Update",
+       "Balance"
+      ],
+      [
+       "BankX Savings",
+       "***********************9012",
+       "—",
+       "€ 12,150.00"
+      ],
+      [
+       "Subtotal — Savings Account",
+       "",
+       "",
+       "€ 12,150.00"
+      ]
+     ],
+     "colWidths": [
+      198.43,
+      113.39,
+      96.38,
+      85.04
+     ]
+    }
+   ]
+  },
+  {
+   "spacer": 11.34
+  },
+  {
+   "p": "section",
+   "text": "CREDIT CARD"
+  },
+  {
+   "keep": [
+    {
+     "table": [
+      [
+       "Account",
+       "IBAN",
+       "Last Update",
+       "Balance"
+      ],
+      [
+       "Visa Credit Card",
+       "—",
+       "—",
+       "(€ 340.00)"
+      ],
+      [
+       "Subtotal — Credit Card",
+       "",
+       "",
+       "(€ 340.00)"
+      ]
+     ],
+     "colWidths": [
+      198.43,
+      113.39,
+      96.38,
+      85.04
+     ]
+    }
+   ]
+  },
+  {
+   "spacer": 11.34
+  },
+  {
+   "p": "section",
+   "text": "CASH WALLET"
+  },
+  {
+   "keep": [
+    {
+     "table": [
+      [
+       "Account",
+       "IBAN",
+       "Last Update",
+       "Balance"
+      ],
+      [
+       "Cash Wallet",
+       "—",
+       "—",
+       "€ 150.00"
+      ],
+      [
+       "Subtotal — Cash Wallet",
+       "",
+       "",
+       "€ 150.00"
+      ]
+     ],
+     "colWidths": [
+      198.43,
+      113.39,
+      96.38,
+      85.04
+     ]
+    }
+   ]
+  },
+  {
+   "spacer": 28.35
+  },
+  {
+   "p": "section",
+   "text": "NET WORTH SUMMARY"
+  },
+  {
+   "table": [
+    [
+     "Total Assets (positive balances)",
+     "€ 20,732.50"
+    ],
+    [
+     "Total Liabilities (negative balances)",
+     "(€ 340.00)"
+    ],
+    [
+     "Financial Net Worth",
+     "€ 20,392.50"
+    ]
+   ],
+   "colWidths": [
+    368.5,
+    124.72
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "small",
+   "text": "Data as of As of 2025-12-31. Current balances from Firefly III account registry. Total accounts: 4. Net worth includes asset-type accounts only."
+  }
+ ],
+ "strings": [
+  "ASSET & NET WORTH STATEMENT",
+  "Sample User — Freelancer",
+  "Period: As of 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1"
+ ],
+ "pages": 1
+}

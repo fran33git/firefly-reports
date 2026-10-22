@@ -1,0 +1,136 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Proactive Liquidity Forecast"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: January 2026 – June 2026"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "table": [
+    [
+     "Category / Item",
+     "January 2026",
+     "February 2026",
+     "March 2026",
+     "April 2026",
+     "May 2026",
+     "June 2026"
+    ],
+    [
+     "Projected Inflows",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Income",
+     "3,430.00",
+     "3,430.00",
+     "3,430.00",
+     "3,430.00",
+     "3,430.00",
+     "3,430.00"
+    ],
+    [
+     "Projected Outflows",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Budget",
+     "369.00",
+     "369.00",
+     "694.00",
+     "569.00",
+     "369.00",
+     "694.00"
+    ],
+    [
+     "Expenses",
+     "1,119.62",
+     "1,119.62",
+     "1,119.62",
+     "1,119.62",
+     "1,119.62",
+     "1,119.62"
+    ],
+    [
+     "Net Flow",
+     "1,941.38",
+     "1,941.38",
+     "1,616.38",
+     "1,741.38",
+     "1,941.38",
+     "1,616.38"
+    ],
+    [
+     "Proj. Balance",
+     "16,941.38",
+     "18,882.76",
+     "20,499.14",
+     "22,240.52",
+     "24,181.90",
+     "25,798.28"
+    ]
+   ],
+   "colWidths": [
+    170.08,
+    94.96,
+    94.96,
+    94.96,
+    94.96,
+    94.96,
+    94.96
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "small",
+   "text": "Projected Balance: calculated as the previous month's balance plus estimated inflows minus outflows. Estimated Income and Outflows are based on averages and recurring configurations."
+  }
+ ],
+ "strings": [
+  "PROACTIVE LIQUIDITY FORECAST",
+  "Sample User — Freelancer",
+  "Period: January 2026 – June 2026   ·   Generated on 2026-01-15",
+  "Page 1",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  ""
+ ],
+ "pages": 1
+}

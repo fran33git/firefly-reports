@@ -1,0 +1,164 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Expense Trend by Category"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "MONTHLY EXPENSE TREND BY CATEGORY"
+  },
+  {
+   "table": [
+    [
+     "Category",
+     "Jan 25",
+     "Feb 25",
+     "Mar 25",
+     "Apr 25",
+     "May 25",
+     "Total"
+    ],
+    [
+     "Office Rent",
+     "280.00",
+     "280.00",
+     "280.00",
+     "280.00",
+     "280.00",
+     "1,400.00"
+    ],
+    [
+     "Taxes",
+     "—",
+     "—",
+     "—",
+     "1,200.00",
+     "—",
+     "1,200.00"
+    ],
+    [
+     "Taxes & Contributions",
+     "—",
+     "—",
+     "780.08",
+     "—",
+     "—",
+     "780.08"
+    ],
+    [
+     "Travel & Transport",
+     "—",
+     "235.00",
+     "450.00",
+     "—",
+     "—",
+     "685.00"
+    ],
+    [
+     "Social Security Contributions",
+     "650.00",
+     "—",
+     "—",
+     "—",
+     "—",
+     "650.00"
+    ],
+    [
+     "Accountant Fees",
+     "—",
+     "—",
+     "320.00",
+     "—",
+     "—",
+     "320.00"
+    ],
+    [
+     "Software & Subscriptions",
+     "89.00",
+     "—",
+     "—",
+     "199.00",
+     "—",
+     "288.00"
+    ],
+    [
+     "Office Supplies",
+     "—",
+     "—",
+     "—",
+     "—",
+     "155.00",
+     "155.00"
+    ],
+    [
+     "Professional Training",
+     "—",
+     "120.00",
+     "—",
+     "—",
+     "—",
+     "120.00"
+    ],
+    [
+     "Total Expenses",
+     "1,019.00",
+     "635.00",
+     "1,830.08",
+     "1,679.00",
+     "435.00",
+     "5,598.08"
+    ],
+    [
+     "Income (comparison)",
+     "3,200.00",
+     "2,800.00",
+     "4,550.00",
+     "3,100.00",
+     "3,500.00",
+     "17,150.00"
+    ]
+   ],
+   "colWidths": [
+    170.08,
+    68.03,
+    68.03,
+    68.03,
+    68.03,
+    68.03,
+    79.37
+   ]
+  },
+  {
+   "spacer": 11.34
+  },
+  {
+   "p": "small",
+   "text": "The 'Income (comparison)' row shows incoming flows in the same period to facilitate comparison with expenses by category."
+  }
+ ],
+ "strings": [
+  "EXPENSE TREND BY CATEGORY",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1"
+ ],
+ "pages": 1
+}

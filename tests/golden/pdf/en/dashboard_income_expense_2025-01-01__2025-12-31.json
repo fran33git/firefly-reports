@@ -1,0 +1,156 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Income & Expense Dashboard"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "table": [
+    [
+     {
+      "table": [
+       [
+        "TOTAL INCOME"
+       ],
+       [
+        "€ 17,150.00"
+       ]
+      ],
+      "colWidths": [
+       114.8
+      ]
+     },
+     "",
+     {
+      "table": [
+       [
+        "TOTAL EXPENSES"
+       ],
+       [
+        "€ 5,598.08"
+       ]
+      ],
+      "colWidths": [
+       114.8
+      ]
+     },
+     "",
+     {
+      "table": [
+       [
+        "NET SAVINGS"
+       ],
+       [
+        "€ 11,551.92"
+       ]
+      ],
+      "colWidths": [
+       114.8
+      ]
+     },
+     "",
+     {
+      "table": [
+       [
+        "SAVINGS RATE"
+       ],
+       [
+        "67.4%"
+       ]
+      ],
+      "colWidths": [
+       114.8
+      ]
+     }
+    ]
+   ],
+   "colWidths": [
+    114.8,
+    11.34,
+    114.8,
+    11.34,
+    114.8,
+    11.34,
+    114.8
+   ]
+  },
+  {
+   "spacer": 11.34
+  },
+  {
+   "p": "section",
+   "text": "MONTHLY INCOME VS EXPENSES"
+  },
+  {
+   "image": [
+    487.56,
+    233.92
+   ]
+  },
+  {
+   "spacer": 5.67
+  },
+  {
+   "keep": [
+    {
+     "p": "section",
+     "text": "SPENDING BY CATEGORY"
+    },
+    {
+     "image": [
+      487.56,
+      233.68
+     ]
+    }
+   ]
+  },
+  {
+   "spacer": 8.5
+  },
+  {
+   "keep": [
+    {
+     "p": "section",
+     "text": "TOP 5 INCOME SOURCES"
+    },
+    {
+     "image": [
+      487.56,
+      187.69
+     ]
+    }
+   ]
+  }
+ ],
+ "strings": [
+  "INCOME & EXPENSE DASHBOARD",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1",
+  "",
+  "",
+  "",
+  "INCOME & EXPENSE DASHBOARD",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 2"
+ ],
+ "pages": 2
+}

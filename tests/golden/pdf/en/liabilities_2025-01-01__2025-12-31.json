@@ -1,0 +1,79 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Liabilities & Debt Report"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: As of 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "DEBT SITUATION"
+  },
+  {
+   "table": [
+    [
+     "Name",
+     "Type",
+     "Outstanding Debt (€)",
+     "Rate %",
+     "Currency",
+     "Period Pay 2025-01–"
+    ],
+    [
+     "Home Mortgage",
+     "Mortgage",
+     "€ 87,500.00",
+     "2.30 %",
+     "EUR",
+     "—"
+    ],
+    [
+     "Total Liabilities (negative balances)",
+     "",
+     "€ 87,500.00",
+     "",
+     "",
+     "€ 0.00"
+    ]
+   ],
+   "colWidths": [
+    155.91,
+    70.87,
+    70.87,
+    56.69,
+    70.87,
+    82.2
+   ]
+  },
+  {
+   "spacer": 11.34
+  },
+  {
+   "p": "small",
+   "text": "Outstanding Debt: current balance of the liability account at generation time. Rate: annual interest rate configured in Firefly III."
+  }
+ ],
+ "strings": [
+  "LIABILITIES & DEBT REPORT",
+  "Sample User — Freelancer",
+  "Period: As of 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1"
+ ],
+ "pages": 1
+}

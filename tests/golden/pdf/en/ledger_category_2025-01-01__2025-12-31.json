@@ -1,0 +1,559 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Category Detail Ledger"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "ACCOUNTANT FEES"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Counterpart",
+     "Amount"
+    ],
+    [
+     "2025-03-15",
+     "Accountant fees Q1",
+     "Bianchi & Partners",
+     "(320.00)"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "(€ 320.00)"
+    ]
+   ],
+   "colWidths": [
+    62.36,
+    232.44,
+    113.39,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "CONSULTING"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Counterpart",
+     "Amount"
+    ],
+    [
+     "2025-03-05",
+     "Consulting - Blue Startup",
+     "Blue Startup",
+     "1,500.00"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "€ 1,500.00"
+    ]
+   ],
+   "colWidths": [
+    62.36,
+    232.44,
+    113.39,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "OFFICE RENT"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Counterpart",
+     "Amount"
+    ],
+    [
+     "2025-01-05",
+     "Office rent - January",
+     "Office Landlord",
+     "(280.00)"
+    ],
+    [
+     "2025-02-05",
+     "Office rent - February",
+     "Office Landlord",
+     "(280.00)"
+    ],
+    [
+     "2025-03-05",
+     "Office rent - March",
+     "Office Landlord",
+     "(280.00)"
+    ],
+    [
+     "2025-04-05",
+     "Office rent - April",
+     "Office Landlord",
+     "(280.00)"
+    ],
+    [
+     "2025-05-05",
+     "Office rent - May",
+     "Office Landlord",
+     "(280.00)"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "(€ 1,400.00)"
+    ]
+   ],
+   "colWidths": [
+    62.36,
+    232.44,
+    113.39,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "OFFICE SUPPLIES"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Counterpart",
+     "Amount"
+    ],
+    [
+     "2025-05-18",
+     "Office supplies",
+     "Amazon",
+     "(155.00)"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "(€ 155.00)"
+    ]
+   ],
+   "colWidths": [
+    62.36,
+    232.44,
+    113.39,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "PROFESSIONAL FEES"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Counterpart",
+     "Amount"
+    ],
+    [
+     "2025-01-15",
+     "Invoice #001 - Rossi LLC",
+     "Rossi LLC",
+     "3,200.00"
+    ],
+    [
+     "2025-02-10",
+     "Invoice #002 - Verde Inc.",
+     "Verde Inc.",
+     "2,800.00"
+    ],
+    [
+     "2025-03-28",
+     "Invoice #003 - Rossi LLC",
+     "Rossi LLC",
+     "2,900.00"
+    ],
+    [
+     "2025-04-12",
+     "Invoice #004 - Verde Inc.",
+     "Verde Inc.",
+     "3,100.00"
+    ],
+    [
+     "2025-05-20",
+     "Invoice #005 - Giallo Ltd",
+     "Giallo Ltd",
+     "3,050.00"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "€ 15,050.00"
+    ]
+   ],
+   "colWidths": [
+    62.36,
+    232.44,
+    113.39,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "PROFESSIONAL TRAINING"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Counterpart",
+     "Amount"
+    ],
+    [
+     "2025-02-14",
+     "Technical books and online courses",
+     "Amazon/Udemy",
+     "(120.00)"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "(€ 120.00)"
+    ]
+   ],
+   "colWidths": [
+    62.36,
+    232.44,
+    113.39,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "REIMBURSEMENTS"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Counterpart",
+     "Amount"
+    ],
+    [
+     "2025-03-10",
+     "Travel expense reimbursement",
+     "Rossi LLC",
+     "150.00"
+    ],
+    [
+     "2025-05-08",
+     "Travel expense reimbursement",
+     "Rossi LLC",
+     "450.00"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "€ 600.00"
+    ]
+   ],
+   "colWidths": [
+    62.36,
+    232.44,
+    113.39,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "SOCIAL SECURITY CONTRIBUTIONS"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Counterpart",
+     "Amount"
+    ],
+    [
+     "2025-01-22",
+     "Social security contributions Q1",
+     "Social Security",
+     "(650.00)"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "(€ 650.00)"
+    ]
+   ],
+   "colWidths": [
+    62.36,
+    232.44,
+    113.39,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "SOFTWARE & SUBSCRIPTIONS"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Counterpart",
+     "Amount"
+    ],
+    [
+     "2025-01-10",
+     "Adobe Creative Cloud",
+     "Adobe Systems",
+     "(89.00)"
+    ],
+    [
+     "2025-04-22",
+     "Annual hosting and domain",
+     "Hetzner Online",
+     "(199.00)"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "(€ 288.00)"
+    ]
+   ],
+   "colWidths": [
+    62.36,
+    232.44,
+    113.39,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "TAXES"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Counterpart",
+     "Amount"
+    ],
+    [
+     "2025-04-15",
+     "Income tax advance",
+     "Tax Authority",
+     "(1,200.00)"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "(€ 1,200.00)"
+    ]
+   ],
+   "colWidths": [
+    62.36,
+    232.44,
+    113.39,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "TAXES & CONTRIBUTIONS"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Counterpart",
+     "Amount"
+    ],
+    [
+     "2025-03-15",
+     "Tax withholdings",
+     "Tax Authority",
+     "(557.44)"
+    ],
+    [
+     "2025-03-15",
+     "Supplementary benefit installment recovery",
+     "Tax Authority",
+     "(220.74)"
+    ],
+    [
+     "2025-03-15",
+     "Other withholdings",
+     "Tax Authority",
+     "(1.90)"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "(€ 780.08)"
+    ]
+   ],
+   "colWidths": [
+    62.36,
+    232.44,
+    113.39,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "TRAVEL & TRANSPORT"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Counterpart",
+     "Amount"
+    ],
+    [
+     "2025-02-15",
+     "Travel expense advance",
+     "Rome Hotel",
+     "(150.00)"
+    ],
+    [
+     "2025-02-28",
+     "Fuel and tolls",
+     "Various",
+     "(85.00)"
+    ],
+    [
+     "2025-03-30",
+     "Milan business trip",
+     "Various",
+     "(450.00)"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "(€ 685.00)"
+    ]
+   ],
+   "colWidths": [
+    62.36,
+    232.44,
+    113.39,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "table": [
+    [
+     "TOTAL",
+     "€ 11,551.92"
+    ]
+   ],
+   "colWidths": [
+    408.19,
+    85.04
+   ]
+  }
+ ],
+ "strings": [
+  "CATEGORY DETAIL LEDGER",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1",
+  "CATEGORY DETAIL LEDGER",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 2",
+  "CATEGORY DETAIL LEDGER",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 3"
+ ],
+ "pages": 3
+}

@@ -1,0 +1,359 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Comprehensive Tag Ledger"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "TAG: consulting"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Category",
+     "Amount"
+    ],
+    [
+     "2025-03-05",
+     "Consulting - Blue Startup",
+     "Consulting",
+     "1,500.00"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "€ 1,500.00"
+    ]
+   ],
+   "colWidths": [
+    70.87,
+    238.11,
+    99.21,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "TAG: invoice"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Category",
+     "Amount"
+    ],
+    [
+     "2025-01-15",
+     "Invoice #001 - Rossi LLC",
+     "Professional Fees",
+     "3,200.00"
+    ],
+    [
+     "2025-02-10",
+     "Invoice #002 - Verde Inc.",
+     "Professional Fees",
+     "2,800.00"
+    ],
+    [
+     "2025-03-28",
+     "Invoice #003 - Rossi LLC",
+     "Professional Fees",
+     "2,900.00"
+    ],
+    [
+     "2025-04-12",
+     "Invoice #004 - Verde Inc.",
+     "Professional Fees",
+     "3,100.00"
+    ],
+    [
+     "2025-05-20",
+     "Invoice #005 - Giallo Ltd",
+     "Professional Fees",
+     "3,050.00"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "€ 15,050.00"
+    ]
+   ],
+   "colWidths": [
+    70.87,
+    238.11,
+    99.21,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "TAG: recurring"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Category",
+     "Amount"
+    ],
+    [
+     "2025-01-05",
+     "Office rent - January",
+     "Office Rent",
+     "(280.00)"
+    ],
+    [
+     "2025-02-05",
+     "Office rent - February",
+     "Office Rent",
+     "(280.00)"
+    ],
+    [
+     "2025-03-05",
+     "Office rent - March",
+     "Office Rent",
+     "(280.00)"
+    ],
+    [
+     "2025-04-05",
+     "Office rent - April",
+     "Office Rent",
+     "(280.00)"
+    ],
+    [
+     "2025-05-05",
+     "Office rent - May",
+     "Office Rent",
+     "(280.00)"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "(€ 1,400.00)"
+    ]
+   ],
+   "colWidths": [
+    70.87,
+    238.11,
+    99.21,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "TAG: reimbursement"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Category",
+     "Amount"
+    ],
+    [
+     "2025-05-08",
+     "Travel expense reimbursement",
+     "Reimbursements",
+     "450.00"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "€ 450.00"
+    ]
+   ],
+   "colWidths": [
+    70.87,
+    238.11,
+    99.21,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "TAG: social-security"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Category",
+     "Amount"
+    ],
+    [
+     "2025-01-22",
+     "Social security contributions Q1",
+     "Social Security Contributions",
+     "(650.00)"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "(€ 650.00)"
+    ]
+   ],
+   "colWidths": [
+    70.87,
+    238.11,
+    99.21,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "TAG: software"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Category",
+     "Amount"
+    ],
+    [
+     "2025-01-10",
+     "Adobe Creative Cloud",
+     "Software & Subscriptions",
+     "(89.00)"
+    ],
+    [
+     "2025-04-22",
+     "Annual hosting and domain",
+     "Software & Subscriptions",
+     "(199.00)"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "(€ 288.00)"
+    ]
+   ],
+   "colWidths": [
+    70.87,
+    238.11,
+    99.21,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "TAG: tax"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Category",
+     "Amount"
+    ],
+    [
+     "2025-01-15",
+     "Invoice #001 - Rossi LLC",
+     "Professional Fees",
+     "3,200.00"
+    ],
+    [
+     "2025-01-22",
+     "Social security contributions Q1",
+     "Social Security Contributions",
+     "(650.00)"
+    ],
+    [
+     "2025-03-28",
+     "Invoice #003 - Rossi LLC",
+     "Professional Fees",
+     "2,900.00"
+    ],
+    [
+     "2025-03-30",
+     "Milan business trip",
+     "Travel & Transport",
+     "(450.00)"
+    ],
+    [
+     "2025-04-15",
+     "Income tax advance",
+     "Taxes",
+     "(1,200.00)"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "€ 3,800.00"
+    ]
+   ],
+   "colWidths": [
+    70.87,
+    238.11,
+    99.21,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  }
+ ],
+ "strings": [
+  "COMPREHENSIVE TAG LEDGER",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1",
+  "COMPREHENSIVE TAG LEDGER",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 2"
+ ],
+ "pages": 2
+}
