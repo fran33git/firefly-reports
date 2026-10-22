@@ -65,6 +65,45 @@ The token can be provided via `--token`, the `FIREFLY_TOKEN` environment variabl
 
 > **Report 17 — Transaction Audit Log** (`audit_log_<period>.pdf`) is now generated only when `--legacy-report` is active. The Summary report takes its slot in standard mode.
 
+## Beancount / Fava export
+
+Export every transaction to a [Beancount](https://beancount.github.io/) v3 ledger for [Fava](https://beancount.github.io/fava/):
+
+```bash
+pip install "firefly-iii-reports[beancount]"          # optional, only for --validate
+
+# Pass 1: draft the account mapping (writes no ledger file), then review beancount_map.yaml
+firefly-reports export beancount --scaffold
+
+# Pass 2: export (accounts.beancount + one firefly-YYYY.beancount per year)
+firefly-reports export beancount --init --validate
+fava ledger/main.beancount
+```
+
+Re-run the second command whenever you want fresh data (only changed files are rewritten);
+`--scaffold` again lists accounts that are new since you reviewed the mapping. `--layout single` writes a
+single `firefly.beancount` instead (and allows `--start`/`--end`).
+
+Example `beancount_map.yaml`:
+
+```yaml
+accounts:                       # Firefly account (name or id) -> Beancount account
+  "Conto Corrente": "Assets:Banca:Intesa:Corrente"
+investment_accounts:            # -> Assets:Investimenti:<Broker>:Cash
+  "Fineco Investimenti": "Fineco"
+fallback:
+  expense: "Expenses:Non-Classificato"
+  income: "Income:Non-Classificato"
+operating_currency: [EUR]
+commodities: [EUR, USD]
+```
+
+Recommended layout: `main.beancount` (options + includes, yours) · `accounts.beancount` and `firefly-YYYY.beancount`
+(**generated**, replaced atomically, closed years never change) · `investimenti.beancount` (securities, hand-written) ·
+`prices.beancount`.
+`--dry-run` prints to stdout, `--no-timestamp` gives byte-identical reruns, `--lang en|it` translates metadata and
+messages. Full user guide (options, mapping reference, worked example, Fava queries, troubleshooting): [Beancount Export](docs/wiki/Beancount-Export.md). Internals and how to add hledger/ledger: [Ledger Architecture](docs/wiki/Ledger-Architecture.md).
+
 ## Demo (no Firefly III required)
 
 ```bash
@@ -84,8 +123,9 @@ Full documentation is on the [GitHub Wiki](https://github.com/fran33git/firefly-
 - [Installation & Quick Start](https://github.com/fran33git/firefly-reports/wiki/Installation)
 - [Configuration](https://github.com/fran33git/firefly-reports/wiki/Configuration) — all CLI flags, TOML keys, env vars
 - [Reports Reference](https://github.com/fran33git/firefly-reports/wiki/Reports-Reference) — all 26 reports
+- [Beancount Export](https://github.com/fran33git/firefly-reports/wiki/Beancount-Export)
 - [Troubleshooting](https://github.com/fran33git/firefly-reports/wiki/Troubleshooting)
-- [Architecture](https://github.com/fran33git/firefly-reports/wiki/Architecture)
+- [Architecture](https://github.com/fran33git/firefly-reports/wiki/Architecture) · [Ledger Architecture](https://github.com/fran33git/firefly-reports/wiki/Ledger-Architecture)
 
 ## Development
 

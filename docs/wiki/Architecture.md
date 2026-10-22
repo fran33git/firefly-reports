@@ -9,6 +9,8 @@ firefly_client.py  →  data_processor.py  →  pdf_exporter.py
                                           →  excel_exporter.py
 ```
 
+The plain-text-accounting export is a second, independent branch that starts from the same client (see [Ledger branch](#ledger-branch)).
+
 `main.py` orchestrates the pipeline. `demo.py` is an alternative entry point that substitutes inline mock data for the API client.
 
 ## Module map
@@ -21,6 +23,7 @@ firefly_client.py  →  data_processor.py  →  pdf_exporter.py
 | `excel_exporter.py` | `render_all_xlsx_full(data_dict, path)` writes a workbook via openpyxl: 16 core report sheets plus Summary, with Account Statements contributing one sheet per asset account |
 | `chart_engine.py` | Matplotlib (Agg) charts for the dashboard PDFs, sharing one visual identity (steel/slate palette, 200 dpi, locale-aware compact labels): donut, bar, line, area and income/expense combo |
 | `config.py` | Loads `./firefly-reports.toml` using `tomllib`; returns an empty dict when absent |
+| `ledger/` | Separate export branch (`firefly-reports export beancount`): Firefly splits → neutral model → `LedgerWriter` (`BeancountWriter`). Details in [[Ledger-Architecture]], usage in [[Beancount-Export]] |
 | `i18n.py` | Translation singleton; call `i18n.load("en")` once at startup; use `i18n.t("key")` anywhere |
 | `main.py` | CLI argument parsing, credential resolution, orchestration of all pipeline steps |
 | `demo.py` | Standalone runner with hard-coded mock data; produces all 26 reports without a Firefly III instance |
@@ -61,6 +64,24 @@ main.py ────────────────────────
 | `reconciled` | bool | Whether the transaction is reconciled |
 
 All monetary arithmetic uses `Decimal` with 2 decimal places via `_d()` in `data_processor.py`. `firefly_client.py` uses the equivalent `_dec()` helper for aggregation methods.
+
+## Ledger branch
+
+```mermaid
+flowchart LR
+    CL["firefly_client.py"] --> CV["ledger/convert.py"]
+    CV --> MD["ledger/model.py"]
+    MD --> WR["ledger/writers/*<br/>accounts + per-year files"]
+    WR --> AW["atomic_write"]
+    CV -.-> SC["ledger/scaffold.py<br/>(pass 1: mapping draft)"]
+    AC["ledger/accounts.py<br/>+ mapping.py (YAML)"] --> CV
+    LB["ledger/labels.py<br/>(i18n)"] --> WR
+```
+
+It consumes the same flat split list described above, plus `source_type` / `destination_type`,
+`currency_code`, `foreign_amount`, `foreign_currency_code`, `notes` and `transaction_journal_id`.
+It does not use `data_processor.py` (that module is for reports); the same rules apply: `Decimal` only,
+no network outside `firefly_client.py`. `main.py` only wires the CLI (`export` subcommand).
 
 ## Adding a report
 

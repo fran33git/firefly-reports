@@ -25,6 +25,15 @@ mypy firefly_reports/
 
 Both run automatically on `git commit` via pre-commit.
 
+To also run the Beancount export integration tests (they call `bean-check` and are skipped otherwise):
+
+```bash
+pip install beancount
+pytest tests/test_ledger.py tests/test_ledger_cli.py -v
+```
+
+Design notes for the export: wiki page *Ledger Architecture* (`docs/wiki/Ledger-Architecture.md`).
+
 ## Full developer documentation
 
 See the [GitHub Wiki](https://github.com/fran33git/firefly-reports/wiki):

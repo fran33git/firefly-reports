@@ -62,6 +62,7 @@ from firefly_reports.data_processor import (
 )
 from firefly_reports.excel_exporter import render_all_xlsx_full
 from firefly_reports.firefly_client import FireflyClient
+from firefly_reports.ledger.cli import add_export_parser, run_export_command
 from firefly_reports.pdf_exporter import (
     render_account_statements_pdf,
     render_all_tags_pdf,
@@ -103,6 +104,7 @@ def parse_args() -> argparse.Namespace:
     )
     sub = p.add_subparsers(dest="command")
     sub.add_parser("init", help="Create ./firefly-reports.toml interactively")
+    add_export_parser(sub)
 
     p.add_argument("--url", default=None, help="Firefly III base URL")
     p.add_argument("--token", default=None, help="Personal Access Token")
@@ -371,6 +373,16 @@ def cmd_init() -> None:
             )
 
 
+def cmd_export(args: argparse.Namespace, config: dict[str, Any]) -> int:
+    """Run ``export <format>``; returns the process exit code."""
+
+    def make_client() -> FireflyClient:
+        url, token = _resolve_credentials(args, config)
+        return FireflyClient(url, token, logging.getLogger("firefly_reports.client"))
+
+    return run_export_command(args, make_client, _parse_cli_date)
+
+
 def main():
     # Avoid UnicodeEncodeError on Windows consoles with legacy codepages
     # (e.g. cp1252): replace characters the console cannot encode.
@@ -406,6 +418,11 @@ def main():
 
     if args.command == "init":
         cmd_init()
+        return
+    if args.command == "export":
+        code = cmd_export(args, config)
+        if code:
+            sys.exit(code)
         return
 
     filters_cfg = config.get("filters", {})

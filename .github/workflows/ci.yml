@@ -36,7 +36,7 @@ jobs:
           cache: "pip"
           cache-dependency-path: "firefly_reports/requirements.txt"
       - run: pip install -r firefly_reports/requirements.txt
-      - run: pip install mypy types-requests python-dotenv
+      - run: pip install mypy types-requests types-PyYAML python-dotenv
       - run: mypy firefly_reports/
 
   test:
@@ -59,7 +59,7 @@ jobs:
           pytest tests/ \
             --cov=firefly_reports \
             --cov-report=xml \
-            --cov-fail-under=60 \
+            --cov-fail-under=90 \
             -v
       - uses: actions/upload-artifact@v7
         with:
