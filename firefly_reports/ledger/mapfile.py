@@ -62,7 +62,8 @@ def _block_end(lines: list[str], start: int) -> int:
 def _open_key_line(lines: list[str], idx: int) -> None:
     """Accept ``key:`` (block) and rewrite ``key: {}``; anything else is unsafe."""
     match = _KEY.match(lines[idx])
-    assert match is not None
+    if match is None:
+        raise _UnsafeError
     value = _value(match.group(3))
     if value == "":
         return
