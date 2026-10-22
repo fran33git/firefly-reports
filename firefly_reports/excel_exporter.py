@@ -5,7 +5,6 @@ render_all_xlsx_full() generates 16 core sheets and is the current entry point.
 """
 
 from datetime import date as dt_date
-from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
@@ -13,7 +12,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
-from firefly_reports import i18n
+from firefly_reports import clock, i18n
 from firefly_reports.i18n import T, t
 
 # ─────────────────────────────────────────────────
@@ -130,7 +129,7 @@ def _title_block(ws, sheet_title: str, owner: str, period: str) -> int:
     ws.row_dimensions[3].height = 14
     ws.merge_cells("A3:H3")
     c3 = ws["A3"]
-    c3.value = t("excel.header_period_ref").format(period=period, date=_fmt_date(datetime.now()))
+    c3.value = t("excel.header_period_ref").format(period=period, date=_fmt_date(clock.now()))
     c3.font = Font(name="Calibri", size=9, color=LIGHT_HEX, italic=True)
     c3.alignment = Alignment(horizontal="left", vertical="center")
     c3.border = Border(bottom=_medium())

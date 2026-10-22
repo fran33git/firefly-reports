@@ -7,7 +7,7 @@ from datetime import date
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
-from firefly_reports import i18n
+from firefly_reports import clock, i18n
 
 
 def _d(value: Any) -> Decimal:
@@ -829,13 +829,12 @@ def build_budget_vs_actual(
     currency_symbol: str = "EUR",
 ) -> dict[str, Any]:
     """Return budget planned vs actual spend per budget line."""
-    from datetime import datetime
 
     actual_by_budget: dict = defaultdict(Decimal)
     unbudgeted = Decimal("0")
 
     # Calculate % of month elapsed
-    now = datetime.now().date()
+    now = clock.today()
     if now < start:
         elapsed_pct = Decimal("0")
     elif now > end:
@@ -1608,11 +1607,10 @@ def build_performance_forecast(
     currency_symbol: str = "EUR",
 ) -> dict[str, Any]:
     """Project month-end spending based on current velocity."""
-    from datetime import datetime
 
     actual_by_budget: dict = defaultdict(Decimal)
 
-    now = datetime.now().date()
+    now = clock.today()
     total_days = (end - start).days + 1
     if now < start:
         days_elapsed = 0

@@ -5,7 +5,6 @@ the corresponding build_* function in data_processor and writes a PDF to path.
 """
 
 from datetime import date as dt_date
-from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
@@ -29,7 +28,7 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-from firefly_reports import i18n
+from firefly_reports import clock, i18n
 from firefly_reports.chart_engine import (
     create_area_chart,
     create_bar_chart,
@@ -437,7 +436,7 @@ def _corporate_styles() -> dict:
 # ─────────────────────────────────────────────────
 def _page_fn(owner: str, report_title: str, period: str, landscape_mode=False):
     pagesize = landscape(A4) if landscape_mode else A4
-    generated = _fmt_date(datetime.now())
+    generated = _fmt_date(clock.now())
 
     def draw(canvas, doc):
         canvas.saveState()
