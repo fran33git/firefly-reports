@@ -1,0 +1,430 @@
+{
+  "data": [
+    {
+      "type": "transactions",
+      "id": "1",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2025-06-01T10:00:00+02:00",
+        "transactions": [
+          {
+            "type": "opening balance",
+            "date": "2024-12-31T00:00:00+01:00",
+            "amount": "1500.00",
+            "description": "Opening balance for Conto Corrente",
+            "currency_code": "EUR",
+            "source_id": null,
+            "source_name": "Conto Corrente initial balance",
+            "source_type": "Initial balance account",
+            "destination_id": 1,
+            "destination_name": "Conto Corrente",
+            "destination_type": "Asset account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "1"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "2",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2025-06-01T10:00:00+02:00",
+        "transactions": [
+          {
+            "type": "deposit",
+            "date": "2025-01-15T00:00:00+01:00",
+            "amount": "3200.00",
+            "description": "Fattura #001",
+            "currency_code": "EUR",
+            "source_id": null,
+            "source_name": "Rossi S.r.l.",
+            "source_type": "Revenue account",
+            "destination_id": 1,
+            "destination_name": "Conto Corrente",
+            "destination_type": "Asset account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": true,
+            "tags": [
+              "fattura",
+              "tasse 2025"
+            ],
+            "category_name": "Compensi",
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "2"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "3",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2025-06-01T10:00:00+02:00",
+        "transactions": [
+          {
+            "type": "withdrawal",
+            "date": "2025-01-20T00:00:00+01:00",
+            "amount": "42.50",
+            "description": "Cena \"da Mario\"",
+            "currency_code": "EUR",
+            "source_id": 1,
+            "source_name": "Conto Corrente",
+            "source_type": "Asset account",
+            "destination_id": null,
+            "destination_name": "Caffè Münch & Söhne",
+            "destination_type": "Expense account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": "Ristoranti",
+            "budget_name": "Svago",
+            "notes": "Riga uno\nRiga due con \\ backslash",
+            "transaction_journal_id": "3"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "4",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2025-06-01T10:00:00+02:00",
+        "transactions": [
+          {
+            "type": "transfer",
+            "date": "2025-02-01T00:00:00+01:00",
+            "amount": "500.00",
+            "description": "Giroconto risparmio",
+            "currency_code": "EUR",
+            "source_id": 1,
+            "source_name": "Conto Corrente",
+            "source_type": "Asset account",
+            "destination_id": 2,
+            "destination_name": "Risparmio / Emergenza",
+            "destination_type": "Asset account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": true,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "4"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "5",
+      "attributes": {
+        "group_title": "Spesa del sabato",
+        "updated_at": "2025-06-01T10:00:00+02:00",
+        "transactions": [
+          {
+            "type": "withdrawal",
+            "date": "2025-02-08T00:00:00+01:00",
+            "amount": "30.00",
+            "description": "Frutta e verdura",
+            "currency_code": "EUR",
+            "source_id": 1,
+            "source_name": "Conto Corrente",
+            "source_type": "Asset account",
+            "destination_id": null,
+            "destination_name": "Supermercato Più",
+            "destination_type": "Expense account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": "Alimentari",
+            "budget_name": "Casa",
+            "notes": null,
+            "transaction_journal_id": "5"
+          },
+          {
+            "type": "withdrawal",
+            "date": "2025-02-08T00:00:00+01:00",
+            "amount": "12.40",
+            "description": "Detersivi",
+            "currency_code": "EUR",
+            "source_id": 1,
+            "source_name": "Conto Corrente",
+            "source_type": "Asset account",
+            "destination_id": null,
+            "destination_name": "Supermercato Più",
+            "destination_type": "Expense account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": "Casa",
+            "budget_name": "Casa",
+            "notes": null,
+            "transaction_journal_id": "6"
+          },
+          {
+            "type": "withdrawal",
+            "date": "2025-02-08T00:00:00+01:00",
+            "amount": "7.10",
+            "description": "Vitamine",
+            "currency_code": "EUR",
+            "source_id": 1,
+            "source_name": "Conto Corrente",
+            "source_type": "Asset account",
+            "destination_id": null,
+            "destination_name": "Farmacia Centrale",
+            "destination_type": "Expense account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": "Salute",
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "7"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "8",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2025-06-01T10:00:00+02:00",
+        "transactions": [
+          {
+            "type": "withdrawal",
+            "date": "2025-03-03T00:00:00+01:00",
+            "amount": "91.75",
+            "description": "Hotel a Lisbona",
+            "currency_code": "EUR",
+            "source_id": 1,
+            "source_name": "Conto Corrente",
+            "source_type": "Asset account",
+            "destination_id": null,
+            "destination_name": "Hotel Lisboa",
+            "destination_type": "Expense account",
+            "foreign_amount": "100.00",
+            "foreign_currency_code": "usd",
+            "reconciled": false,
+            "tags": [],
+            "category_name": "Viaggi",
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "8"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "9",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2025-06-01T10:00:00+02:00",
+        "transactions": [
+          {
+            "type": "deposit",
+            "date": "2025-03-10T00:00:00+01:00",
+            "amount": "184.20",
+            "description": "Consulenza",
+            "currency_code": "EUR",
+            "source_id": null,
+            "source_name": "Freelance USA Inc",
+            "source_type": "Revenue account",
+            "destination_id": 1,
+            "destination_name": "Conto Corrente",
+            "destination_type": "Asset account",
+            "foreign_amount": "200.00",
+            "foreign_currency_code": "USD",
+            "reconciled": false,
+            "tags": [],
+            "category_name": "Compensi",
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "9"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "10",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2025-06-01T10:00:00+02:00",
+        "transactions": [
+          {
+            "type": "transfer",
+            "date": "2025-03-15T00:00:00+01:00",
+            "amount": "1000.00",
+            "description": "Versamento al broker",
+            "currency_code": "EUR",
+            "source_id": 1,
+            "source_name": "Conto Corrente",
+            "source_type": "Asset account",
+            "destination_id": 3,
+            "destination_name": "Fineco Investimenti",
+            "destination_type": "Asset account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": true,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "10"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "11",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2025-06-01T10:00:00+02:00",
+        "transactions": [
+          {
+            "type": "reconciliation",
+            "date": "2025-03-31T00:00:00+01:00",
+            "amount": "2.35",
+            "description": "Riconciliazione",
+            "currency_code": "EUR",
+            "source_id": null,
+            "source_name": "Reconciliation (Conto Corrente)",
+            "source_type": "Reconciliation account",
+            "destination_id": 1,
+            "destination_name": "Conto Corrente",
+            "destination_type": "Asset account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "11"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "12",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2025-06-01T10:00:00+02:00",
+        "transactions": [
+          {
+            "type": "withdrawal",
+            "date": "2025-04-02T00:00:00+01:00",
+            "amount": "9.99",
+            "description": "Spesa senza beneficiario",
+            "currency_code": "EUR",
+            "source_id": 1,
+            "source_name": "Conto Corrente",
+            "source_type": "Asset account",
+            "destination_id": null,
+            "destination_name": "(no name)",
+            "destination_type": "Expense account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "12"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "13",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2025-06-01T10:00:00+02:00",
+        "transactions": [
+          {
+            "type": "withdrawal",
+            "date": "2025-04-05T00:00:00+01:00",
+            "amount": "60.00",
+            "description": "Prelievo contanti",
+            "currency_code": "EUR",
+            "source_id": 1,
+            "source_name": "Conto Corrente",
+            "source_type": "Asset account",
+            "destination_id": null,
+            "destination_name": "(cash)",
+            "destination_type": "Cash account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "13"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "14",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2025-06-01T10:00:00+02:00",
+        "transactions": [
+          {
+            "type": "withdrawal",
+            "date": "2025-04-10T00:00:00+01:00",
+            "amount": "250.00",
+            "description": "Rata",
+            "currency_code": "EUR",
+            "source_id": 9,
+            "source_name": "Mutuo Casa",
+            "source_type": "Loan",
+            "destination_id": null,
+            "destination_name": "Banca Rossi",
+            "destination_type": "Expense account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "14"
+          }
+        ]
+      }
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "total": 12,
+      "count": 12,
+      "per_page": 100,
+      "current_page": 1,
+      "total_pages": 1
+    }
+  }
+}

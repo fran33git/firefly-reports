@@ -59,7 +59,7 @@ jobs:
           pytest tests/ \
             --cov=firefly_reports \
             --cov-report=xml \
-            --cov-fail-under=60 \
+            --cov-fail-under=90 \
             -v
       - uses: actions/upload-artifact@v7
         with:
