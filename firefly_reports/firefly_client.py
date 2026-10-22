@@ -106,15 +106,19 @@ class FireflyClient:
 
     def get_transactions(
         self,
-        start: date,
-        end: date,
+        start: date | None = None,
+        end: date | None = None,
         tx_type: str | None = None,
     ) -> list[dict[str, Any]]:
-        """Return all transactions in [start, end], one dict per split."""
-        params: dict[str, Any] = {
-            "start": start.isoformat(),
-            "end": end.isoformat(),
-        }
+        """Return all transactions in [start, end], one dict per split.
+
+        Either bound may be omitted; with neither, the whole history is returned.
+        """
+        params: dict[str, Any] = {}
+        if start:
+            params["start"] = start.isoformat()
+        if end:
+            params["end"] = end.isoformat()
         if tx_type:
             params["type"] = tx_type
         raw = self._get_paginated("transactions", params)
@@ -206,13 +210,15 @@ class FireflyClient:
             str(item.get("id", "")): str(item.get("attributes", {}).get("name", "")) for item in raw
         }
 
-    def get_transaction_links(self) -> list[dict[str, Any]]:
-        """Return all transaction links with the link type name resolved.
+    def get_transaction_links(self, resolve_types: bool = True) -> list[dict[str, Any]]:
+        """Return all transaction links, by default with the link type name resolved.
 
         Each item: id, link_type_id, link_type_name, inward_id, outward_id, notes.
-        inward_id/outward_id reference transaction journal IDs.
+        inward_id/outward_id reference transaction journal IDs. With
+        ``resolve_types=False`` the link types are not fetched (one request less)
+        and ``link_type_name`` is empty.
         """
-        type_names = self.get_link_types()
+        type_names = self.get_link_types() if resolve_types else {}
         links: list[dict[str, Any]] = []
         for item in self._get_paginated("transaction-links"):
             attrs = item.get("attributes", {})

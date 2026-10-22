@@ -102,6 +102,9 @@ def clean_env(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     for var in ("FIREFLY_URL", "FIREFLY_TOKEN", "FIREFLY_LANG", "FIREFLY_LEGACY_REPORT"):
         monkeypatch.delenv(var, raising=False)
+    # load_dotenv() searches upward from the package, not from cwd: without this a
+    # developer's real .env would repopulate the variables removed above.
+    monkeypatch.setattr("firefly_reports.main.load_dotenv", lambda *a, **k: None)
     return tmp_path
 
 

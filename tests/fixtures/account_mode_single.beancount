@@ -1,0 +1,94 @@
+; GENERATED - DO NOT EDIT BY HAND
+
+2024-12-31 commodity EUR
+2025-03-03 commodity USD
+
+2025-04-05 open Assets:Cash
+2024-12-31 open Assets:Conto-Corrente
+2025-03-15 open Assets:Investments:Fineco:Cash
+2025-02-01 open Assets:Risparmio-Emergenza
+2024-12-31 open Equity:Opening-Balances
+2025-03-31 open Equity:Reconciliation
+2025-04-10 open Expenses:Banca-Rossi
+2025-01-20 open Expenses:Caffe-Munch-Sohne
+2025-02-08 open Expenses:Farmacia-Centrale
+2025-03-03 open Expenses:Hotel-Lisboa
+2025-02-08 open Expenses:Supermercato-Piu
+2025-04-02 open Expenses:Uncategorized
+2025-03-10 open Income:Freelance-USA-Inc
+2025-01-15 open Income:Rossi-S-r-l
+2025-04-10 open Liabilities:Mutuo
+
+2024-12-31 * "Opening balance for Conto Corrente"
+  firefly_id: "1"
+  Equity:Opening-Balances         -1500.00 EUR
+  Assets:Conto-Corrente            1500.00 EUR
+
+2025-01-15 * "Rossi S.r.l." "Fattura #001" #fattura #tasse-2025
+  firefly_id: "2"
+  category: "Compensi"
+  Income:Rossi-S-r-l              -3200.00 EUR
+  Assets:Conto-Corrente            3200.00 EUR
+
+2025-01-20 * "Caffè Münch & Söhne" "Cena \"da Mario\""
+  firefly_id: "3"
+  category: "Ristoranti"
+  budget: "Svago"
+  note: "Riga uno Riga due con \\ backslash"
+  Assets:Conto-Corrente             -42.50 EUR
+  Expenses:Caffe-Munch-Sohne         42.50 EUR
+
+2025-02-01 * "Giroconto risparmio"
+  firefly_id: "4"
+  Assets:Conto-Corrente            -500.00 EUR
+  Assets:Risparmio-Emergenza        500.00 EUR
+
+2025-02-08 * "Spesa del sabato"
+  firefly_id: "5"
+  firefly_group_id: "5"
+  Assets:Conto-Corrente             -49.50 EUR
+  Expenses:Supermercato-Piu          30.00 EUR
+    category: "Alimentari"
+    budget: "Casa"
+  Expenses:Supermercato-Piu          12.40 EUR
+    category: "Casa"
+    budget: "Casa"
+  Expenses:Farmacia-Centrale          7.10 EUR
+    category: "Salute"
+
+2025-03-03 * "Hotel Lisboa" "Hotel a Lisbona"
+  firefly_id: "8"
+  category: "Viaggi"
+  Assets:Conto-Corrente             -91.75 EUR
+  Expenses:Hotel-Lisboa             100.00 USD @@ 91.75 EUR
+
+2025-03-10 * "Freelance USA Inc" "Consulenza"
+  firefly_id: "9"
+  category: "Compensi"
+  Income:Freelance-USA-Inc         -200.00 USD @@ 184.20 EUR
+  Assets:Conto-Corrente             184.20 EUR
+
+2025-03-15 * "Versamento al broker"
+  firefly_id: "10"
+  Assets:Conto-Corrente           -1000.00 EUR
+  Assets:Investments:Fineco:Cash   1000.00 EUR
+
+2025-03-31 * "Riconciliazione"
+  firefly_id: "11"
+  Equity:Reconciliation              -2.35 EUR
+  Assets:Conto-Corrente               2.35 EUR
+
+2025-04-02 * "Spesa senza beneficiario"
+  firefly_id: "12"
+  Assets:Conto-Corrente              -9.99 EUR
+  Expenses:Uncategorized              9.99 EUR
+
+2025-04-05 * "Prelievo contanti"
+  firefly_id: "13"
+  Assets:Conto-Corrente             -60.00 EUR
+  Assets:Cash                        60.00 EUR
+
+2025-04-10 * "Banca Rossi" "Rata"
+  firefly_id: "14"
+  Liabilities:Mutuo                -250.00 EUR
+  Expenses:Banca-Rossi              250.00 EUR

@@ -10,7 +10,7 @@ Guidance for AI coding agents working in this repository.
 - License: GPL-3.0-or-later
 - Repository: https://github.com/fran33git/firefly-reports
 - Packaging: setuptools (`pyproject.toml`); dependencies also pinned in `firefly_reports/requirements.txt` (source list in `requirements.in`)
-- Runtime dependencies: `requests`, `reportlab` (PDF), `openpyxl` (Excel), `matplotlib` (charts), `python-dateutil`, `python-dotenv`
+- Runtime dependencies: `requests`, `reportlab` (PDF), `openpyxl` (Excel), `matplotlib` (charts), `python-dateutil`, `python-dotenv`, `pyyaml` (ledger mapping). Optional extra `beancount` (only for `--validate`)
 
 ## Architecture
 
@@ -34,6 +34,7 @@ All modules live in `firefly_reports/` and are imported as package-qualified abs
 | `demo.py` | Exercises all 26 report types using inline English mock data (`TXN_2025`, `TXN_2024`, `ACCOUNTS`, `LIABILITIES`, `BUDGETS`, `BILLS`, `PIGGY_BANKS`, `TRANSACTION_LINKS`) — no Firefly III needed. Writes to `./output` by default (override with `--out`); full year via `--year YYYY` (default 2025); report language selectable with `--lang en\|it` (default `en`) |
 | `config.py` | Loads `./firefly-reports.toml` (cwd) via `tomllib`; returns `{}` if missing |
 | `i18n.py` | Loads `firefly_reports/translations/{lang}.toml` into a module-level `T` dict; `t("pdf.category")` accessor falls back to `en`, then returns the key itself |
+| `ledger/` | Plain-text-accounting export (`firefly-reports export beancount`): `convert.py` (Firefly splits → neutral `model.py`, pure), `accounts.py` (normalisation/collisions), `mapping.py` (YAML mapping), `cli.py` (`export` parser + runner), `scaffold.py` (mapping-file draft), `labels.py` (i18n strings), `writers/` (`LedgerWriter` protocol, `BeancountWriter`, `atomic_write`), `validate.py` (optional `bean-check`), `export.py` (orchestration, `--init`). A new format = a new writer only. Same rules: `Decimal` only, no network outside `firefly_client.py` |
 | `translations/` | `en.toml`, `it.toml` — output languages English and Italian |
 
 ### Configuration precedence
@@ -92,10 +93,24 @@ pip-audit -r firefly_reports/requirements.txt
 
 ## Testing instructions
 
-- Framework: pytest (with `pytest-cov`; CI enforces `--cov-fail-under=60`, `demo.py` excluded from coverage). Config in `pyproject.toml` (`testpaths = ["tests"]`).
+- Framework: pytest (with `pytest-cov`; CI enforces `--cov-fail-under=90`, `demo.py` excluded from coverage). Config in `pyproject.toml` (`testpaths = ["tests"]`).
 - Run from the repo root with plain pytest (no `PYTHONPATH` needed — `pyproject.toml` sets `pythonpath = ["."]`): `pytest tests/ -v`.
-- Tests must not require a live Firefly III instance: fixtures in `tests/conftest.py` derive from the mock data in `demo.py`, and HTTP calls are mocked with the `responses` library (see `tests/test_firefly_client.py`).
+- Tests must not require a live Firefly III instance: fixtures in `tests/conftest.py` derive from the mock data in `demo.py`, and HTTP calls are mocked with the `responses` library (see `tests/test_firefly_client.py`). An autouse fixture in `conftest.py` refuses every socket `connect()`, so a test that escapes its mock fails instead of reaching a real instance.
+- Ledger tests (`tests/test_ledger*.py`) use `tests/fixtures/firefly_transactions.json` (plus `firefly_account_types.json` for the account types and shapes it lacks); the `bean-check` integration tests are skipped unless `beancount` is installed (`pip install beancount`) — install it locally so they actually run.
 - `conftest.py` loads English translations once per session via `i18n.load("en")` — keep this autouse fixture when adding tests that touch rendered strings.
+
+## Ledger export (Beancount)
+
+- Entry point: `firefly-reports export beancount` (parser and runner in `firefly_reports/ledger/cli.py`, thin adapter `main.cmd_export`; logic in `firefly_reports/ledger/`).
+- Layering is strict: `convert.py` (pure) -> `model.py` -> `writers/*` (pure, no `i18n` calls; they receive `LedgerLabels`). Only `export.py`, `validate.py`, `writers/base.atomic_write` and `mapping.load_ledger_config` do I/O.
+- A new output format = a new `LedgerWriter` (`extension`, `render`, `render_accounts`, `render_transactions`) plus a CLI choice; do not fork `convert.py`.
+- Layouts (`yearly` default, `single`) are built by `export.plan_files()`; everything is rendered before any file is written, unchanged files are not rewritten and orphans are only reported. `--scaffold` never writes ledger files.
+- Expense/income accounts come from the Firefly **category** by default (`--classify-by category`; `account` keeps the counterpart accounts). `convert._split_postings` picks the real account and the counterpart per split; the counterpart then lives in `payee` (on the posting when the splits of a group diverge). Transfers and any transaction with two real sides keep a `category` metadata instead of a category account.
+- Two passes: `--scaffold` drafts `beancount_map.yaml` (accounts, `categories:` with split counts). On an existing mapping it only prints the missing entries, unless `--append` (inserts them via `mapfile.append_entries`, `.bak` copy, falls back to printing when the layout is not safe) or `--overwrite` (regenerates after the user types the file name, timestamped copy, never when stdin is not interactive). The export is blocked (exit 1, nothing written) without a mapping file or with categories it does not list, unless `--allow-unmapped`.
+- Beyond the core postings the writer emits `^firefly-link-<id>` links (from `get_transaction_links(resolve_types=False)`), fixed-key metadata (`bill`, `reference`, `external_id`, `external_url`, `book_date`, `interest_date`), `iban` on `open` directives and always the `*` flag (reconciliation is not exported).
+- Errors are `LedgerError(message_key, **params)` with keys in the `[ledger]` section of both translation files.
+- Output must stay deterministic (sorted, no dict/set order reliance) and `Decimal`-only; adding a transaction shape means extending `tests/fixtures/firefly_transactions.json`.
+- Docs: `docs/wiki/Beancount-Export.md` (user) and `docs/wiki/Ledger-Architecture.md` (developer); keep both and `beancount_map.example.yaml` in sync with behaviour changes.
 
 ## Adding a new report
 

@@ -4,6 +4,7 @@ All fixtures are derived from the mock data in demo.py so tests run
 without a live Firefly III instance.
 """
 
+import socket
 from datetime import date
 
 import pytest
@@ -15,6 +16,20 @@ from firefly_reports import i18n
 def setup_i18n():
     """Load English translations once for the entire test session."""
     i18n.load("en")
+
+
+@pytest.fixture(autouse=True)
+def block_network(monkeypatch):
+    """Fail any test that tries to open a network connection.
+
+    HTTP is mocked with ``responses``; a real connection means a test escaped its mock
+    (for instance by picking up a developer's ``.env``) and would reach a live instance.
+    """
+
+    def refuse(self, *args, **kwargs):
+        raise RuntimeError("network access is disabled in tests")
+
+    monkeypatch.setattr(socket.socket, "connect", refuse)
 
 
 @pytest.fixture

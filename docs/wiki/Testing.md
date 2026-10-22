@@ -29,7 +29,25 @@ The CI pipeline runs tests on Python 3.11 and 3.12. Coverage must be ≥ 60%.
 | `tests/test_config.py` | Config file loading and missing-file behaviour |
 | `tests/test_i18n.py` | Translation loading and fallback |
 | `tests/test_chart_engine.py` | Chart generators return non-empty PNG buffers |
+| `tests/test_ledger.py` | Ledger export: normalisation, account resolver and collisions, YAML mapping validation, conversion of every transaction type, multi-split groups, foreign amounts, Beancount writer (escaping, determinism), atomic write, i18n, `--init`, `bean-check` integration |
+| `tests/test_ledger_cli.py` | `export beancount` argument parsing and end-to-end `main()` runs with a mocked client |
+| `tests/fixtures/firefly_transactions.json` | API-shaped Firefly payload used by the ledger tests (see [[Ledger-Architecture]]) |
 | `tests/conftest.py` | Shared fixtures: `FireflyClient` instance, sample transactions |
+
+## Ledger tests and `bean-check`
+
+The ledger tests are offline: the fixture JSON is served through the `responses` mock and flattened by the real
+`FireflyClient`. Tests that call `bean-check` are skipped when it is not installed; to run them:
+
+```bash
+pip install beancount          # provides bean-check
+pytest tests/test_ledger.py tests/test_ledger_cli.py -v
+```
+
+When you add a transaction shape, extend `tests/fixtures/firefly_transactions.json` (keep ids unique) and
+update the expected counts in `tests/test_ledger_cli.py`. The invariants to keep: every transaction balances
+per currency, output is byte-identical across runs and input orders, and the generated file passes `bean-check`
+in both `en` and `it`.
 
 ## Writing a client test
 

@@ -357,6 +357,26 @@ def test_get_transaction_links_resolves_type_names(client):
 
 
 @rsps_lib.activate
+def test_get_transaction_links_without_types_makes_one_request(client):
+    rsps_lib.add(
+        rsps_lib.GET,
+        f"{BASE}/api/v1/transaction-links",
+        json={
+            "data": [
+                {
+                    "id": "1",
+                    "attributes": {"link_type_id": "9", "inward_id": "501", "outward_id": "500"},
+                }
+            ],
+            "meta": {"pagination": {"total_pages": 1}},
+        },
+    )
+    links = client.get_transaction_links(resolve_types=False)
+    assert len(rsps_lib.calls) == 1
+    assert links[0]["inward_id"] == "501" and links[0]["link_type_name"] == ""
+
+
+@rsps_lib.activate
 def test_get_transaction_journal_by_id(client):
     rsps_lib.add(
         rsps_lib.GET,
@@ -810,3 +830,30 @@ def test_dec_valid_value():
     from decimal import Decimal
 
     assert _dec("12.34") == Decimal("12.34")
+
+
+# ---------- get_transactions: optional date bounds ----------
+
+
+@rsps_lib.activate
+def test_get_transactions_without_dates_sends_no_range(client):
+    rsps_lib.add(
+        rsps_lib.GET,
+        f"{BASE}/api/v1/transactions",
+        json={"data": [], "meta": {"pagination": {"total_pages": 1}}},
+    )
+    assert client.get_transactions() == []
+    query = rsps_lib.calls[0].request.params
+    assert "start" not in query and "end" not in query
+
+
+@rsps_lib.activate
+def test_get_transactions_with_only_start(client):
+    rsps_lib.add(
+        rsps_lib.GET,
+        f"{BASE}/api/v1/transactions",
+        json={"data": [], "meta": {"pagination": {"total_pages": 1}}},
+    )
+    client.get_transactions(start=__import__("datetime").date(2025, 1, 1))
+    query = rsps_lib.calls[0].request.params
+    assert query["start"] == "2025-01-01" and "end" not in query

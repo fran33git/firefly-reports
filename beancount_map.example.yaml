@@ -1,0 +1,40 @@
+# Example mapping for `firefly-reports export beancount`.
+# Tip: `firefly-reports export beancount --scaffold` drafts this file for you from your Firefly accounts
+# (it never overwrites an existing file). Every section is optional.
+
+# Explicit Firefly account (name or numeric id) -> Beancount account.
+# Overrides the automatic normalisation.
+accounts:
+  "Conto Corrente": "Assets:Banca:Intesa:Corrente"
+  "Risparmio / Emergenza": "Assets:Banca:Intesa:Risparmio"
+  "Mutuo Casa": "Liabilities:Mutuo"
+
+# Firefly investment accounts -> broker name. They become
+# <investment_root>:<Broker>:Cash. Securities positions are NOT generated from
+# Firefly (it has no quantities or prices): keep them in a hand-written file.
+investment_accounts:
+  "Fineco Investimenti": "Fineco"
+
+# Optional. Default depends on --lang: Assets:Investimenti (it) / Assets:Investments (en).
+# investment_root: "Assets:Investimenti"
+
+# Used for empty/"(no name)" counterparts and, with strict: true, for every
+# expense/revenue account that is not listed under `accounts`.
+# Defaults depend on --lang (Expenses:Non-Classificato / Expenses:Uncategorized, ...).
+fallback:
+  expense: "Expenses:Non-Classificato"
+  income: "Income:Non-Classificato"
+  strict: false
+
+# Written to main.beancount by --init.
+operating_currency: [EUR]
+
+# Extra commodities to declare even if no transaction uses them yet.
+commodities: [EUR, USD]
+
+# Optional: force metadata key names regardless of --lang
+# (e.g. keep existing Fava queries working). Keys: category, budget, note.
+# labels:
+#   category: categoria
+#   budget: budget
+#   note: nota

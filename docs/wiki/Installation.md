@@ -13,6 +13,8 @@ From PyPI (recommended):
 
 ```bash
 pip install firefly-iii-reports
+# optional, only for `export beancount --validate`:
+pip install "firefly-iii-reports[beancount]"
 ```
 
 This installs the `firefly-reports` command. Alternatively, install from source:
