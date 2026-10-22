@@ -738,10 +738,10 @@ def test_main_declares_the_output_language(ledger):
     def main():
         return render_main_beancount(ledger, parse_ledger_config(None), "single")
 
-    assert 'option "language" "en"' in main()
+    assert 'custom "fava-option" "language" "en"' in main()
     i18n.load("it")
     try:
-        assert 'option "language" "it"' in main()
+        assert 'custom "fava-option" "language" "it"' in main()
     finally:
         i18n.load("en")
 

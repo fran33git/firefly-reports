@@ -1,9 +1,9 @@
 requests>=2.31.0
-reportlab>=4.0.0
+reportlab>=5.0.1
 openpyxl>=3.1.0
 python-dateutil>=2.8.2
-python-dotenv>=1.2.3
-matplotlib>=3.11.1
+python-dotenv>=1.2.4
+matplotlib>=3.11.2
 pyyaml>=6.0
 
 # numpy is a transitive dep of matplotlib. Capped because numpy>=2.5.0
@@ -12,3 +12,7 @@ pyyaml>=6.0
 # Dependabot's lockfile regeneration) picks the latest numpy and
 # breaks installation on 3.11.
 numpy<2.5
+
+# contourpy>=1.4.0 requires Python>=3.12 (transitive dep of matplotlib);
+# capped for the same reason as numpy above.
+contourpy<1.4

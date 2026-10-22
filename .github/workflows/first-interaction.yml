@@ -8,6 +8,8 @@ on:
 
 jobs:
   greeting:
+    # Maintainers do not need the welcome message on their own issues and PRs.
+    if: github.actor != github.repository_owner
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -23,7 +25,6 @@ jobs:
             output) help a lot.
           pr_message: >
             Thanks for your first pull request! Please make sure
-            `PYTHONPATH=firefly_reports pytest tests/ -v`, `ruff check
-            firefly_reports/` and `mypy firefly_reports/` all pass locally —
-            see [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md) for the full
+            `pytest tests/ -v`, `ruff check firefly_reports/` and
+            `mypy firefly_reports/` all pass locally. See [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md) for the full
             checklist. I'll review it soon.
