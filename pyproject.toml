@@ -70,7 +70,7 @@ module = ["reportlab.*", "openpyxl.*", "matplotlib.*", "dateutil.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = ["firefly_reports.pdf_exporter", "firefly_reports.excel_exporter", "firefly_reports.demo.*", "firefly_reports.main"]
+module = ["firefly_reports.pdf_exporter", "firefly_reports.excel_exporter", "firefly_reports.demo.*", "firefly_reports.main", "firefly_reports.render.pdf.*", "firefly_reports.render.xlsx.*"]
 disallow_untyped_defs = false
 warn_return_any = false
 
