@@ -8,11 +8,8 @@ compact number formatting and value labels where space allows.
 import io
 from typing import Any
 
-import matplotlib
-
-matplotlib.use("Agg")  # Headless backend
-
-import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter
 
 from firefly_reports import i18n
@@ -111,8 +108,8 @@ def _set_xticks(ax: Any, labels: list[str]) -> None:
 
 def _finish(fig: Any) -> io.BytesIO:
     buf = io.BytesIO()
+    FigureCanvasAgg(fig)
     fig.savefig(buf, format="png", bbox_inches="tight", facecolor="white")
-    plt.close(fig)
     buf.seek(0)
     return buf
 
@@ -141,7 +138,8 @@ def create_donut_chart(data: dict[str, float], title: str, top_n: int = 8) -> io
     values = [v for _, v in items]
     total = sum(values)
 
-    fig, ax = plt.subplots(figsize=(6.9, 3.2), dpi=_DPI)
+    fig = Figure(figsize=(6.9, 3.2), dpi=_DPI)
+    ax = fig.subplots()
     wedges, *_ = ax.pie(
         values,
         startangle=90,
@@ -190,7 +188,8 @@ def create_bar_chart(data: dict[str, float], title: str, color: str = "#2A6F97")
     labels = _short_months(list(data.keys()))
     values = list(data.values())
 
-    fig, ax = plt.subplots(figsize=(5.0, 2.8), dpi=_DPI)
+    fig = Figure(figsize=(5.0, 2.8), dpi=_DPI)
+    ax = fig.subplots()
     bars = ax.bar(range(len(labels)), values, width=0.6, color=color)
     ax.bar_label(bars, labels=[_compact(v) for v in values], padding=2, fontsize=7.5, color=INK)
     ax.margins(y=0.15)
@@ -210,7 +209,8 @@ def create_horizontal_bar_chart(
     labels = list(data.keys())
     values = list(data.values())
 
-    fig, ax = plt.subplots(figsize=(6.9, 2.9), dpi=_DPI)
+    fig = Figure(figsize=(6.9, 2.9), dpi=_DPI)
+    ax = fig.subplots()
     bars = ax.barh(range(len(labels)), values, height=0.62, color=color)
     ax.bar_label(bars, labels=[_compact(v) for v in values], padding=3, fontsize=9, color=INK)
     ax.invert_yaxis()  # Labels read top-to-bottom
@@ -231,7 +231,8 @@ def create_line_chart(data: dict[str, float], title: str) -> io.BytesIO:
     labels = _short_months(list(data.keys()))
     values = list(data.values())
 
-    fig, ax = plt.subplots(figsize=(6.7, 2.6), dpi=_DPI)
+    fig = Figure(figsize=(6.7, 2.6), dpi=_DPI)
+    ax = fig.subplots()
     ax.plot(range(len(labels)), values, marker="o", markersize=3.5, linewidth=1.8, color=NET)
     ax.fill_between(range(len(labels)), values, color=NET, alpha=0.08)
     if any(v < 0 for v in values):
@@ -251,7 +252,8 @@ def create_area_chart(data: dict[str, float], title: str) -> io.BytesIO:
     labels = _short_months(list(data.keys()))
     values = list(data.values())
 
-    fig, ax = plt.subplots(figsize=(6.7, 2.5), dpi=_DPI)
+    fig = Figure(figsize=(6.7, 2.5), dpi=_DPI)
+    ax = fig.subplots()
     ax.fill_between(range(len(labels)), values, color="#468FAF", alpha=0.18)
     ax.plot(range(len(labels)), values, color="#2A6F97", linewidth=1.8)
     ax.axhline(0, color=INK, linewidth=0.6)
@@ -277,7 +279,8 @@ def create_cashflow_combo(trend: list[dict[str, Any]], title: str) -> io.BytesIO
     net = [float(r["net"]) for r in trend]
     x = list(range(len(labels)))
 
-    fig, ax = plt.subplots(figsize=(6.7, 2.7), dpi=_DPI)
+    fig = Figure(figsize=(6.7, 2.7), dpi=_DPI)
+    ax = fig.subplots()
     w = 0.38
     b_inc = ax.bar([i - w / 2 for i in x], inc, width=w, color=INCOME, label=t("charts.income"))
     b_exp = ax.bar([i + w / 2 for i in x], exp, width=w, color=EXPENSE, label=t("charts.expense"))
@@ -309,7 +312,8 @@ def create_cashflow_combo(trend: list[dict[str, Any]], title: str) -> io.BytesIO
 
 
 def _create_placeholder(title: str) -> io.BytesIO:
-    fig, ax = plt.subplots(figsize=(5.0, 2.6), dpi=_DPI)
+    fig = Figure(figsize=(5.0, 2.6), dpi=_DPI)
+    ax = fig.subplots()
     ax.text(
         0.5,
         0.5,
