@@ -10,7 +10,18 @@ readme = "README.md"
 license = { text = "GPL-3.0-or-later" }
 requires-python = ">=3.11"
 authors = [{ name = "fran33git", email = "80598630+fran33git@users.noreply.github.com" }]
-keywords = ["firefly-iii", "finance", "reports", "pdf", "excel", "accounting"]
+keywords = ["firefly-iii", "finance", "reports", "pdf", "excel", "accounting", "beancount"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial :: Accounting",
+    "Typing :: Typed",
+]
 dependencies = [
     "requests>=2.31.0",
     "reportlab>=4.0.0",
@@ -29,8 +40,12 @@ Homepage = "https://bytesdust.com"
 Repository = "https://github.com/fran33git/firefly-reports"
 "Bug Tracker" = "https://github.com/fran33git/firefly-reports/issues"
 
+[tool.setuptools.packages.find]
+include = ["firefly_reports*"]
+exclude = ["tests*"]
+
 [tool.setuptools.package-data]
-firefly_reports = ["translations/*.toml"]
+firefly_reports = ["translations/*.toml", "py.typed"]
 
 [project.optional-dependencies]
 beancount = ["beancount>=3.0"]
