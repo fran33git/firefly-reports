@@ -50,6 +50,9 @@ pre-refactor code.
   `FIREFLY_LANG` and `FIREFLY_LEGACY_REPORT`
 
 ### Changed
+- `--url`/`--token` now follow the same precedence as every other setting: CLI > `firefly-reports.toml` >
+  environment (`FIREFLY_URL`/`FIREFLY_TOKEN`, `.env`) > prompt. Before, the environment beat the config file
+  for these two: a config file with `url`/`token` now overrides a stale variable in the shell
 - Errors (configuration, credentials, dates, API) are printed to stderr; Firefly III request failures no
   longer end in a traceback. Messages follow `--lang`
 - Exit codes: `3` when the run finished but some files could not be written (was `0`), `2` for a bare

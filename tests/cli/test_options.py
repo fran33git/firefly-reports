@@ -34,16 +34,24 @@ def test_resolve_credentials_cli_wins(monkeypatch):
     assert (url, token) == (URL, TOKEN)
 
 
-def test_resolve_credentials_env_fallback(monkeypatch):
-    """Env vars are used when CLI args are absent."""
+def test_resolve_credentials_config_beats_env(monkeypatch):
+    """Same order as every other setting: the config file wins over the environment."""
     monkeypatch.setenv("FIREFLY_URL", "https://env.example.com")
     monkeypatch.setenv("FIREFLY_TOKEN", "env-token")
     url, token = _resolve(None, None, {"url": "https://cfg.example.com", "token": "cfg"})
+    assert (url, token) == ("https://cfg.example.com", "cfg")
+
+
+def test_resolve_credentials_env_fallback(monkeypatch):
+    """Environment variables (and .env) are used when the config file has no value."""
+    monkeypatch.setenv("FIREFLY_URL", "https://env.example.com")
+    monkeypatch.setenv("FIREFLY_TOKEN", "env-token")
+    url, token = _resolve(None, None, {})
     assert (url, token) == ("https://env.example.com", "env-token")
 
 
-def test_resolve_credentials_config_fallback(monkeypatch):
-    """Config file values are the last non-interactive fallback."""
+def test_resolve_credentials_config_without_env(monkeypatch):
+    """Config file values work when the environment is empty."""
     monkeypatch.delenv("FIREFLY_URL", raising=False)
     monkeypatch.delenv("FIREFLY_TOKEN", raising=False)
     url, token = _resolve(None, None, {"url": URL, "token": "cfg-token"})
