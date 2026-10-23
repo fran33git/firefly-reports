@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # the identity check walks the commits of the pull request
       - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
@@ -24,6 +26,13 @@ jobs:
       - run: pip install ruff
       - run: ruff check firefly_reports/ tests/ tools/
       - run: ruff format --check firefly_reports/ tests/ tools/
+      # The maintainer's own pull requests only: outside contributors keep their identity.
+      - name: Commit identities
+        if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'fran33git'
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: tools/check-identity.sh "$BASE..$HEAD"
 
   types:
     name: Type check (mypy)
