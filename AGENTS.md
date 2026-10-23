@@ -149,7 +149,7 @@ pip-audit -r firefly_reports/requirements.txt
 
 ## Git identity
 
-Commits in this repository are authored as the GitHub account: name `fran33git`, an address under `users.noreply.github.com` (the `<id>+fran33git@users.noreply.github.com` form listed under GitHub > Settings > Emails). Never use a personal address or another name, and do not override `user.name`/`user.email` to get around this. Check with `git config user.name` before the first commit of a session. `tools/check-identity.sh` (no argument: the next commit; `BASE..HEAD`: a range) is run by CI on the maintainer's pull requests. The name on commits made on github.com (merges) comes from the GitHub profile name, so it must be `fran33git` too. Co-author trailers are not covered by the rule.
+Commits in this repository are authored as the GitHub account: name `fran33git`, an address under `users.noreply.github.com` (the `<id>+fran33git@users.noreply.github.com` form listed under GitHub > Settings > Emails). Never use a personal address or another name, and do not override `user.name`/`user.email` to get around this. Check with `git config user.name` before the first commit of a session. `bash tools/check-identity.sh` (no argument: the next commit; `BASE..HEAD`: a range) is run by CI on the maintainer's pull requests. The name on commits made on github.com (merges) comes from the GitHub profile name, so it must be `fran33git` too. Co-author trailers are not covered by the rule.
 
 ## Security considerations
 
