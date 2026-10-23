@@ -7,8 +7,8 @@ from __future__ import annotations
 
 import argparse
 import sys
-from collections.abc import Callable
-from dataclasses import replace
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass, replace
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -34,6 +34,7 @@ from firefly_reports.ledger.labels import LedgerLabels
 from firefly_reports.ledger.mapping import load_ledger_config
 
 DEFAULT_OUT = "ledger"
+CLASSIFY_CHOICES = ["category", "account"]
 FORMATS = ["beancount"]
 
 
@@ -66,7 +67,7 @@ def add_export_parser(sub: Any, common: argparse.ArgumentParser) -> None:
     exp.add_argument(
         "--layout",
         choices=LAYOUTS,
-        default=LAYOUT_YEARLY,
+        default=None,
         help="yearly: accounts file + one file per year (default, whole history); "
         "single: one file (allows --start/--end)",
     )
@@ -96,7 +97,7 @@ def add_export_parser(sub: Any, common: argparse.ArgumentParser) -> None:
     )
     exp.add_argument(
         "--classify-by",
-        choices=["category", "account"],
+        choices=CLASSIFY_CHOICES,
         default=None,
         help="Where expense/income accounts come from: the Firefly category (default) or "
         "the counterpart account",
@@ -138,17 +139,57 @@ def confirm_overwrite(path: Path) -> bool:
     return answer.strip() == path.name
 
 
+@dataclass(frozen=True)
+class ExportSettings:
+    """Effective ``export`` settings after merging the flags with the ``[export]`` config."""
+
+    out: Path
+    layout: str
+    classify_by: str | None
+    map: str | None
+
+
+def _choice(value: Any, choices: Sequence[str], key: str) -> str:
+    if value not in choices:
+        raise ConfigurationError(
+            "cli.err_config_choice", key=key, value=value, choices=", ".join(choices)
+        )
+    return str(value)
+
+
+def resolve_export_settings(args: argparse.Namespace, config: Mapping[str, Any]) -> ExportSettings:
+    """Merge flags and the ``[export]`` section of the config file: CLI > config > default.
+
+    The top-level ``out`` key of the config file belongs to ``report`` only; the ledger has
+    its own ``[export] out`` so one file can drive both commands.
+    """
+    section = config.get("export", {})
+    layout = args.layout or section.get("layout") or LAYOUT_YEARLY
+    classify_by = args.classify_by or section.get("classify_by") or None
+    return ExportSettings(
+        out=Path(getattr(args, "out", None) or section.get("out") or DEFAULT_OUT),
+        layout=_choice(layout, LAYOUTS, "export.layout"),
+        classify_by=(
+            _choice(classify_by, CLASSIFY_CHOICES, "export.classify_by") if classify_by else None
+        ),
+        map=args.map or section.get("map") or None,
+    )
+
+
 def run_export_command(
     args: argparse.Namespace,
     make_client: Callable[[], TransactionSource],
     parse_date: Callable[[str, str], date],
+    config: Mapping[str, Any] | None = None,
 ) -> int:
     """Run ``export <format>`` from parsed arguments; returns the process exit code.
 
     *make_client* resolves credentials and builds the API client, *parse_date*
     parses a ``YYYY-MM-DD`` flag (exiting with a message on error). Both are
-    injected by ``cli/__init__.py`` so this module does not import it.
+    injected by ``cli/__init__.py`` so this module does not import it. *config* is the
+    loaded ``firefly-reports.toml`` (its ``[export]`` section supplies defaults for the flags).
     """
+    settings = resolve_export_settings(args, config or {})
     if (args.append or args.overwrite) and (not args.scaffold or (args.append and args.overwrite)):
         print(f"Error: {t('ledger.err_scaffold_flags')}", file=sys.stderr)
         return 1
@@ -166,13 +207,13 @@ def run_export_command(
         )
         return 1
 
-    if args.layout == LAYOUT_YEARLY and not args.scaffold and (start or end):
+    if settings.layout == LAYOUT_YEARLY and not args.scaffold and (start or end):
         print(f"Error: {t('ledger.err_yearly_filters')}", file=sys.stderr)
         return 1
 
-    map_target = Path(args.map or DEFAULT_MAP)
+    map_target = Path(settings.map or DEFAULT_MAP)
     map_path: Path | None = map_target if map_target.is_file() else None
-    if args.map and map_path is None and not args.scaffold:
+    if settings.map and map_path is None and not args.scaffold:
         print(t("ledger.map_not_found").format(path=map_target), file=sys.stderr)
         return 1
 
@@ -181,16 +222,16 @@ def run_export_command(
         # replaced must neither shape the draft nor need to be valid.
         regenerate = args.scaffold and args.overwrite
         ledger_config = load_ledger_config(None if regenerate else map_path)
-        if args.classify_by:
-            ledger_config = replace(ledger_config, classify_by=args.classify_by)
+        if settings.classify_by:
+            ledger_config = replace(ledger_config, classify_by=settings.classify_by)
         labels = LedgerLabels.from_i18n(ledger_config.label_overrides)
         client = make_client()
         request = ExportRequest(
             start=start,
             end=end,
-            out=Path(args.out or DEFAULT_OUT),
+            out=settings.out,
             config=ledger_config,
-            layout=args.layout,
+            layout=settings.layout,
             dry_run=args.dry_run,
             validate=args.validate,
             init=args.init_files,

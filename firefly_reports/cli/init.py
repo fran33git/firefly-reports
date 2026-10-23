@@ -4,6 +4,35 @@ import getpass
 import os
 from pathlib import Path
 
+# Optional settings, written commented out so the file documents every key the CLI reads.
+OPTIONAL_TEMPLATE = """
+# year = 2025                       # default for --year (full calendar year)
+
+[reports]
+# fetch_links = false               # fetch details of linked transactions (slower)
+# link_delay = 0.2                  # seconds between those requests
+# all_tags_report = false           # one report for every tag
+# historical_years = 3              # 3 or 5
+
+[filters]
+# accounts_include = []             # asset account IDs
+# accounts_exclude = []
+# categories_include = []
+# categories_exclude = []
+# show_transfers = true
+# reconciled_only = false
+# fiscal_year_start = "01-01"       # MM-DD, year mode only
+
+[tax]
+# deductible_keywords = ["studio", "software"]
+
+[export]                            # defaults for `firefly-reports export beancount`
+# out = "./ledger"
+# layout = "yearly"                 # yearly | single
+# classify_by = "category"          # category | account
+# map = "beancount_map.yaml"
+"""
+
 
 def run_init() -> None:
     """Generate ./firefly-reports.toml interactively."""
@@ -67,7 +96,7 @@ def run_init() -> None:
     else:
         lines.append("tags     = []")
 
-    content = "\n".join(lines) + "\n"
+    content = "\n".join(lines) + "\n" + OPTIONAL_TEMPLATE
     if token:
         # Create atomically with owner-only permissions before any bytes
         # are written, so the token is never briefly world/group-readable
