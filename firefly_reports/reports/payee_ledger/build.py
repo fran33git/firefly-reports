@@ -1,11 +1,13 @@
 """Builder of the payee_ledger report (pure: no I/O, Decimal money)."""
 
 from collections import defaultdict
+from collections.abc import Mapping
 from datetime import date
 from typing import Any
 
 from firefly_reports import i18n
 from firefly_reports.reports._money import _d
+from firefly_reports.reports.spec import ReportContext, ReportData, SourceData
 
 
 def build_payee_ledger(
@@ -61,3 +63,9 @@ def build_payee_ledger(
         "sections": sections,
         "grand_total": sum(s["total"] for s in sections),
     }
+
+
+def from_source(src: SourceData, ctx: ReportContext, built: Mapping[str, ReportData]) -> ReportData:
+    """Registry adapter: build this report from the fetched data and the run context."""
+    p, o = ctx.period, ctx.options
+    return build_payee_ledger(src.transactions, p.start, p.end, o.owner, o.currency)

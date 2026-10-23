@@ -1,9 +1,11 @@
 """Builder of the audit_log report (pure: no I/O, Decimal money)."""
 
+from collections.abc import Mapping
 from datetime import date
 from typing import Any
 
 from firefly_reports.reports._money import _d
+from firefly_reports.reports.spec import ReportContext, ReportData, SourceData
 
 
 def build_audit_log(
@@ -55,3 +57,9 @@ def build_audit_log(
         "total_count": len(rows),
         "reconciled_count": sum(1 for r in rows if r["reconciled"]),
     }
+
+
+def from_source(src: SourceData, ctx: ReportContext, built: Mapping[str, ReportData]) -> ReportData:
+    """Registry adapter: build this report from the fetched data and the run context."""
+    p, o = ctx.period, ctx.options
+    return build_audit_log(src.transactions, p.start, p.end, o.owner, o.currency)

@@ -1,12 +1,14 @@
 """Builder of the cash_flow report (pure: no I/O, Decimal money)."""
 
 from collections import defaultdict
+from collections.abc import Mapping
 from datetime import date
 from decimal import Decimal
 from typing import Any
 
 from firefly_reports import i18n
 from firefly_reports.reports._money import _d
+from firefly_reports.reports.spec import ReportContext, ReportData, SourceData
 
 
 def build_cash_flow(
@@ -128,3 +130,11 @@ def build_cash_flow(
             "closing_cash": closing_cash,
         },
     }
+
+
+def from_source(src: SourceData, ctx: ReportContext, built: Mapping[str, ReportData]) -> ReportData:
+    """Registry adapter: build this report from the fetched data and the run context."""
+    p, o = ctx.period, ctx.options
+    return build_cash_flow(
+        src.transactions, p.start, p.end, o.owner, o.currency, src.accounts, src.liabilities
+    )

@@ -1,11 +1,13 @@
 """Builder of the tax_summary report (pure: no I/O, Decimal money)."""
 
 from collections import defaultdict
+from collections.abc import Mapping
 from decimal import Decimal
 from typing import Any
 
 from firefly_reports import i18n
 from firefly_reports.reports._money import _d
+from firefly_reports.reports.spec import ReportContext, ReportData, SourceData
 
 
 def build_tax_summary(
@@ -80,3 +82,15 @@ def build_tax_summary(
         "total_nondeductible": total_nonded,
         "taxable_estimate": taxable_estimate,
     }
+
+
+def from_source(src: SourceData, ctx: ReportContext, built: Mapping[str, ReportData]) -> ReportData:
+    """Registry adapter: build this report from the fetched data and the run context."""
+    p, o = ctx.period, ctx.options
+    return build_tax_summary(
+        src.transactions,
+        p.start.year,
+        owner_name=o.owner,
+        currency_symbol=o.currency,
+        deductible_keywords=list(o.deductible_keywords),
+    )

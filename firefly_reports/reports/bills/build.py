@@ -1,5 +1,6 @@
 """Builder of the bills report (pure: no I/O, Decimal money)."""
 
+from collections.abc import Mapping
 from datetime import date
 from decimal import Decimal
 from typing import Any
@@ -8,6 +9,7 @@ from firefly_reports.reports._labels import (
     frequency_label,
 )
 from firefly_reports.reports._money import _d
+from firefly_reports.reports.spec import ReportContext, ReportData, SourceData
 
 
 def build_bills_report(
@@ -82,3 +84,9 @@ def build_bills_report(
         "total_paid": total_paid,
         "delta": total_paid - total_expected,
     }
+
+
+def from_source(src: SourceData, ctx: ReportContext, built: Mapping[str, ReportData]) -> ReportData:
+    """Registry adapter: build this report from the fetched data and the run context."""
+    p, o = ctx.period, ctx.options
+    return build_bills_report(src.bills, src.bill_transactions, p.start, p.end, o.owner, o.currency)

@@ -1,5 +1,6 @@
 """Builder of the liabilities report (pure: no I/O, Decimal money)."""
 
+from collections.abc import Mapping
 from datetime import date
 from decimal import Decimal
 from typing import Any
@@ -8,6 +9,7 @@ from firefly_reports.reports._labels import (
     liability_type_label,
 )
 from firefly_reports.reports._money import _d
+from firefly_reports.reports.spec import ReportContext, ReportData, SourceData
 
 
 def build_liabilities_report(
@@ -74,3 +76,11 @@ def build_liabilities_report(
         "total_payments": total_payments,
         "liability_count": len(rows),
     }
+
+
+def from_source(src: SourceData, ctx: ReportContext, built: Mapping[str, ReportData]) -> ReportData:
+    """Registry adapter: build this report from the fetched data and the run context."""
+    p, o = ctx.period, ctx.options
+    return build_liabilities_report(
+        src.liabilities, src.liability_transactions, p.end, p.start, p.end, o.owner, o.currency
+    )

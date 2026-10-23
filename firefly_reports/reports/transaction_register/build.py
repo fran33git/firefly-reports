@@ -1,11 +1,13 @@
 """Builder of the transaction_register report (pure: no I/O, Decimal money)."""
 
 from collections import defaultdict
+from collections.abc import Mapping
 from datetime import date
 from decimal import Decimal
 from typing import Any
 
 from firefly_reports.reports._money import _d
+from firefly_reports.reports.spec import ReportContext, ReportData, SourceData
 
 
 def build_transaction_register(
@@ -109,3 +111,9 @@ def build_transaction_register(
         "total_transactions": sum(len(r["splits"]) for r in rows),
         "totals_by_type": dict(totals_by_type),
     }
+
+
+def from_source(src: SourceData, ctx: ReportContext, built: Mapping[str, ReportData]) -> ReportData:
+    """Registry adapter: build this report from the fetched data and the run context."""
+    p, o = ctx.period, ctx.options
+    return build_transaction_register(src.transactions, p.start, p.end, o.owner, o.currency)

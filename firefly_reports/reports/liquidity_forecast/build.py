@@ -1,11 +1,13 @@
 """Builder of the liquidity_forecast report (pure: no I/O, Decimal money)."""
 
+from collections.abc import Mapping
 from datetime import date
 from decimal import Decimal
 from typing import Any
 
 from firefly_reports import i18n
 from firefly_reports.reports._money import _d
+from firefly_reports.reports.spec import ReportContext, ReportData, SourceData
 
 
 def build_liquidity_forecast(
@@ -111,3 +113,28 @@ def build_liquidity_forecast(
         "avg_income": inc,
         "avg_variable": var,
     }
+
+
+def from_source(src: SourceData, ctx: ReportContext, built: Mapping[str, ReportData]) -> ReportData:
+    """Registry adapter: build this report from the fetched data and the run context."""
+    p, o = ctx.period, ctx.options
+    # Only positive balances: consistent with build_kpi_scorecard logic.
+    # Negative asset accounts (e.g. credit cards) reduce runway separately.
+    liquid_assets = sum(
+        (
+            Decimal(str(acc.get("attributes", acc).get("current_balance", 0)))
+            for acc in src.accounts
+            if Decimal(str(acc.get("attributes", acc).get("current_balance", 0))) > 0
+        ),
+        Decimal(0),
+    )
+    kpi = built["kpi_scorecard"]
+    return build_liquidity_forecast(
+        current_balance=liquid_assets,
+        avg_income=kpi["avg_monthly_in"],
+        avg_variable_expense=kpi["avg_monthly_out"],
+        bills=src.bills,
+        end_date=p.end,
+        owner_name=o.owner,
+        currency_symbol=o.currency,
+    )

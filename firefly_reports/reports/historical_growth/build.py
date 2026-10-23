@@ -1,9 +1,11 @@
 """Builder of the historical_growth report (pure: no I/O, Decimal money)."""
 
+from collections.abc import Mapping
 from decimal import Decimal
 from typing import Any
 
 from firefly_reports.reports._money import _d
+from firefly_reports.reports.spec import ReportContext, ReportData, SourceData
 
 
 def build_historical_report(
@@ -56,3 +58,11 @@ def build_historical_report(
         "rows": rows,
         "year_count": len(rows),
     }
+
+
+def from_source(src: SourceData, ctx: ReportContext, built: Mapping[str, ReportData]) -> ReportData:
+    """Registry adapter: build this report from the fetched data and the run context."""
+    o = ctx.options
+    if not src.history:
+        return None
+    return build_historical_report(src.history, o.owner, o.currency)

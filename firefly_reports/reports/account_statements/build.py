@@ -1,5 +1,6 @@
 """Builder of the account_statements report (pure: no I/O, Decimal money)."""
 
+from collections.abc import Mapping
 from datetime import date
 from decimal import Decimal
 from typing import Any
@@ -9,6 +10,7 @@ from firefly_reports.reports._labels import (
     account_role_label,
 )
 from firefly_reports.reports._money import _d
+from firefly_reports.reports.spec import ReportContext, ReportData, SourceData
 
 
 def build_account_statements(
@@ -96,3 +98,11 @@ def build_account_statements(
         )
 
     return statements
+
+
+def from_source(src: SourceData, ctx: ReportContext, built: Mapping[str, ReportData]) -> ReportData:
+    """Registry adapter: build this report from the fetched data and the run context."""
+    p, o = ctx.period, ctx.options
+    return build_account_statements(
+        src.accounts, src.account_transactions, p.start, p.end, o.owner, o.currency
+    )
