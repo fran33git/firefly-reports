@@ -3,6 +3,7 @@ Report data processor: aggregates raw API data into structures ready for PDF/Exc
 """
 
 from collections import defaultdict
+from collections.abc import Mapping
 from datetime import date
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
@@ -1442,7 +1443,7 @@ def build_cumulative_cashflow(
         elif t == "withdrawal":
             by_month[mk]["out"] += a
 
-    months_dict: dict = i18n.T.get("months", {})
+    months_dict: Mapping[str, Any] = i18n.current().section("months")
 
     cumulative = Decimal("0")
     months = []
@@ -2109,8 +2110,10 @@ def build_liquidity_forecast(
         outflow = monthly_fixed + var
         running_balance = running_balance + inc - outflow
 
-        month_name = i18n.T.get("months", {}).get(
-            f"{target_date.month:02d}", target_date.strftime("%m")
+        month_name = (
+            i18n.current()
+            .section("months")
+            .get(f"{target_date.month:02d}", target_date.strftime("%m"))
         )
         months.append(
             {

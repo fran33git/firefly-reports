@@ -1,5 +1,7 @@
 """Tests for the i18n loader and t() accessor."""
 
+import threading
+import time
 import tomllib
 from pathlib import Path
 
@@ -60,16 +62,47 @@ def test_t_returns_italian_after_load_it():
 
 def test_t_falls_back_to_english_per_key():
     """A key missing from the active language falls back to the English string."""
-    i18n.load("it")
-    # simulate a key present in en.toml but missing from the active catalog
-    del i18n.T["common"]["category"]
-    assert i18n.t("common.category") == "Category"
-    i18n.load("en")  # restore for other tests
+    tr = i18n.Translator("it", {"common": {}}, {"common": {"category": "Category"}})
+    assert tr.t("common.category") == "Category"
+    assert tr.t("common.absent") == "common.absent"
+    assert tr.section("months") == {}
 
 
 def test_load_sets_current_lang():
-    """load() records the active language in i18n.CURRENT_LANG."""
+    """load() sets the process default language."""
     i18n.load("it")
-    assert i18n.CURRENT_LANG == "it"
+    assert i18n.current().lang == "it"
     i18n.load("en")  # restore for other tests
-    assert i18n.CURRENT_LANG == "en"
+    assert i18n.current().lang == "en"
+
+
+def test_unknown_language_falls_back_to_english(caplog):
+    i18n.load("xx")
+    assert i18n.current().lang == "en"
+    assert "falling back" in caplog.text
+    assert i18n.available_languages() == ("en", "it")
+
+
+def test_using_overrides_and_restores():
+    i18n.load("en")
+    with i18n.using("it") as tr:
+        assert tr is i18n.current()
+        assert i18n.current().lang == "it" and i18n.t("months.01") != "January"
+    assert i18n.current().lang == "en"
+
+
+def test_using_is_isolated_per_thread():
+    seen = {}
+
+    def worker(lang):
+        with i18n.using(lang):
+            time.sleep(0.05)
+            seen[lang] = i18n.t("common.uncategorized")
+
+    threads = [threading.Thread(target=worker, args=(lang,)) for lang in ("en", "it")]
+    for th in threads:
+        th.start()
+    for th in threads:
+        th.join()
+    assert seen["en"] != seen["it"]
+    assert i18n.current().lang == "en"
