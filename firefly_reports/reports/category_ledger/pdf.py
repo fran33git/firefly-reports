@@ -84,6 +84,6 @@ def _render_modern_category_ledger(data: dict[str, Any], output_path: str) -> No
     doc.build(story)
 
 
-def render_category_ledger_pdf(data: dict, path: str, legacy: bool = False):
+def render_category_ledger_pdf(data: dict, path: str, legacy: bool = False) -> None:
     # Category Ledger is Modern only
     return _render_modern_category_ledger(data, path)

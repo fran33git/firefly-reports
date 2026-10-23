@@ -68,11 +68,6 @@ warn_unused_ignores = true
 module = ["reportlab.*", "openpyxl.*", "matplotlib.*", "dateutil.*"]
 ignore_missing_imports = true
 
-[[tool.mypy.overrides]]
-module = ["firefly_reports.reports.*.pdf", "firefly_reports.reports.*.xlsx", "firefly_reports.pdf_exporter", "firefly_reports.excel_exporter", "firefly_reports.demo.*", "firefly_reports.main", "firefly_reports.render.pdf.*", "firefly_reports.render.xlsx.*"]
-disallow_untyped_defs = false
-warn_return_any = false
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--tb=short"

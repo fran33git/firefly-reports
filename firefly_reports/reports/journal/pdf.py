@@ -100,6 +100,6 @@ def _render_modern_journal(data: dict[str, Any], output_path: str) -> None:
     doc.build(story)
 
 
-def render_journal_pdf(data: dict, path: str, legacy: bool = False):
+def render_journal_pdf(data: dict, path: str, legacy: bool = False) -> None:
     # General Journal is Modern only
     return _render_modern_journal(data, path)

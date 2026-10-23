@@ -195,7 +195,7 @@ def _render_modern_budget_vs_actual(data: dict[str, Any], output_path: str) -> N
     doc.build(story)
 
 
-def render_budget_vs_actual_pdf(data: dict, path: str, legacy: bool = False):
+def render_budget_vs_actual_pdf(data: dict, path: str, legacy: bool = False) -> None:
     if legacy:
         return _render_legacy_budget_vs_actual(data, path)
     return _render_modern_budget_vs_actual(data, path)

@@ -173,7 +173,7 @@ def _render_legacy_income_expense(data: dict[str, Any], output_path: str) -> Non
     doc.build(story)
 
 
-def render_income_expense_pdf(data: dict, path: str, legacy: bool = False):
+def render_income_expense_pdf(data: dict, path: str, legacy: bool = False) -> None:
     if legacy:
         return _render_legacy_income_expense(data, path)
     return _render_legacy_income_expense(data, path)  # TODO: Modern

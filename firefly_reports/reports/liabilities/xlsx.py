@@ -1,5 +1,9 @@
 """Excel sheet of the liabilities report."""
 
+from typing import Any
+
+from openpyxl import Workbook
+
 from firefly_reports.i18n import t
 from firefly_reports.render.fmt import fmt_date
 from firefly_reports.render.xlsx.layout import (
@@ -19,7 +23,7 @@ from firefly_reports.render.xlsx.layout import (
 # ─────────────────────────────────────────────────
 
 
-def write_sheet(wb, data):
+def write_sheet(wb: Workbook, data: dict[str, Any]) -> None:
     ws = wb.create_sheet(t("excel.sheet_liabilities"))
     as_of = fmt_date(data["as_of_date"])
     row = title_block(ws, t("titles.liabilities"), data["owner"], t("pdf.as_of").format(date=as_of))

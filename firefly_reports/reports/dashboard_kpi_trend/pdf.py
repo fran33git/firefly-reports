@@ -61,7 +61,7 @@ def _render_legacy_kpi_trend_dashboard(data: dict[str, Any], output_path: str) -
     # KPI cards as a table
     story.append(Spacer(1, 1 * cm))
 
-    def _card(label, value):
+    def _card(label: str, value: Any) -> list[Any]:
         return [
             Paragraph(f"<b>{label}</b>", st["cell_c"]),
             Paragraph(f"<font size=14 color='#2980b9'>{value}</font>", st["cell_c"]),
@@ -147,7 +147,7 @@ def _render_modern_kpi_trend_dashboard(data: dict[str, Any], output_path: str) -
     doc.build(story)
 
 
-def render_kpi_trend_dashboard_pdf(data: dict, path: str, legacy: bool = False):
+def render_kpi_trend_dashboard_pdf(data: dict, path: str, legacy: bool = False) -> None:
     if legacy:
         return _render_legacy_kpi_trend_dashboard(data, path)
     return _render_modern_kpi_trend_dashboard(data, path)

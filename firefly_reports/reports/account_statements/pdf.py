@@ -204,7 +204,7 @@ def _render_legacy_account_statements(statements: list[dict[str, Any]], output_p
     doc.build(story)
 
 
-def render_account_statements_pdf(data: list, path: str, legacy: bool = False):
+def render_account_statements_pdf(data: list, path: str, legacy: bool = False) -> None:
     if legacy:
         return _render_legacy_account_statements(data, path)
     return _render_legacy_account_statements(data, path)  # TODO: Modern

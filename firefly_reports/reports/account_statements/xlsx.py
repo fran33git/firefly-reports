@@ -1,5 +1,7 @@
 """Excel sheet of the account_statements report."""
 
+from typing import Any
+
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font
 
@@ -27,7 +29,7 @@ from firefly_reports.render.xlsx.styles import (
 # ─────────────────────────────────────────────────
 
 
-def write_sheet(wb: Workbook, statements: list):
+def write_sheet(wb: Workbook, statements: list[dict[str, Any]]) -> None:
     for stmt in statements:
         sheet_name = safe_sheet_name(f"{t('common.account')} {stmt['account_name']}")
         ws = wb.create_sheet(sheet_name)

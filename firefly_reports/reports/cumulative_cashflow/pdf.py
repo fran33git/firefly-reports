@@ -98,7 +98,7 @@ def _render_legacy_cumulative_cashflow(data: dict[str, Any], output_path: str) -
     doc.build(story)
 
 
-def render_cumulative_cashflow_pdf(data: dict, path: str, legacy: bool = False):
+def render_cumulative_cashflow_pdf(data: dict, path: str, legacy: bool = False) -> None:
     if legacy:
         return _render_legacy_cumulative_cashflow(data, path)
     return _render_legacy_cumulative_cashflow(data, path)  # TODO: Modern

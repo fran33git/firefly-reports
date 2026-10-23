@@ -101,6 +101,6 @@ def _render_modern_forecast(data: dict[str, Any], output_path: str) -> None:
     doc.build(story)
 
 
-def render_forecast_pdf(data: dict, path: str, legacy: bool = False):
+def render_forecast_pdf(data: dict, path: str, legacy: bool = False) -> None:
     # Forecast is Modern only
     return _render_modern_forecast(data, path)

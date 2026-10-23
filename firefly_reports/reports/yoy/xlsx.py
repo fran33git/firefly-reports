@@ -1,5 +1,8 @@
 """Excel sheet of the yoy report."""
 
+from typing import Any
+
+from openpyxl import Workbook
 from openpyxl.styles import Font
 
 from firefly_reports.i18n import t
@@ -23,7 +26,7 @@ from firefly_reports.render.xlsx.styles import (
 # ─────────────────────────────────────────────────
 
 
-def write_sheet(wb, data):
+def write_sheet(wb: Workbook, data: dict[str, Any]) -> None:
     ws = wb.create_sheet(t("excel.sheet_yoy"))
     la, lb = data["period_a"]["label"], data["period_b"]["label"]
     row = title_block(ws, t("titles.yoy_comparison"), data["owner"], f"{lb} vs {la}")

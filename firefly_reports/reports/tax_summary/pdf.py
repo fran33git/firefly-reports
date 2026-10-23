@@ -177,7 +177,7 @@ def _render_legacy_tax_summary(data: dict[str, Any], output_path: str) -> None:
     doc.build(story)
 
 
-def render_tax_summary_pdf(data: dict, path: str, legacy: bool = False):
+def render_tax_summary_pdf(data: dict, path: str, legacy: bool = False) -> None:
     if legacy:
         return _render_legacy_tax_summary(data, path)
     return _render_legacy_tax_summary(data, path)  # TODO: Modern

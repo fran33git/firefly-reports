@@ -94,6 +94,6 @@ def _render_modern_audit_log(data: dict[str, Any], output_path: str) -> None:
     doc.build(story)
 
 
-def render_audit_log_pdf(data: dict, path: str, legacy: bool = False):
+def render_audit_log_pdf(data: dict, path: str, legacy: bool = False) -> None:
     # Audit Log is Modern only
     return _render_modern_audit_log(data, path)

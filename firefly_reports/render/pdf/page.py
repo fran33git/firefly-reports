@@ -1,7 +1,11 @@
 """Page decorator, document factory and title block of the PDF reports."""
 
+from collections.abc import Callable
+from typing import Any
+
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import cm
+from reportlab.pdfgen.canvas import Canvas
 from reportlab.platypus import (
     BaseDocTemplate,
     Frame,
@@ -21,11 +25,13 @@ from firefly_reports.render.pdf.palette import (
 )
 
 
-def page_decorator(owner: str, report_title: str, period: str, landscape_mode=False):
+def page_decorator(
+    owner: str, report_title: str, period: str, landscape_mode: bool = False
+) -> Callable[[Canvas, Any], None]:
     pagesize = landscape(A4) if landscape_mode else A4
     generated = fmt_date(clock.now())
 
-    def draw(canvas, doc):
+    def draw(canvas: Canvas, doc: Any) -> None:
         canvas.saveState()
         w, h = pagesize
 
@@ -59,7 +65,9 @@ def page_decorator(owner: str, report_title: str, period: str, landscape_mode=Fa
     return draw
 
 
-def make_doc(output_path: str, page_fn, landscape_mode=False) -> BaseDocTemplate:
+def make_doc(
+    output_path: str, page_fn: Callable[[Canvas, Any], None], landscape_mode: bool = False
+) -> BaseDocTemplate:
     pagesize = landscape(A4) if landscape_mode else A4
     doc = BaseDocTemplate(
         output_path,

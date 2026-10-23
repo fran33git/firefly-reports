@@ -53,7 +53,7 @@ def _render_legacy_expense_trend(data: dict[str, Any], output_path: str) -> None
 
     months_abbr = i18n.current().section("months_abbr")
 
-    def _mk_label(mk):
+    def _mk_label(mk: str) -> str:
         y, m = mk.split("-")
         return f"{months_abbr.get(m, m)}\n{y[-2:]}"
 
@@ -179,7 +179,7 @@ def _render_legacy_expense_trend(data: dict[str, Any], output_path: str) -> None
     doc.build(story)
 
 
-def render_expense_trend_pdf(data: dict, path: str, legacy: bool = False):
+def render_expense_trend_pdf(data: dict, path: str, legacy: bool = False) -> None:
     if legacy:
         return _render_legacy_expense_trend(data, path)
     return _render_legacy_expense_trend(data, path)  # TODO: Modern

@@ -84,6 +84,6 @@ def _render_modern_payee_ledger(data: dict[str, Any], output_path: str) -> None:
     doc.build(story)
 
 
-def render_payee_ledger_pdf(data: dict, path: str, legacy: bool = False):
+def render_payee_ledger_pdf(data: dict, path: str, legacy: bool = False) -> None:
     # Payee Ledger is Modern only
     return _render_modern_payee_ledger(data, path)

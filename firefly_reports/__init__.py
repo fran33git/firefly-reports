@@ -17,29 +17,6 @@ __version__ = "2.0.0"
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-_LAZY = {
-    "Period": "firefly_reports.reports.options",
-    "GlobalFilters": "firefly_reports.reports.options",
-    "ReportOptions": "firefly_reports.reports.options",
-    "FireflySource": "firefly_reports.reports.spec",
-    "SourceData": "firefly_reports.reports.spec",
-    "GeneratedFile": "firefly_reports.reports.pipeline",
-    "FailedFile": "firefly_reports.reports.pipeline",
-    "ReportResult": "firefly_reports.api",
-    "Headline": "firefly_reports.api",
-    "ReportInfo": "firefly_reports.api",
-    "connect": "firefly_reports.api",
-    "fetch_data": "firefly_reports.api",
-    "build_reports": "firefly_reports.api",
-    "write_reports": "firefly_reports.api",
-    "generate_reports": "firefly_reports.api",
-    "available_reports": "firefly_reports.api",
-    "FireflyReportsError": "firefly_reports.errors",
-    "ConfigurationError": "firefly_reports.errors",
-    "FireflyAPIError": "firefly_reports.errors",
-    "ReportError": "firefly_reports.errors",
-}
-
 __all__ = [
     "__version__",
     "ConfigurationError",
@@ -87,13 +64,40 @@ if TYPE_CHECKING:
     from firefly_reports.reports.spec import FireflySource, SourceData
 
 
-def __getattr__(name: str) -> Any:
-    module = _LAZY.get(name)
-    if module is None:
-        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-    import importlib
+_OPTIONS = frozenset(["Period", "GlobalFilters", "ReportOptions"])
+_SPEC = frozenset(["FireflySource", "SourceData"])
+_PIPELINE = frozenset(["GeneratedFile", "FailedFile"])
+_API = frozenset(
+    [
+        "ReportResult",
+        "Headline",
+        "ReportInfo",
+        "connect",
+        "fetch_data",
+        "build_reports",
+        "write_reports",
+        "generate_reports",
+        "available_reports",
+    ]
+)
+_ERRORS = frozenset(["FireflyReportsError", "ConfigurationError", "FireflyAPIError", "ReportError"])
 
-    value = getattr(importlib.import_module(module), name)
+
+def __getattr__(name: str) -> Any:
+    """Load the facade lazily (PEP 562) with static imports, so the package imports fast."""
+    if name in _OPTIONS:
+        from firefly_reports.reports import options as module
+    elif name in _SPEC:
+        from firefly_reports.reports import spec as module  # type: ignore[no-redef]
+    elif name in _PIPELINE:
+        from firefly_reports.reports import pipeline as module  # type: ignore[no-redef]
+    elif name in _API:
+        from firefly_reports import api as module  # type: ignore[no-redef]
+    elif name in _ERRORS:
+        from firefly_reports import errors as module  # type: ignore[no-redef]
+    else:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    value = getattr(module, name)
     globals()[name] = value
     return value
 

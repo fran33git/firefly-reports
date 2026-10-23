@@ -74,7 +74,7 @@ def _render_legacy_bills(data: dict[str, Any], output_path: str) -> None:
     doc.build(story)
 
 
-def render_bills_pdf(data: dict, path: str, legacy: bool = False):
+def render_bills_pdf(data: dict, path: str, legacy: bool = False) -> None:
     if legacy:
         return _render_legacy_bills(data, path)
     return _render_legacy_bills(data, path)  # TODO: Modern

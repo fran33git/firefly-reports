@@ -147,7 +147,7 @@ def _render_modern_income_expense_dashboard(data: dict[str, Any], output_path: s
     doc.build(story)
 
 
-def render_income_expense_dashboard_pdf(data: dict, path: str, legacy: bool = False):
+def render_income_expense_dashboard_pdf(data: dict, path: str, legacy: bool = False) -> None:
     if legacy:
         return _render_legacy_income_expense_dashboard(data, path)
     return _render_modern_income_expense_dashboard(data, path)

@@ -1,9 +1,12 @@
 """Sheet layout helpers: title block, header and data rows, sheet names."""
 
+from collections.abc import Sequence
 from decimal import Decimal
+from typing import Any
 
 from openpyxl.styles import Alignment, Border, Font
 from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.worksheet import Worksheet
 
 from firefly_reports import clock
 from firefly_reports.i18n import t
@@ -21,7 +24,7 @@ from firefly_reports.render.xlsx.styles import (
 )
 
 
-def title_block(ws, sheet_title: str, owner: str, period: str) -> int:
+def title_block(ws: Worksheet, sheet_title: str, owner: str, period: str) -> int:
     """
     Write the first 4 header rows.
     Returns the row number from which content should start.
@@ -54,7 +57,9 @@ def title_block(ws, sheet_title: str, owner: str, period: str) -> int:
     return 5  # first content row
 
 
-def header_row(ws, row: int, labels: list, col_widths: list | None = None):
+def header_row(
+    ws: Worksheet, row: int, labels: list[Any], col_widths: Sequence[float] | None = None
+) -> int:
     """Write a column header row with bold font and thin bottom border."""
     for col_idx, label in enumerate(labels, start=1):
         c = ws.cell(row=row, column=col_idx, value=label)
@@ -69,13 +74,13 @@ def header_row(ws, row: int, labels: list, col_widths: list | None = None):
 
 
 def data_row(
-    ws,
+    ws: Worksheet,
     row: int,
-    values: list,
+    values: list[Any],
     indent_col: int | None = None,
     is_total: bool = False,
     is_grand: bool = False,
-):
+) -> int:
     """
     Write a data row.
     - is_total: bold + grey background + thin top border

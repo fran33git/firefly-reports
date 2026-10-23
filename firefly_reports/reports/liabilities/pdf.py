@@ -91,7 +91,7 @@ def _render_legacy_liabilities(data: dict[str, Any], output_path: str) -> None:
     doc.build(story)
 
 
-def render_liabilities_pdf(data: dict, path: str, legacy: bool = False):
+def render_liabilities_pdf(data: dict, path: str, legacy: bool = False) -> None:
     if legacy:
         return _render_legacy_liabilities(data, path)
     return _render_legacy_liabilities(data, path)  # TODO: Modern
