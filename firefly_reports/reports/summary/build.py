@@ -1,10 +1,12 @@
 """Builder of the summary report (pure: no I/O, Decimal money)."""
 
+from collections.abc import Mapping
 from datetime import date
 from decimal import Decimal
 from typing import Any
 
 from firefly_reports.reports._money import _d
+from firefly_reports.reports.spec import ReportContext, ReportData, SourceData
 
 
 def build_summary(
@@ -95,3 +97,22 @@ def build_summary(
             "avg_daily_expense": _d(total_out / days),
         },
     }
+
+
+def from_source(src: SourceData, ctx: ReportContext, built: Mapping[str, ReportData]) -> ReportData:
+    """Registry adapter: build this report from the fetched data and the run context."""
+    p, o = ctx.period, ctx.options
+    return build_summary(
+        src.transactions,
+        src.accounts,
+        src.liabilities,
+        src.budgets,
+        src.bills,
+        src.piggy_banks,
+        src.about,
+        src.about_user,
+        p.start,
+        p.end,
+        o.owner,
+        o.currency,
+    )

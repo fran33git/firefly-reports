@@ -93,3 +93,26 @@ class FireflySource(Protocol):
     def get_transaction_links(self, resolve_types: bool = True) -> list[dict[str, Any]]: ...
 
     def fetch_link_details(self, journal_ids: list[str]) -> list[dict[str, Any]]: ...
+
+
+def _always(ctx: ReportContext) -> bool:
+    return True
+
+
+def _always_pdf(ctx: ReportContext, data: ReportData) -> bool:
+    return True
+
+
+@dataclass(frozen=True)
+class ReportSpec:
+    """One report: how to build it, where it is rendered and when it applies."""
+
+    key: str  # package name, e.g. "cash_flow"
+    build: Builder  # adapter in the package: from_source()
+    pdf: PdfRenderer | None
+    filename: Callable[[ReportContext], str]  # PDF basename
+    sheet: SheetWriter | None = None
+    applies: Callable[[ReportContext], bool] = _always  # build at all?
+    pdf_enabled: Callable[[ReportContext, ReportData], bool] = _always_pdf
+    depends_on: tuple[str, ...] = ()
+    view: bool = False  # True for the two dashboards (derived data, no builder of their own)

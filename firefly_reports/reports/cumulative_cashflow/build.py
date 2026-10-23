@@ -8,6 +8,7 @@ from typing import Any
 
 from firefly_reports import i18n
 from firefly_reports.reports._money import _d
+from firefly_reports.reports.spec import ReportContext, ReportData, SourceData
 
 
 def build_cumulative_cashflow(
@@ -65,3 +66,9 @@ def build_cumulative_cashflow(
         "peak_month": peak_month,
         "low_month": low_month,
     }
+
+
+def from_source(src: SourceData, ctx: ReportContext, built: Mapping[str, ReportData]) -> ReportData:
+    """Registry adapter: build this report from the fetched data and the run context."""
+    p, o = ctx.period, ctx.options
+    return build_cumulative_cashflow(src.transactions, p.start, p.end, o.owner, o.currency)

@@ -1,12 +1,14 @@
 """Builder of the income_concentration report (pure: no I/O, Decimal money)."""
 
 from collections import defaultdict
+from collections.abc import Mapping
 from datetime import date
 from decimal import Decimal
 from typing import Any
 
 from firefly_reports import i18n
 from firefly_reports.reports._money import _d
+from firefly_reports.reports.spec import ReportContext, ReportData, SourceData
 
 
 def build_income_concentration(
@@ -60,3 +62,9 @@ def build_income_concentration(
         "total_income": total_income,
         "client_count": len(rows),
     }
+
+
+def from_source(src: SourceData, ctx: ReportContext, built: Mapping[str, ReportData]) -> ReportData:
+    """Registry adapter: build this report from the fetched data and the run context."""
+    p, o = ctx.period, ctx.options
+    return build_income_concentration(src.transactions, p.start, p.end, o.owner, o.currency)
