@@ -5,19 +5,18 @@ from decimal import Decimal
 from typing import Any
 
 from firefly_reports import i18n
-from firefly_reports.i18n import T
 
 
 def fmt_date(d: Any) -> str:
     """Locale-aware date format: DD/MM/YYYY for Italian, ISO YYYY-MM-DD otherwise."""
     if not hasattr(d, "strftime"):
         return str(d)
-    fmt = "%d/%m/%Y" if i18n.CURRENT_LANG == "it" else "%Y-%m-%d"
+    fmt = "%d/%m/%Y" if i18n.current().lang == "it" else "%Y-%m-%d"
     return str(d.strftime(fmt))
 
 
 def period_str(start: dt_date, end: dt_date) -> str:
-    months_it = T.get("months", {})
+    months_it = i18n.current().section("months")
     if start.year == end.year and start.month == end.month:
         m_key = f"{start.month:02d}"
         month_label = months_it.get(m_key, str(start.month))
@@ -28,14 +27,14 @@ def period_str(start: dt_date, end: dt_date) -> str:
 def fmt_num(value: Decimal, show_sym: bool = False, sym: str = "€", parens_neg: bool = True) -> str:
     """
     Accounting number format:
-      - thousands/decimal separators follow i18n.CURRENT_LANG
+      - thousands/decimal separators follow i18n.current().lang
         (it: "1.234,56" — other languages: "1,234.56")
       - negative values in parentheses
       - optional currency symbol
     """
     abs_val = abs(value)
     s = f"{abs_val:,.2f}"
-    if i18n.CURRENT_LANG == "it":
+    if i18n.current().lang == "it":
         s = s.replace(",", "X").replace(".", ",").replace("X", ".")
     if show_sym:
         s = f"{sym} {s}"

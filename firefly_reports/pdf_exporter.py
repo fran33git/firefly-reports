@@ -23,7 +23,7 @@ from reportlab.platypus import (
 )
 
 from firefly_reports import i18n
-from firefly_reports.i18n import T, t
+from firefly_reports.i18n import t
 from firefly_reports.render.charts import (
     create_area_chart,
     create_bar_chart,
@@ -220,7 +220,7 @@ def _render_legacy_cash_flow(data: dict[str, Any], output_path: str) -> None:
     story.append(PageBreak())
     story += title_block(t("titles.cash_flow"), owner, period, t("pdf.section_monthly"), st)
 
-    months_it = T.get("months", {})
+    months_it = i18n.current().section("months")
 
     CW3 = [6.5 * cm, 3.5 * cm, 3.5 * cm, 4.4 * cm]
 
@@ -320,7 +320,7 @@ def _render_legacy_income_expense(data: dict[str, Any], output_path: str) -> Non
         [
             Paragraph(t("common.total_income"), st["total_l"]),
             Paragraph(fmt_num(data["total_income"], show_sym=True, sym=sym), st["total_r"]),
-            Paragraph("100,0 %" if i18n.CURRENT_LANG == "it" else "100.0 %", st["total_r"]),
+            Paragraph("100,0 %" if i18n.current().lang == "it" else "100.0 %", st["total_r"]),
         ]
     )
     t_idx = len(rows) - 1
@@ -355,7 +355,7 @@ def _render_legacy_income_expense(data: dict[str, Any], output_path: str) -> Non
         [
             Paragraph(t("common.total_expense"), st["total_l"]),
             Paragraph(fmt_num(data["total_expense"], show_sym=True, sym=sym), st["total_r"]),
-            Paragraph("100,0 %" if i18n.CURRENT_LANG == "it" else "100.0 %", st["total_r"]),
+            Paragraph("100,0 %" if i18n.current().lang == "it" else "100.0 %", st["total_r"]),
         ]
     )
     t2_idx = len(rows2) - 1
@@ -482,7 +482,7 @@ def _render_legacy_transaction_register(data: dict[str, Any], output_path: str) 
         if month_key != current_month:
             current_month = month_key
             y, m = month_key.split("-")
-            months_it = T.get("months", {})
+            months_it = i18n.current().section("months")
             month_label = f"{months_it.get(m, m)} {y}".upper()
             rows.append(
                 [
@@ -1177,7 +1177,7 @@ def _render_legacy_tax_summary(data: dict[str, Any], output_path: str) -> None:
         [
             Paragraph(t("common.total_income"), st["total_l"]),
             Paragraph(fmt_num(total_in, show_sym=True, sym=sym), st["total_r"]),
-            Paragraph("100,0 %" if i18n.CURRENT_LANG == "it" else "100.0 %", st["total_r"]),
+            Paragraph("100,0 %" if i18n.current().lang == "it" else "100.0 %", st["total_r"]),
         ]
     )
     story.append(accounting_table(rows_c, CW2, total_rows=[len(rows_c) - 1]))
@@ -1314,7 +1314,7 @@ def _render_legacy_expense_trend(data: dict[str, Any], output_path: str) -> None
         st,
     )
 
-    months_abbr = T.get("months_abbr", {})
+    months_abbr = i18n.current().section("months_abbr")
 
     def _mk_label(mk):
         y, m = mk.split("-")
@@ -1586,7 +1586,7 @@ def _render_legacy_tagged_report(data: dict[str, Any], output_path: str) -> None
             [
                 Paragraph(t("common.total_income"), st["total_l"]),
                 Paragraph(fmt_num(data["total_in"], show_sym=True, sym=sym), st["total_r"]),
-                Paragraph("100,0 %" if i18n.CURRENT_LANG == "it" else "100.0 %", st["total_r"]),
+                Paragraph("100,0 %" if i18n.current().lang == "it" else "100.0 %", st["total_r"]),
             ]
         )
         story.append(accounting_table(rows_i, CW2, total_rows=[len(rows_i) - 1]))
@@ -1615,7 +1615,7 @@ def _render_legacy_tagged_report(data: dict[str, Any], output_path: str) -> None
             [
                 Paragraph(t("common.total_expense"), st["total_l"]),
                 Paragraph(fmt_num(data["total_out"], show_sym=True, sym=sym), st["total_r"]),
-                Paragraph("100,0 %" if i18n.CURRENT_LANG == "it" else "100.0 %", st["total_r"]),
+                Paragraph("100,0 %" if i18n.current().lang == "it" else "100.0 %", st["total_r"]),
             ]
         )
         story.append(accounting_table(rows_e, CW2, total_rows=[len(rows_e) - 1]))
@@ -2123,7 +2123,7 @@ def _render_legacy_kpi_scorecard(data: dict[str, Any], output_path: str) -> None
         story.append(Spacer(1, 0.6 * cm))
         story.append(Paragraph(t("pdf.trend_monthly"), st["section"]))
 
-        months_abbr = T.get("months_abbr", {})
+        months_abbr = i18n.current().section("months_abbr")
         CW_t = [3.5 * cm, 3.5 * cm, 3.5 * cm, 3.5 * cm, 3.9 * cm]
         trend_hdr = [
             [
@@ -2429,7 +2429,7 @@ def _render_legacy_income_concentration(data: dict[str, Any], output_path: str) 
         [
             Paragraph(t("common.total"), st["total_l"]),
             Paragraph(fmt_num(data["total_income"], show_sym=True, sym=sym), st["total_r"]),
-            Paragraph("100,0 %" if i18n.CURRENT_LANG == "it" else "100.0 %", st["total_r"]),
+            Paragraph("100,0 %" if i18n.current().lang == "it" else "100.0 %", st["total_r"]),
             Paragraph("", st["cell_r"]),
             Paragraph("", st["cell_r"]),
         ]

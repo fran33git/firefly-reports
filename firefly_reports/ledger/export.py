@@ -145,7 +145,7 @@ def render_main_beancount(
         f'option "title" "{t("ledger.init_title")}"',
         *(f'option "operating_currency" "{cur}"' for cur in operating),
         # Beancount rejects unknown options; Fava reads its own settings from custom directives.
-        f'{FAVA_OPTION_DATE} custom "fava-option" "language" "{i18n.CURRENT_LANG}"',
+        f'{FAVA_OPTION_DATE} custom "fava-option" "language" "{i18n.current().lang}"',
         "",
         *(f'include "{name}"' for name in generated),
         f'include "{INVESTMENTS_FILE}"',

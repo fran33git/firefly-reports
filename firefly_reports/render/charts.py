@@ -13,7 +13,7 @@ from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter
 
 from firefly_reports import i18n
-from firefly_reports.i18n import T, t
+from firefly_reports.i18n import t
 
 # ─────────────────────────────────────────────
 # Shared visual identity
@@ -53,14 +53,14 @@ def _compact(value: float) -> str:
         s = f"{a / 1000:.1f}".rstrip("0").rstrip(".") + "k"
     else:
         s = f"{a:.0f}"
-    if i18n.CURRENT_LANG == "it":
+    if i18n.current().lang == "it":
         s = s.replace(".", ",")
     return sign + s
 
 
 def _fmt_pct(pct: float) -> str:
     s = f"{pct:.1f}"
-    if i18n.CURRENT_LANG == "it":
+    if i18n.current().lang == "it":
         s = s.replace(".", ",")
     return f"{s}%"
 
@@ -72,7 +72,7 @@ def _short_months(labels: list[str]) -> list[str]:
     several years get a year suffix ("Jan '25"). Non-month labels are
     returned unchanged.
     """
-    months = T.get("months", {})
+    months = i18n.current().section("months")
     parsed: list[tuple[str, str]] = []
     for lab in labels:
         s = str(lab)

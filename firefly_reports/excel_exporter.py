@@ -11,7 +11,8 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font
 from openpyxl.utils import get_column_letter
 
-from firefly_reports.i18n import T, t
+from firefly_reports import i18n
+from firefly_reports.i18n import t
 from firefly_reports.render.fmt import flatten_rows, fmt_date, period_str
 from firefly_reports.render.xlsx.layout import (
     data_row,
@@ -78,7 +79,7 @@ def _build_cash_flow_sheet(wb: Workbook, data: dict):
 
     # ── Monthly
     if len(data["by_month"]) > 1:
-        months_it = T.get("months", {})
+        months_it = i18n.current().section("months")
         ws.merge_cells(f"A{row}:H{row}")
         c = ws.cell(row=row, column=1, value=t("excel.section_monthly"))
         c.font = Font(name="Calibri", bold=True, size=9, color=LIGHT_HEX)
@@ -222,7 +223,7 @@ def _build_transaction_register_sheet(wb: Workbook, data: dict):
     row = header_row(ws, row, headers, col_widths=col_widths)
 
     current_month = None
-    months_it = T.get("months", {})
+    months_it = i18n.current().section("months")
 
     flat_rows = flatten_rows(data["rows"])
     for r in flat_rows:
@@ -545,7 +546,7 @@ def _build_expense_trend_sheet(wb: Workbook, data: dict):
 
     row = title_block(ws, t("titles.expense_trend"), data["owner"], period)
 
-    months_abbr = T.get("months_abbr", {})
+    months_abbr = i18n.current().section("months_abbr")
 
     def _mk(mk):
         y, m = mk.split("-")
@@ -1065,7 +1066,7 @@ def _build_kpi_sheet(wb, data):
     ws.row_dimensions[row].height = 20
     row += 1
 
-    months_abbr = T.get("months_abbr", {})
+    months_abbr = i18n.current().section("months_abbr")
 
     row = header_row(
         ws,
