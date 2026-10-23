@@ -57,7 +57,6 @@ ignore = ["E501"]
 
 [tool.ruff.lint.per-file-ignores]
 "firefly_reports/reports/*/pdf.py" = ["N806"]
-"firefly_reports/excel_exporter.py" = ["E701"]
 
 [tool.mypy]
 python_version = "3.11"
@@ -70,7 +69,7 @@ module = ["reportlab.*", "openpyxl.*", "matplotlib.*", "dateutil.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = ["firefly_reports.reports.*.pdf", "firefly_reports.pdf_exporter", "firefly_reports.excel_exporter", "firefly_reports.demo.*", "firefly_reports.main", "firefly_reports.render.pdf.*", "firefly_reports.render.xlsx.*"]
+module = ["firefly_reports.reports.*.pdf", "firefly_reports.reports.*.xlsx", "firefly_reports.pdf_exporter", "firefly_reports.excel_exporter", "firefly_reports.demo.*", "firefly_reports.main", "firefly_reports.render.pdf.*", "firefly_reports.render.xlsx.*"]
 disallow_untyped_defs = false
 warn_return_any = false
 
