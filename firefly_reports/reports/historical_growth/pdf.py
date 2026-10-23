@@ -74,7 +74,7 @@ def _render_modern_historical_report(data: dict[str, Any], output_path: str) -> 
         for i, y in enumerate(years):
             val = y.get(key, Decimal("0"))
             color = "#27ae60" if val >= 0 else "#c0392b"
-            # In data_processor, YoY growth is 0 for the first year
+            # In the builder, YoY growth is 0 for the first year
             val_str = f"<font color='{color}'>{val:+.1f}%</font>" if i > 0 else "—"
             row.append(Paragraph(val_str, st["cell_r"]))
         return row

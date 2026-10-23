@@ -1,6 +1,6 @@
 """Translatable strings used by the ledger writers.
 
-Writers stay free of global i18n state: ``main.py`` builds a ``LedgerLabels``
+Writers stay free of global i18n state: the CLI builds a ``LedgerLabels``
 (from the active language plus optional overrides in the mapping file) and
 hands it to them.
 """

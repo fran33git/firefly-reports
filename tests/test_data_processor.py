@@ -1,4 +1,4 @@
-"""Unit tests for data_processor build_* functions."""
+"""Unit tests for the report builders (build_* functions)."""
 
 from datetime import date
 from decimal import Decimal
