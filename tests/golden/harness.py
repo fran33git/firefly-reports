@@ -46,8 +46,9 @@ from firefly_reports.data_processor import (
     build_yoy_comparison,
 )
 from firefly_reports.demo import data as demo
-from firefly_reports.demo.__main__ import main as demo_main
 from firefly_reports.demo.client import DemoClient
+from firefly_reports.reports import registry
+from firefly_reports.reports.workbook import write_workbook
 
 DEMO_CLOCK = datetime(2026, 1, 15, 12, 0)
 YEAR = 2025
@@ -153,16 +154,59 @@ def build_demo_suite(lang: str) -> dict[str, Any]:
         i18n.load("en")
 
 
+# The 1.x demo rendered these 28 PDFs (note: both summary and audit_log, and its own names).
+DEMO_PDFS = (
+    ("cash_flow", "cash_flow_{tag}.pdf"),
+    ("income_expense", "income_expense_{tag}.pdf"),
+    ("transaction_register", "transaction_register_{tag}.pdf"),
+    ("net_worth", "net_worth_{tag}.pdf"),
+    ("tax_summary", "tax_summary_{year}.pdf"),
+    ("expense_trend", "expense_trend_{tag}.pdf"),
+    ("tagged", "tagged_tax_{tag}.pdf"),
+    ("budget_vs_actual", "budget_vs_actual_{tag}.pdf"),
+    ("bills", "bills_{tag}.pdf"),
+    ("savings_goals", "savings_goals_{tag}.pdf"),
+    ("liabilities", "liabilities_{tag}.pdf"),
+    ("kpi_scorecard", "kpi_scorecard_{tag}.pdf"),
+    ("yoy", "yoy_comparison_{prev}_vs_{year}.pdf"),
+    ("cumulative_cashflow", "cumulative_cashflow_{tag}.pdf"),
+    ("income_concentration", "income_concentration_{tag}.pdf"),
+    ("dashboard_income_expense", "dashboard_income_expense_{tag}.pdf"),
+    ("dashboard_kpi_trend", "dashboard_kpi_trend_{tag}.pdf"),
+    ("audit_log", "audit_log_{tag}.pdf"),
+    ("summary", "summary_{tag}.pdf"),
+    ("journal", "journal_{tag}.pdf"),
+    ("budget_forecast", "budget_forecast_{tag}.pdf"),
+    ("category_ledger", "ledger_category_{tag}.pdf"),
+    ("payee_ledger", "ledger_payee_{tag}.pdf"),
+    ("linkage_audit", "audit_linkage_{tag}.pdf"),
+    ("all_tags", "ledger_all_tags_{tag}.pdf"),
+    ("historical_growth", "historical_growth_{tag}.pdf"),
+    ("liquidity_forecast", "liquidity_forecast_{tag}.pdf"),
+    ("account_statements", "account_statements_{tag}.pdf"),
+)
+
+
 def render_demo_suite(out_dir: Path, lang: str) -> list[Path]:
-    """Run the demo (all 28 PDFs + the workbook) with the clock frozen; return the files."""
-    argv = ["demo", "--out", str(out_dir), "--lang", lang, "--year", str(YEAR)]
-    old_argv = sys.argv
-    sys.argv = argv
+    """Render every report's PDF (28) plus the workbook from the builder suite, clock frozen.
+
+    Independent of the CLI: it pins the renderers themselves, whatever the ``demo`` command
+    or the pipeline decide to produce.
+    """
+    suite = build_demo_suite(lang)
+    tag = f"{YEAR}-01-01__{YEAR}-12-31"
+    names = {"tag": tag, "year": YEAR, "prev": YEAR - 1}
+    i18n.load(lang)
     try:
-        with clock.frozen(DEMO_CLOCK), contextlib.redirect_stdout(io.StringIO()):
-            demo_main()
+        with clock.frozen(DEMO_CLOCK):
+            for key, template in DEMO_PDFS:
+                spec = registry.get(key)
+                data = spec.build(None, None, suite) if spec.view else suite[key]  # type: ignore[arg-type]
+                assert spec.pdf is not None
+                spec.pdf(data, str(out_dir / template.format(**names)))
+            sheets = [(spec.sheet, suite.get(spec.key)) for spec in registry.REPORTS if spec.sheet]
+            write_workbook(sheets, out_dir / f"firefly_reports_complete_{tag}.xlsx")
     finally:
-        sys.argv = old_argv
         i18n.load("en")
     return sorted(out_dir.iterdir())
 

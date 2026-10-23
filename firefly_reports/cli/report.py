@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import logging
 from collections.abc import Mapping
+from pathlib import Path
 from typing import Any
 
 from firefly_reports import api
@@ -16,6 +17,8 @@ from firefly_reports.cli._options import (
     resolve_report_settings,
 )
 from firefly_reports.i18n import t
+from firefly_reports.reports.options import Period, ReportOptions
+from firefly_reports.reports.spec import FireflySource
 
 EXAMPLES = """examples:
   firefly-reports report --year 2025 --owner "Mario Rossi"
@@ -125,10 +128,23 @@ def run_report(args: argparse.Namespace, config: Mapping[str, Any], env: Mapping
         log.warning(msg)
         print(f"[*] {msg}")
 
+    print(f"[*] Connecting to {url}")
+    client = make_client(url, token, log, settings.link_delay)
+    return execute(client, period, options, out_dir, debug=settings.debug)
+
+
+def execute(
+    client: FireflySource,
+    period: Period,
+    options: ReportOptions,
+    out_dir: Path,
+    *,
+    debug: bool,
+) -> int:
+    """Fetch, build and write one run, printing the 1.x console output."""
+    log = logging.getLogger("firefly_reports")
     progress = ProgressPrinter()
     try:
-        print(f"[*] Connecting to {url}")
-        client = make_client(url, token, log, settings.link_delay)
         data = api.fetch_data(client, period, options, progress=progress)
 
         print("\n[*] Processing data...")
@@ -154,13 +170,13 @@ def run_report(args: argparse.Namespace, config: Mapping[str, Any], env: Mapping
 
         result = api.write_reports(built, period, options, out_dir, progress=progress)
     except Exception:
-        logging.getLogger("firefly_reports").exception("Fatal error")
+        log.exception("Fatal error")
         raise
 
     if result.failures:
         files = ", ".join(f.filename for f in result.failures)
         print(f"\n{t('cli.files_failed').format(count=len(result.failures), files=files)}")
-        if not settings.debug:
+        if not debug:
             print(t("cli.rerun_debug"))
         return 3
     print(f"\n[*] All reports written to {out_dir.resolve()}")

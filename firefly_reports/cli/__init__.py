@@ -110,7 +110,7 @@ def _dispatch(args: argparse.Namespace, config: Mapping[str, Any], env: Mapping[
         run_init()
         return 0
     if args.command == "demo":
-        return run_demo(args)
+        return run_demo(args, config, env)
     if args.command == "export":
 
         def client() -> Any:
