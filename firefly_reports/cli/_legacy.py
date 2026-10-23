@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+import re
 import shlex
 from collections.abc import Collection, Sequence
 
@@ -48,26 +50,56 @@ def rewrite_legacy(
     return ["report", *args], True
 
 
+def _is_secret_option(option: str) -> bool:
+    """``--token`` or any prefix of it (argparse accepts unique abbreviations such as ``--tok``)."""
+    return (
+        len(option) > 2
+        and option.startswith("--")
+        and any(secret.startswith(option) for secret in SECRET_OPTIONS)
+    )
+
+
 def redact(argv: Sequence[str]) -> list[str]:
     """Copy of *argv* with the values of secret options replaced by ``***``."""
     out: list[str] = []
     skip = False
-    for token in argv:
+    for arg in argv:
         if skip:
-            out.append("***")
+            out.append(MASK)
             skip = False
-        elif token in SECRET_OPTIONS:
-            out.append(token)
+        elif "=" not in arg and _is_secret_option(arg):
+            out.append(arg)
             skip = True
-        elif any(token.startswith(f"{opt}=") for opt in SECRET_OPTIONS):
-            out.extend([token.split("=", 1)[0], "***"])
+        elif "=" in arg and _is_secret_option(arg.split("=", 1)[0]):
+            out.extend([arg.split("=", 1)[0], MASK])
         else:
-            out.append(token)
+            out.append(arg)
     return out
 
 
-def command_hint(argv: Sequence[str]) -> str:
-    """The equivalent current-form command line, secrets redacted."""
-    tokens = ["firefly-reports", "report", *redact(argv)]
-    # the placeholder stays unquoted so the hint reads `--token ***`
-    return " ".join(t if t == "***" else shlex.quote(t) for t in tokens)
+_USERINFO = re.compile(r"(://)[^/@\s]+@")
+
+
+MASK = "***"
+_CMD_SPECIAL = re.compile(r'[\s"&|<>^()%]')
+
+
+def _quote(part: str, windows: bool) -> str:
+    if part == MASK:  # the placeholder stays unquoted so the hint reads `--token ***`
+        return part
+    if not windows:
+        return shlex.quote(part)
+    if part and not _CMD_SPECIAL.search(part):
+        return part
+    return '"' + part.replace('"', '\\"') + '"'  # cmd.exe / CommandLineToArgvW convention
+
+
+def command_hint(argv: Sequence[str], *, windows: bool | None = None) -> str:
+    """The equivalent current-form command line for the console it was typed in.
+
+    Secrets are masked: the value of ``--token`` (and its abbreviations) and any
+    ``user:password@`` part of a URL. Quoting follows the platform (``cmd.exe`` on Windows).
+    """
+    windows = os.name == "nt" if windows is None else windows
+    masked = [_USERINFO.sub(r"\1***@", token) for token in redact(argv)]
+    return " ".join(_quote(t, windows) for t in ["firefly-reports", "report", *masked])
