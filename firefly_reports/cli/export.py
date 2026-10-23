@@ -51,8 +51,12 @@ def add_export_parser(sub: Any, common: argparse.ArgumentParser) -> None:
     )
     exp.add_argument("format", choices=FORMATS, help="Output format")
     sup = argparse.SUPPRESS
-    exp.add_argument("--start", default=sup, help="Start date (YYYY-MM-DD), default: all")
-    exp.add_argument("--end", default=sup, help="End date (YYYY-MM-DD), default: all")
+    exp.add_argument(
+        "--start", default=sup, metavar="YYYY-MM-DD", help="Start date (YYYY-MM-DD), default: all"
+    )
+    exp.add_argument(
+        "--end", default=sup, metavar="YYYY-MM-DD", help="End date (YYYY-MM-DD), default: all"
+    )
     exp.add_argument(
         "--out",
         default=sup,
@@ -143,7 +147,7 @@ def run_export_command(
 
     *make_client* resolves credentials and builds the API client, *parse_date*
     parses a ``YYYY-MM-DD`` flag (exiting with a message on error). Both are
-    injected by ``main.py`` so this module does not import it.
+    injected by ``cli/__init__.py`` so this module does not import it.
     """
     if (args.append or args.overwrite) and (not args.scaffold or (args.append and args.overwrite)):
         print(f"Error: {t('ledger.err_scaffold_flags')}", file=sys.stderr)
