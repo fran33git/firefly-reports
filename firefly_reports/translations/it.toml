@@ -498,3 +498,10 @@ err_start_after_end = "--start ({start}) non può essere successivo a --end ({en
 warn_orphan_files  = "Non prodotti in questo run e lasciati intatti (eliminali se obsoleti): {files}"
 warn_mapping_root  = "accounts: '{name}' ({type}) è mappato su {account}, la cui radice differisce da quella prevista per questo tipo di conto; il mapping viene mantenuto, ma verificalo."
 wrote_files        = "Scritte {count} transazioni in {files} file in {path}"
+
+[errors]
+invalid_year           = "anno non valido '{year}' (atteso es. 2025)"
+year_out_of_range      = "anno non valido '{year}' (atteso 1900-2100)"
+invalid_fiscal_start   = "inizio anno fiscale non valido '{value}' (atteso MM-GG)"
+fiscal_start_not_leap  = "l'inizio anno fiscale '{value}' non è valido per l'anno {year} (02-29 richiede un anno bisestile)"
+start_after_end        = "l'inizio ({start}) non può essere successivo alla fine ({end})"
