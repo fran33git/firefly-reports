@@ -4,42 +4,53 @@ Guidance for AI coding agents working in this repository.
 
 ## Project overview
 
-**firefly-reports** generates 26 financial reports (PDF + Excel) from a [Firefly III](https://www.firefly-iii.org/) instance, targeted at individuals, freelancers and small businesses who want a complete annual financial overview.
+**firefly-reports** generates 26 financial reports (PDF + Excel) from a [Firefly III](https://www.firefly-iii.org/) instance, plus a Beancount ledger export, for individuals, freelancers and small businesses who want a complete annual financial overview.
 
-- Language: Python >= 3.11
+- Language: Python >= 3.11 (CI runs 3.11 and 3.12)
 - License: GPL-3.0-or-later
 - Repository: https://github.com/fran33git/firefly-reports
-- Packaging: setuptools (`pyproject.toml`); dependencies also pinned in `firefly_reports/requirements.txt` (source list in `requirements.in`)
+- Packaging: setuptools (`pyproject.toml`); distribution `firefly-iii-reports`, import package `firefly_reports`, command `firefly-reports`. Dependencies are locked in `firefly_reports/requirements.txt` (pip-compile from `requirements.in`, caps on `numpy` and `contourpy` for Python 3.11)
 - Runtime dependencies: `requests`, `reportlab` (PDF), `openpyxl` (Excel), `matplotlib` (charts), `python-dateutil`, `python-dotenv`, `pyyaml` (ledger mapping). Optional extra `beancount` (only for `--validate`)
 
 ## Architecture
 
-The pipeline is strictly linear: **API → processor → exporters**.
+The pipeline is strictly linear: **fetch -> build -> write**, driven by a registry of report packages.
 
 ```
-firefly_client.py  →  data_processor.py  →  pdf_exporter.py
-                                          →  excel_exporter.py
+firefly_client.py -> reports/fetch.py -> reports/<key>/build.py -> reports/<key>/pdf.py
+                                                              -> reports/<key>/xlsx.py
 ```
 
-All modules live in `firefly_reports/` and are imported as package-qualified absolute imports (e.g. `from firefly_reports.data_processor import ...`). pytest resolves them via `pythonpath = ["."]` in `pyproject.toml`.
+Everything lives in `firefly_reports/` and is imported with package-qualified absolute imports (`from firefly_reports.reports.options import Period`). pytest resolves them through `pythonpath = ["."]`.
 
-| Module | Role |
+| Package / module | Role |
 |---|---|
-| `firefly_client.py` | `FireflyClient` wraps the Firefly III REST API; `_get_paginated()` handles pagination; `get_transactions()` flattens nested splits into a flat list of dicts; `get_about()`/`get_about_user()` fetch instance info for the `summary` report |
-| `data_processor.py` | 26 `build_*` functions plus `apply_global_filters()`, each taking flat transaction/account/budget/bills data and returning a plain dict ready for rendering. All monetary values are `Decimal` (2 dp) via `_d()`. Zero I/O. |
-| `pdf_exporter.py` | 28 `render_*_pdf(data, path)` functions using ReportLab (26 matching `build_*` + 2 dashboard variants). Colour constants and `_make_header_footer()` at the top of the file. |
-| `excel_exporter.py` | `render_all_xlsx()` (3 sheets, legacy) and `render_all_xlsx_full()` (16 core report sheets + Summary, used by `main.py` and `demo.py`; Account Statements contributes one sheet per asset account) |
-| `chart_engine.py` | matplotlib (Agg backend) chart generators returning `io.BytesIO` PNG buffers |
-| `main.py` | CLI entry point (installed as `firefly-reports`; from source `python -m firefly_reports.main ...`); orchestrates fetch → process → export. Subcommand `firefly-reports init` runs an interactive wizard that creates `firefly-reports.toml` |
-| `demo.py` | Exercises all 26 report types using inline English mock data (`TXN_2025`, `TXN_2024`, `ACCOUNTS`, `LIABILITIES`, `BUDGETS`, `BILLS`, `PIGGY_BANKS`, `TRANSACTION_LINKS`) — no Firefly III needed. Writes to `./output` by default (override with `--out`); full year via `--year YYYY` (default 2025); report language selectable with `--lang en\|it` (default `en`) |
-| `config.py` | Loads `./firefly-reports.toml` (cwd) via `tomllib`; returns `{}` if missing |
-| `i18n.py` | Loads `firefly_reports/translations/{lang}.toml` into a module-level `T` dict; `t("pdf.category")` accessor falls back to `en`, then returns the key itself |
-| `ledger/` | Plain-text-accounting export (`firefly-reports export beancount`): `convert.py` (Firefly splits → neutral `model.py`, pure), `accounts.py` (normalisation/collisions), `mapping.py` (YAML mapping), `cli.py` (`export` parser + runner), `scaffold.py` (mapping-file draft), `labels.py` (i18n strings), `writers/` (`LedgerWriter` protocol, `BeancountWriter`, `atomic_write`), `validate.py` (optional `bean-check`), `export.py` (orchestration, `--init`). A new format = a new writer only. Same rules: `Decimal` only, no network outside `firefly_client.py` |
-| `translations/` | `en.toml`, `it.toml` — output languages English and Italian |
+| `cli/` | The only place with `argparse`, `print`, `input`, `sys.exit`, `.env` and `./firefly-reports.toml`. `__init__.main(argv) -> int` and `build_parser()`; subcommands `report.py`, `export.py` (Beancount), `init.py`, `demo.py`; `_options.py` (credentials, dates, settings precedence), `_console.py` (progress lines, debug log), `_legacy.py` (the 1.x form without a subcommand), `config.py` |
+| `api.py` | Provisional library facade: `connect`, `fetch_data`, `build_reports`, `write_reports`, `generate_reports`, `available_reports`. The CLI consumes it. Never prints or exits |
+| `reports/` | `registry.py` (`REPORTS`: every `ReportSpec` in canonical order), `fetch.py` (`fetch_source_data`), `pipeline.py` (`build_all`, `plan_outputs`, `write_outputs`), `workbook.py`, `spec.py` (`ReportSpec`, `ReportContext`, `SourceData`, `FireflySource`), `options.py` (`Period`, `GlobalFilters`, `ReportOptions`), `events.py` (progress events), `filters.py`, `_money.py` (`_d`), `_labels.py` |
+| `reports/<key>/` | One package per report (26 reports + the two dashboards `dashboard_income_expense` and `dashboard_kpi_trend`): `build.py` (pure, `Decimal`, `from_source` adapter), `pdf.py` (ReportLab), `xlsx.py` (openpyxl sheet, `write_sheet`) and `__init__.py` with `SPEC` |
+| `render/` | What many reports share and that knows nothing about reports: `fmt.py` (number/date/period formats), `charts.py` (matplotlib object-oriented API, no `pyplot`), `pdf/` (palette, styles, page, tables, widgets), `xlsx/` (styles, layout) |
+| `ledger/` | Plain-text-accounting export (`firefly-reports export beancount`): `convert.py` (Firefly splits -> neutral `model.py`, pure), `accounts.py`, `mapping.py` (YAML mapping), `mapfile.py` (safe textual edits of the mapping), `scaffold.py` (mapping draft), `labels.py` (i18n strings), `writers/` (`LedgerWriter` protocol, `BeancountWriter`, `atomic_write`), `validate.py` (optional `bean-check`), `export.py` (orchestration, `--init`) |
+| `firefly_client.py` | `FireflyClient` wraps the Firefly III REST API; the only module (with `api.py` and `cli/`) that imports `requests` |
+| `i18n.py` | `Translator` (frozen), process default set by `load(lang)`, per-thread/task override `using(lang)` (a `ContextVar`), `current()`, `t("pdf.category")` (falls back to `en`, then to the key) |
+| `clock.py` | `now()`, `today()`, `frozen(at)`: the only way to read the time, so output can be deterministic |
+| `errors.py` | `FireflyReportsError` (`ConfigurationError`, `FireflyAPIError`, `ReportError`; `ledger.errors.LedgerError` derives from it): a translation key plus parameters, rendered lazily |
+| `demo/` | `data.py` (mock data), `client.py` (`DemoClient`, an offline `FireflySource`); `firefly-reports demo` runs the real pipeline on it |
+| `main.py`, `demo/__main__.py` | Deprecated shims (`python -m firefly_reports.main`, `python -m firefly_reports.demo`), removed in 3.0 |
+| `translations/` | `en.toml`, `it.toml` (output languages English and Italian): sections `[cli]`, `[errors]`, `[ledger]`, `[pdf]`, `[excel]` ... |
+
+The old modules `data_processor`, `pdf_exporter`, `excel_exporter`, `chart_engine` and `config` were removed in 2.0 (internal, replaced by the packages above).
+
+### Public surface and compatibility
+
+- **Stable (semver):** the command line: commands, flags, exit codes, config keys, environment variables and output file names.
+- **Provisional:** the names in `firefly_reports.__all__` (`api.py`). They may change in a minor release until declared stable.
+- **Internal:** everything else (`reports`, `render`, `cli`, `ledger`, `firefly_client`, `i18n`, `clock`, `demo`).
+- Deprecation: announce in release N.x (stderr warning for the CLI, `DeprecationWarning` for Python), keep for the rest of that major, remove in the next major. Deprecated in 2.0 and removed in 3.0: the command without a subcommand, the hidden root `--out/--start/--end`, `firefly_reports.main`, `python -m firefly_reports.demo`.
 
 ### Configuration precedence
 
-Token/URL come from CLI flags (`--url`, `--token`), env vars `FIREFLY_URL`/`FIREFLY_TOKEN`, a `.env` file, a `firefly-reports.toml` config file, or an interactive prompt. See `.env.example` and `docs/wiki/Configuration.md` for all keys (including `--tags`, `--all-tags`, `--years`, `--legacy-report`, `--lang`, `--no-pdf`/`--no-excel`). Note: the `audit_log` PDF is generated only when `--legacy-report` is active; the `summary` report takes its slot in standard mode.
+Token/URL come from CLI flags (`--url`, `--token`), env vars `FIREFLY_URL`/`FIREFLY_TOKEN`, a `.env` file, a `firefly-reports.toml` config file, or an interactive prompt. `cli/_options.resolve_report_settings` holds the precedence table for the other settings (CLI > config file > environment > default), pinned by `tests/cli/test_settings.py`. See `.env.example` and `docs/wiki/Configuration.md`.
 
 ### Transaction type semantics
 
@@ -50,90 +61,98 @@ Token/URL come from CLI flags (`--url`, `--token`), env vars `FIREFLY_URL`/`FIRE
 | `transfer` | Shown in the register, neutral for cash flow |
 | `opening balance` | Ignored in all reports |
 
+### Exit codes
+
+`0` success, `1` error (configuration, credentials, API, ledger), `2` usage error or a bare invocation with nothing to do, `3` the run finished but some files failed, `130` interrupted. Errors go to stderr.
+
 ## Build and test commands
 
-There is no compiled build step; it is a plain Python application.
+There is no compiled build step; it is a plain Python application. Use `python -m <tool>` for dev tools (the console scripts of a moved venv can have broken shebangs).
 
 ```bash
-# Setup (a .venv already exists at .venv/ in the repo root)
-pip install -e ".[dev]"          # or: pip install -r firefly_reports/requirements.txt
+# Setup (Python 3.11 venv in .venv; match the lock so goldens agree with CI)
+uv venv --python 3.11 .venv
+uv pip install --python .venv/bin/python -r firefly_reports/requirements.txt -e ".[dev,beancount]" pyinstaller
 pre-commit install
 
-# Run against a real instance (or use the installed `firefly-reports` command)
-python -m firefly_reports.main --url https://firefly.example.com \
-  --start 2025-01-01 --end 2025-12-31 --owner "Your Name" --out ./output
+# Run against a real instance
+python -m firefly_reports report --url https://firefly.example.com --year 2025 --owner "Your Name" --out ./output
+# Or with built-in sample data (no Firefly III needed)
+python -m firefly_reports demo --out ./output
 
-# Run with mock data (no Firefly III needed)
-python -m firefly_reports.demo --out ./output
-
-# Tests (no PYTHONPATH needed — pyproject.toml sets pythonpath = ["."])
-pytest tests/ -v
-pytest tests/ --cov=firefly_reports --cov-report=term-missing
-
-# Lint / type check / security
-ruff check firefly_reports/
-ruff format --check firefly_reports/
-mypy firefly_reports/
-bandit -r firefly_reports/ -l -ii --exclude firefly_reports/demo.py,firefly_reports/.venv
+# Local gate (all must pass before a commit)
+python -m pytest tests -q --cov=firefly_reports --cov-fail-under=90
+ruff check firefly_reports tests tools && ruff format --check firefly_reports tests tools
+python -m mypy firefly_reports
+python -m bandit -q -r firefly_reports -l -ii --exclude firefly_reports/.venv
+python tools/ab_snapshot.py compare "$TMPDIR/ab/baseline"   # only while refactoring output code
 pip-audit -r firefly_reports/requirements.txt
 
-# Exe packaging smoke test (PyInstaller build + --help, cp1252 and
-# translation-bundle probes). Run before touching the exe build config.
+# Exe packaging smoke test (PyInstaller build + probes). Run before touching the exe build config.
 ./tools/test-exe.sh
 ```
 
 ## Code style guidelines
 
-- Ruff: `line-length = 100`, target `py311`; lint rules `E, W, F, I, N, UP, B, SIM`; `E501` ignored. Per-file ignores exist for `pdf_exporter.py` (`N806`, `E701`) and `excel_exporter.py` (`E701`) — do not "fix" those violations there.
+- Ruff: `line-length = 100`, target `py311`; lint rules `E, W, F, I, N, UP, B, SIM`; `E501` ignored. The only per-file ignore is `N806` for `reports/*/pdf.py` (ReportLab layout code uses `W`, `H`, `COL_W`): do not "fix" those.
 - Ruff format is enforced in CI (`ruff format --check`).
-- mypy: `disallow_untyped_defs = true` globally, but relaxed for `pdf_exporter`, `excel_exporter`, `demo`, and `main`. Missing-import stubs ignored for `reportlab`, `openpyxl`, `matplotlib`, `dateutil`.
-- Use package-qualified absolute imports (`from firefly_reports.data_processor import ...`) — this is how `main.py`, `demo.py`, and the tests import each other.
-- Keep `data_processor.py` free of I/O: it only transforms dicts into dicts. Rendering lives exclusively in the exporters.
-- Monetary values are always `Decimal` (2 decimal places) produced via `_d()` in `data_processor.py` — never raw floats for money.
+- mypy is strict everywhere (`disallow_untyped_defs`, `warn_return_any`, no relaxed modules). Missing-import stubs ignored for `reportlab`, `openpyxl`, `matplotlib`, `dateutil`.
+- Use package-qualified absolute imports.
+- Monetary values are always `Decimal` (2 decimal places) produced via `_d()` (`reports/_money.py`) — never raw floats for money.
+- No 3.12-only syntax or APIs (the floor is 3.11).
+
+### Layering rules (enforced by `tests/test_architecture.py`)
+
+- Builders (`reports/*/build.py`, `_money`, `_labels`, `filters`, `options`, `spec`) do zero I/O: they import none of `reportlab`, `openpyxl`, `matplotlib`, `requests`, `os`, `pathlib`, `io`, `render`, `cli`.
+- `render/` imports neither `reports`, `api`, `cli` nor `ledger`; `ledger/` imports none of `reports`, `render`, `cli`, `api`.
+- `requests` is imported only by `firefly_client.py`, `api.py` and `cli/`. Nothing outside `cli/`, `main.py` and `demo/__main__.py` imports `cli`.
+- `print`, `input` and `sys.exit` live in `cli/` only (grandfathered: `ledger/export.py`).
+- No `importlib` / `__import__`: PyInstaller follows static imports only (the registry imports every report package explicitly).
 
 ## Testing instructions
 
-- Framework: pytest (with `pytest-cov`; CI enforces `--cov-fail-under=90`, `demo.py` excluded from coverage). Config in `pyproject.toml` (`testpaths = ["tests"]`).
-- Run from the repo root with plain pytest (no `PYTHONPATH` needed — `pyproject.toml` sets `pythonpath = ["."]`): `pytest tests/ -v`.
-- Tests must not require a live Firefly III instance: fixtures in `tests/conftest.py` derive from the mock data in `demo.py`, and HTTP calls are mocked with the `responses` library (see `tests/test_firefly_client.py`). An autouse fixture in `conftest.py` refuses every socket `connect()`, so a test that escapes its mock fails instead of reaching a real instance.
-- Ledger tests (`tests/test_ledger*.py`) use `tests/fixtures/firefly_transactions.json` (plus `firefly_account_types.json` for the account types and shapes it lacks); the `bean-check` integration tests are skipped unless `beancount` is installed (`pip install beancount`) — install it locally so they actually run.
-- `conftest.py` loads English translations once per session via `i18n.load("en")` — keep this autouse fixture when adding tests that touch rendered strings.
+- Framework: pytest (with `pytest-cov`; CI enforces `--cov-fail-under=90`). Config in `pyproject.toml` (`testpaths = ["tests"]`, marker `golden`).
+- Run from the repo root with plain pytest (`pythonpath = ["."]`): `python -m pytest tests -q`.
+- Tests must not require a live Firefly III instance: use `DemoClient` (`firefly_reports/demo/client.py`) or the `responses` library. An autouse fixture in `conftest.py` refuses every socket `connect()`, so a test that escapes its mock fails instead of reaching a real instance. `conftest.py` loads English translations per test (`i18n.load("en")`).
+- **Golden tests** (`tests/golden/`, marker `golden`) pin the output of the builders, the PDF documents (flowable tree, strings, page count), the workbook cells, the CLI pipeline stdout, the `--help` texts and the Beancount export. Regenerate on purpose with `FIREFLY_UPDATE_GOLDEN=1 python -m pytest -m golden` and name the reason in the commit message. They depend on the dependency versions of the lock: generate them in a venv built from `requirements.txt`.
+- `tools/ab_snapshot.py write|compare DIR` is a local-only byte-level A/B check of the PDFs (ReportLab `invariant` mode and a frozen clock) used while refactoring output code; it is not a test.
+- Ledger tests (`tests/test_ledger*.py`) use `tests/fixtures/firefly_transactions.json` (plus `firefly_account_types.json`); the `bean-check` integration tests need `beancount` (CI installs it; install it locally so they run).
+- `tests/test_packaging.py::test_wheel_contents` builds the wheel with `FIREFLY_BUILD_WHEEL=1`.
 
 ## Ledger export (Beancount)
 
-- Entry point: `firefly-reports export beancount` (parser and runner in `firefly_reports/ledger/cli.py`, thin adapter `main.cmd_export`; logic in `firefly_reports/ledger/`).
+- Entry point: `firefly-reports export beancount` (parser and runner in `firefly_reports/cli/export.py`; logic in `firefly_reports/ledger/`).
 - Layering is strict: `convert.py` (pure) -> `model.py` -> `writers/*` (pure, no `i18n` calls; they receive `LedgerLabels`). Only `export.py`, `validate.py`, `writers/base.atomic_write` and `mapping.load_ledger_config` do I/O.
 - A new output format = a new `LedgerWriter` (`extension`, `render`, `render_accounts`, `render_transactions`) plus a CLI choice; do not fork `convert.py`.
 - Layouts (`yearly` default, `single`) are built by `export.plan_files()`; everything is rendered before any file is written, unchanged files are not rewritten and orphans are only reported. `--scaffold` never writes ledger files.
-- Expense/income accounts come from the Firefly **category** by default (`--classify-by category`; `account` keeps the counterpart accounts). `convert._split_postings` picks the real account and the counterpart per split; the counterpart then lives in `payee` (on the posting when the splits of a group diverge). Transfers and any transaction with two real sides keep a `category` metadata instead of a category account.
-- Two passes: `--scaffold` drafts `beancount_map.yaml` (accounts, `categories:` with split counts). On an existing mapping it only prints the missing entries, unless `--append` (inserts them via `mapfile.append_entries`, `.bak` copy, falls back to printing when the layout is not safe) or `--overwrite` (regenerates after the user types the file name, timestamped copy, never when stdin is not interactive). The export is blocked (exit 1, nothing written) without a mapping file or with categories it does not list, unless `--allow-unmapped`.
-- Beyond the core postings the writer emits `^firefly-link-<id>` links (from `get_transaction_links(resolve_types=False)`), fixed-key metadata (`bill`, `reference`, `external_id`, `external_url`, `book_date`, `interest_date`), `iban` on `open` directives and always the `*` flag (reconciliation is not exported).
+- Expense/income accounts come from the Firefly **category** by default (`--classify-by category`; `account` keeps the counterpart accounts). `convert._split_postings` picks the real account and the counterpart per split; the counterpart then lives in `payee`. Transfers and any transaction with two real sides keep a `category` metadata instead of a category account.
+- Two passes: `--scaffold` drafts `beancount_map.yaml` (accounts, `categories:` with split counts). On an existing mapping it only prints the missing entries, unless `--append` (inserts them via `mapfile.append_entries`, `.bak` copy) or `--overwrite` (regenerates after the user types the file name, never when stdin is not interactive). The export is blocked (exit 1, nothing written) without a mapping file or with categories it does not list, unless `--allow-unmapped`.
+- Beyond the core postings the writer emits `^firefly-link-<id>` links, fixed-key metadata (`bill`, `reference`, `external_id`, `external_url`, `book_date`, `interest_date`), `iban` on `open` directives and always the `*` flag. `main.beancount` declares the output language with a Fava `custom "fava-option" "language"` directive (Beancount rejects unknown `option` lines).
 - Errors are `LedgerError(message_key, **params)` with keys in the `[ledger]` section of both translation files.
 - Output must stay deterministic (sorted, no dict/set order reliance) and `Decimal`-only; adding a transaction shape means extending `tests/fixtures/firefly_transactions.json`.
 - Docs: `docs/wiki/Beancount-Export.md` (user) and `docs/wiki/Ledger-Architecture.md` (developer); keep both and `beancount_map.example.yaml` in sync with behaviour changes.
 
 ## Adding a new report
 
-1. Add a `build_<name>()` function in `data_processor.py` — return a plain dict.
-2. Add `render_<name>_pdf()` in `pdf_exporter.py`.
-3. Add a sheet in `render_all_xlsx_full()` in `excel_exporter.py`.
-4. Wire it into `demo.py` with mock data to verify output before connecting to a real instance.
-5. Add/extend tests under `tests/`; update any user-facing strings in both `translations/en.toml` and `translations/it.toml`.
+1. Create `reports/<key>/` with `__init__.py` (the `SPEC`), `build.py` (a pure `build_<key>()` returning a plain dict, plus the `from_source(src, ctx, built)` adapter), `pdf.py` (`render_<key>_pdf(data, path, legacy=False)`) and, if it has a sheet, `xlsx.py` (`write_sheet(wb, data)`). Copy a small existing package (for example `reports/savings_goals/`).
+2. Add one line to `REPORTS` in `reports/registry.py` (the order is the Excel sheet order, then the other reports, then the views; a report must come after the ones it `depends_on`) and the package name to the import list there.
+3. Add the strings to **both** `translations/en.toml` and `translations/it.toml`.
+4. Add `tests/reports/test_<key>.py`; extend the demo data if the report needs a shape it lacks (`demo/data.py`); regenerate the goldens (`FIREFLY_UPDATE_GOLDEN=1 python -m pytest -m golden`) and review the diff.
+5. Update the user docs (`docs/wiki/Reports-Reference.md`, README, CHANGELOG).
 
 ## CI and deployment
 
-- GitHub Actions (`.github/workflows/ci.yml`) runs on pushes to `main`/`develop` and on all PRs: ruff lint + format check, mypy, pytest matrix on Python 3.11/3.12 with coverage threshold, `pip-audit`, and `bandit`.
+- GitHub Actions (`.github/workflows/ci.yml`) runs on pushes to `main`/`develop` and on all PRs: ruff lint + format check (package, tests, tools), mypy, pytest matrix on Python 3.11/3.12 with the coverage threshold, `pip-audit`, `bandit`, and the Windows exe smoke test (PyInstaller build from `firefly_reports/__main__.py`, translation, legacy-form, `--version` and offline `demo` probes).
 - Pre-commit hooks (`.pre-commit-config.yaml`) run ruff (with `--fix`), ruff-format, and mypy on commit.
 - Release workflow (`.github/workflows/release.yml`): pushing a tag `v*` checks the tag matches the package version, runs tests, builds the sdist/wheel, publishes to PyPI via OIDC Trusted Publishing (configure the Trusted Publisher on pypi.org), builds a standalone Windows executable with PyInstaller, and creates a GitHub Release. The PyPI distribution is named `firefly-iii-reports` (`firefly-reports` was already taken by an unrelated project); the import package stays `firefly_reports` and the CLI command `firefly-reports`.
 - Wiki sync workflow (`.github/workflows/wiki-sync.yml`): a push to `main` touching `docs/wiki/**` pushes the pages to the GitHub Wiki repository automatically.
 
 ## Security considerations
 
-- **Never commit tokens.** The Firefly III Personal Access Token comes from `FIREFLY_TOKEN`, `.env`, or `firefly-reports.toml`; `.env` is gitignored (see `.env.example`).
-- Bandit runs in CI; `demo.py` and `.venv` are excluded from the scan.
-- Dependencies are audited in CI with `pip-audit` against `firefly_reports/requirements.txt`.
+- **Never commit tokens.** The Firefly III Personal Access Token comes from `FIREFLY_TOKEN`, `.env`, or `firefly-reports.toml`; `.env` is gitignored (see `.env.example`). The deprecation hint of the legacy command form masks `--token`.
+- Bandit runs in CI (no exclusions except the Windows venv); `pip-audit` audits `firefly_reports/requirements.txt`.
 - Do not introduce network calls outside `firefly_client.py`; keep mock/test data offline.
 
 ## Documentation
 
-Full user/developer documentation mirrors the GitHub Wiki under `docs/wiki/` (Installation, Configuration, Reports Reference, Architecture, Testing, Troubleshooting, Adding a New Report, Contributing). `docs/wiki/` is the single source of truth — edit pages only there; the `wiki-sync` workflow pushes them to the GitHub Wiki automatically. Keep `README.md`, `CONTRIBUTING.md`, `CLAUDE.md`, and the wiki files in sync when changing workflows or report lists.
+Full user/developer documentation mirrors the GitHub Wiki under `docs/wiki/` (Installation, Configuration, Reports Reference, Architecture, Testing, Troubleshooting, Adding a New Report, Contributing). `docs/wiki/` is the single source of truth — edit pages only there; the `wiki-sync` workflow pushes them to the GitHub Wiki automatically. Keep `README.md`, `CONTRIBUTING.md`, `CLAUDE.md`, and the wiki files in sync when changing workflows or report lists. (The wiki pages still describe the 1.x module layout and commands until the documentation is migrated; the code and this file are authoritative.)
