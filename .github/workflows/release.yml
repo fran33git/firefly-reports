@@ -41,8 +41,8 @@ jobs:
           cache: "pip"
           cache-dependency-path: "firefly_reports/requirements.txt"
       - run: pip install -r firefly_reports/requirements.txt
-      - run: pip install pytest pytest-cov responses
-      - run: pytest tests/ --cov=firefly_reports --cov-fail-under=60 -q
+      - run: pip install pytest pytest-cov responses beancount
+      - run: pytest tests/ --cov=firefly_reports --cov-fail-under=90 -q
 
   build:
     name: Build sdist and wheel
@@ -85,21 +85,46 @@ jobs:
           python-version: "3.11"
       - run: pip install -r firefly_reports/requirements.txt pyinstaller
       - name: Build exe
-        run: pyinstaller --onefile --name firefly-reports --paths . --add-data "firefly_reports/translations;firefly_reports/translations" firefly_reports/main.py
+        run: pyinstaller --onefile --name firefly-reports --paths . --add-data "firefly_reports/translations;firefly_reports/translations" firefly_reports/__main__.py
       - name: Smoke test exe
         run: |
           .\dist\firefly-reports.exe --help
+          $version = .\dist\firefly-reports.exe --version
+          if ($version -notmatch "^firefly-reports \d+\.\d+\.\d+") {
+            Write-Error "unexpected --version output: $version"
+            exit 1
+          }
           # Probe translation loading from the bundle: any invocation past
           # argparse calls i18n.load(). Expect a connection failure here, but
           # never a missing-translation error. Use cmd /c to capture output
           # without letting the probe's non-zero exit code fail this step.
-          cmd /c ".\dist\firefly-reports.exe --year 2025 --url http://127.0.0.1:9 --token dummy > probe.log 2>&1 || exit 0"
+          cmd /c ".\dist\firefly-reports.exe report --year 2025 --url http://127.0.0.1:9 --token dummy > probe.log 2>&1 || exit 0"
           $probe = Get-Content probe.log -Raw
           if ($probe -match "No translation file|FileNotFoundError|_MEI") {
             Write-Error "translations missing from the bundled exe"
             exit 1
           }
-          Write-Host "translation probe passed (expected connection failure only)"
+          # The 1.x form (no subcommand) still works and warns on stderr.
+          cmd /c ".\dist\firefly-reports.exe --year 2025 --url http://127.0.0.1:9 --token dummy > probe_legacy.log 2>&1 || exit 0"
+          $legacy = Get-Content probe_legacy.log -Raw
+          if ($legacy -notmatch "deprecated" -or $legacy -match "No translation file|FileNotFoundError|_MEI") {
+            Write-Error "legacy form probe failed"
+            exit 1
+          }
+          Write-Host "translation and legacy probes passed (expected connection failure only)"
+          # Offline end to end run under a legacy console codepage: every report from the built-in data.
+          $env:PYTHONIOENCODING = "cp1252"
+          .\dist\firefly-reports.exe demo --out demo_out --lang it
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "demo run failed"
+            exit 1
+          }
+          $pdfs = (Get-ChildItem demo_out -Filter *.pdf).Count
+          if ($pdfs -ne 27) {
+            Write-Error "expected 27 PDFs from the demo, got $pdfs"
+            exit 1
+          }
+          Write-Host "demo probe passed ($pdfs PDFs)"
       - uses: actions/upload-artifact@v7
         with:
           name: windows-exe
