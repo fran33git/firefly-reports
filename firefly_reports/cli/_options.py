@@ -56,14 +56,13 @@ def resolve_credentials(
     *,
     prompt: Callable[[str], str | None] | None = None,
 ) -> tuple[str, str]:
-    """URL and token: CLI value > environment > config file > prompt (token only).
+    """URL and token: CLI value > config file > environment > prompt (token only).
 
-    Kept from 1.x, so it differs from ``resolve_report_settings`` (CLI > config file >
-    environment): a ``FIREFLY_URL``/``FIREFLY_TOKEN`` in the shell or ``.env`` wins over the
-    file, which lets one shell session point the same config at another instance.
+    Same order as every other setting (``resolve_report_settings``). Before 2.0 the
+    environment beat the config file for these two.
     """
-    url = (url or env.get("FIREFLY_URL") or config.get("url") or "").strip()
-    token = (token or env.get("FIREFLY_TOKEN") or config.get("token") or "").strip()
+    url = (url or config.get("url") or env.get("FIREFLY_URL") or "").strip()
+    token = (token or config.get("token") or env.get("FIREFLY_TOKEN") or "").strip()
 
     if not url:
         raise ConfigurationError("cli.err_url_required")
