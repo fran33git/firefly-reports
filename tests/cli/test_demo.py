@@ -64,3 +64,11 @@ def test_python_m_demo_still_works_with_a_deprecation(tmp_path):
     assert proc.returncode == 0, proc.stderr
     assert "deprecated" in proc.stderr and "firefly-reports demo" in proc.stderr
     assert list(tmp_path.glob("firefly_reports_*.xlsx"))
+
+
+def test_demo_warns_that_credentials_are_ignored(cli, capsys):
+    out = cli / "out"
+    assert main(["demo", "--out", str(out), "--no-pdf", "--url", "https://x.invalid"]) == 0
+    assert "--url and --token are ignored" in capsys.readouterr().err
+    assert main(["demo", "--out", str(out), "--no-pdf"]) == 0
+    assert "ignored" not in capsys.readouterr().err

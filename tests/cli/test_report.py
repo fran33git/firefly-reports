@@ -275,9 +275,9 @@ def test_main_continues_after_render_failure(pipeline, clean_env, monkeypatch, c
     with pytest.raises(SystemExit) as exc:
         _run_main(monkeypatch, *CREDS, *RANGE_ARGS)
     assert exc.value.code == 3
-    out = capsys.readouterr().out
-    assert "FAIL" in out
-    assert "files failed" in out
+    captured = capsys.readouterr()
+    assert "FAIL" in captured.out
+    assert "files failed" in captured.err
     pipeline.workbook.assert_called_once()
 
 
@@ -287,9 +287,9 @@ def test_main_excel_failure_reported(pipeline, clean_env, monkeypatch, capsys):
     with pytest.raises(SystemExit) as exc:
         _run_main(monkeypatch, *CREDS, *RANGE_ARGS)
     assert exc.value.code == 3
-    out = capsys.readouterr().out
-    assert "FAIL" in out
-    assert "Re-run with --debug" in out
+    captured = capsys.readouterr()
+    assert "FAIL" in captured.out
+    assert "Re-run with --debug" in captured.err
 
 
 def test_main_reraises_fatal_fetch_error(pipeline, clean_env, monkeypatch):
@@ -364,11 +364,17 @@ def test_main_year_and_start_are_mutually_exclusive(clean_env, monkeypatch, caps
     assert "use either --year or --start/--end" in capsys.readouterr().err
 
 
-def test_main_config_year_conflicts_with_start(clean_env, monkeypatch, capsys):
-    """A year from the config file also conflicts with --start/--end."""
+def test_main_range_overrides_config_year(pipeline, clean_env, monkeypatch, capsys):
+    """A range given on the command line wins over a year kept in the config file."""
     (clean_env / "firefly-reports.toml").write_text("year = 2025\n", encoding="utf-8")
+    _run_main(monkeypatch, *CREDS, *RANGE_ARGS)
+    assert "Range mode" in capsys.readouterr().out
+
+
+def test_main_cli_year_still_conflicts_with_a_range(clean_env, monkeypatch, capsys):
+    """--year together with --start/--end is still an error."""
     with pytest.raises(SystemExit):
-        _run_main(monkeypatch, *CREDS, *RANGE_ARGS)
+        _run_main(monkeypatch, *CREDS, "--year", "2025", *RANGE_ARGS)
     assert "use either --year or --start/--end" in capsys.readouterr().err
 
 
@@ -431,7 +437,7 @@ def test_main_tagged_render_failure_reported(pipeline, clean_env, monkeypatch, c
     with pytest.raises(SystemExit) as exc:
         _run_main(monkeypatch, *CREDS, *RANGE_ARGS, "--tags", "tax")
     assert exc.value.code == 3
-    out = capsys.readouterr().out
-    assert "FAIL" in out
-    assert "files failed" in out
+    captured = capsys.readouterr()
+    assert "FAIL" in captured.out
+    assert "files failed" in captured.err
     pipeline.workbook.assert_called_once()

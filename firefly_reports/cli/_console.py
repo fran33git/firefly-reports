@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import logging
 import sys
-from datetime import datetime
 from pathlib import Path
 
+from firefly_reports import clock
 from firefly_reports.reports import events
 
 
@@ -32,7 +32,7 @@ def setup_debug_log(debug: bool, out_dir: Path, debug_file: str | None = None) -
     if debug_file:
         log_path = Path(debug_file)
     else:
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        ts = clock.now().strftime("%Y%m%d_%H%M%S")
         log_path = out_dir / f"debug_{ts}.log"
 
     fh = logging.FileHandler(log_path, encoding="utf-8")

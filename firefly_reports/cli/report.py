@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import sys
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -57,13 +58,19 @@ def add_report_parser(sub: Any, common: argparse.ArgumentParser) -> None:
         choices=[3, 5],
         help="Number of years for historical analysis (default: 3)",
     )
-    p.add_argument("--legacy-report", action="store_true", help="Use legacy PDF report styles")
+    p.add_argument(
+        "--legacy-report",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Use legacy PDF report styles (--no-legacy-report overrides the config file)",
+    )
     p.add_argument(
         "--tags", default="", metavar="TAG1,TAG2", help="Tags for the tagged transaction report"
     )
     p.add_argument(
         "--fetch-links",
-        action="store_true",
+        action=argparse.BooleanOptionalAction,
+        default=None,
         help="Fetch full details for linked transactions (slower)",
     )
     p.add_argument(
@@ -74,7 +81,10 @@ def add_report_parser(sub: Any, common: argparse.ArgumentParser) -> None:
         help="Seconds between requests when fetching linked transactions (default: 0.2)",
     )
     p.add_argument(
-        "--all-tags", action="store_true", help="Generate a comprehensive report for all tags"
+        "--all-tags",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Generate a comprehensive report for all tags",
     )
     p.add_argument("--no-pdf", action="store_true", help="Skip PDF generation")
     p.add_argument("--no-excel", action="store_true", help="Skip Excel generation")
@@ -94,9 +104,27 @@ def add_report_parser(sub: Any, common: argparse.ArgumentParser) -> None:
         "--categories-exclude", default=None, metavar="C1,C2", help="Exclude these categories"
     )
     p.add_argument(
-        "--hide-transfers", action="store_true", help="Drop transfer transactions from all reports"
+        "--hide-transfers",
+        dest="show_transfers",
+        action="store_const",
+        const=False,
+        default=None,
+        help="Drop transfer transactions from all reports",
     )
-    p.add_argument("--reconciled-only", action="store_true", help="Only reconciled transactions")
+    p.add_argument(
+        "--show-transfers",
+        dest="show_transfers",
+        action="store_const",
+        const=True,
+        default=None,
+        help="Keep transfer transactions (overrides show_transfers = false in the config file)",
+    )
+    p.add_argument(
+        "--reconciled-only",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Only reconciled transactions",
+    )
     p.add_argument(
         "--fiscal-year-start",
         default=None,
@@ -126,7 +154,7 @@ def run_report(args: argparse.Namespace, config: Mapping[str, Any], env: Mapping
     if not options.deductible_keywords and options.pdf:
         msg = "Warning: No 'deductible_keywords' defined in [tax] section of config. All expenses will be non-deductible."
         log.warning(msg)
-        print(f"[*] {msg}")
+        print(msg, file=sys.stderr)
 
     print(f"[*] Connecting to {url}")
     client = make_client(url, token, log, settings.link_delay)
@@ -175,9 +203,12 @@ def execute(
 
     if result.failures:
         files = ", ".join(f.filename for f in result.failures)
-        print(f"\n{t('cli.files_failed').format(count=len(result.failures), files=files)}")
+        print(
+            f"\n{t('cli.files_failed').format(count=len(result.failures), files=files)}",
+            file=sys.stderr,
+        )
         if not debug:
-            print(t("cli.rerun_debug"))
+            print(t("cli.rerun_debug"), file=sys.stderr)
         return 3
     print(f"\n[*] All reports written to {out_dir.resolve()}")
     return 0
