@@ -1,1 +1,1 @@
-"usage: firefly-reports init [-h] options: -h, --help show this help message and exit"
+"usage: firefly-reports init [-h] [--url URL] [--token TOKEN] [--lang {en,it}] [--debug] [--debug-file PATH] options: -h, --help show this help message and exit --url URL Firefly III base URL --token TOKEN Personal Access Token --lang {en,it} Language of the output --debug Enable debug log to file --debug-file PATH Log file path"

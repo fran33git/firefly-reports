@@ -10,8 +10,21 @@ import pytest
 import requests
 
 from firefly_reports import i18n
+from firefly_reports.cli import build_parser
+from firefly_reports.cli import main as cli_main
 from firefly_reports.firefly_client import FireflyClient
-from firefly_reports.main import main, parse_args
+
+
+def main():
+    """Run the CLI on sys.argv like the 1.x entry point: a non-zero code exits."""
+    code = cli_main()
+    if code:
+        raise SystemExit(code)
+
+
+def parse_args():
+    return build_parser().parse_args(sys.argv[1:])
+
 
 FIXTURE = Path(__file__).parent / "fixtures" / "firefly_transactions.json"
 CREDS = ["--url", "https://firefly.example.com", "--token", "tok"]
@@ -29,14 +42,14 @@ def env(tmp_path, monkeypatch):
     for var in ("FIREFLY_URL", "FIREFLY_TOKEN", "FIREFLY_LANG"):
         monkeypatch.delenv(var, raising=False)
     # a developer's real .env must not repopulate the variables removed above
-    monkeypatch.setattr("firefly_reports.main.load_dotenv", lambda *a, **k: None)
+    monkeypatch.setattr("firefly_reports.cli._options.load_dotenv", lambda *a, **k: None)
     yield tmp_path
     i18n.load("en")
 
 
 @pytest.fixture
 def client(splits):
-    with mock.patch("firefly_reports.main.FireflyClient") as cls:
+    with mock.patch("firefly_reports.cli._options.FireflyClient") as cls:
         cls.return_value.get_transactions.return_value = splits
         yield cls.return_value
 

@@ -9,7 +9,13 @@ from tests.golden.snapshot import assert_golden
 @pytest.mark.golden
 @pytest.mark.parametrize(
     ("name", "argv"),
-    [("root", ["--help"]), ("init", ["init", "--help"]), ("export", ["export", "--help"])],
+    [
+        ("root", ["--help"]),
+        ("init", ["init", "--help"]),
+        ("export", ["export", "--help"]),
+        ("report", ["report", "--help"]),
+        ("demo", ["demo", "--help"]),
+    ],
 )
 def test_help_matches_golden(name, argv, tmp_path, monkeypatch):
     monkeypatch.setenv("COLUMNS", "100")

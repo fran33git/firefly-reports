@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 
 from firefly_reports import i18n
+from firefly_reports.cli import main as cli_main
 from firefly_reports.firefly_client import FireflyClient
 from firefly_reports.ledger.accounts import AccountResolver
 from firefly_reports.ledger.convert import build_ledger
@@ -25,8 +26,15 @@ from firefly_reports.ledger.export import (
 from firefly_reports.ledger.labels import LedgerLabels
 from firefly_reports.ledger.mapping import load_ledger_config, parse_ledger_config
 from firefly_reports.ledger.writers import BeancountWriter, WriterOptions
-from firefly_reports.main import main
 from tests.ledger_helpers import export_request
+
+
+def main():
+    """Run the CLI on sys.argv like the 1.x entry point: a non-zero code exits."""
+    code = cli_main()
+    if code:
+        raise SystemExit(code)
+
 
 FIXTURE = Path(__file__).parent / "fixtures" / "firefly_transactions.json"
 MAP = {
@@ -413,7 +421,7 @@ def cli_env(tmp_path, monkeypatch, splits):
     monkeypatch.chdir(tmp_path)
     for var in ("FIREFLY_URL", "FIREFLY_TOKEN", "FIREFLY_LANG"):
         monkeypatch.delenv(var, raising=False)
-    with mock.patch("firefly_reports.main.FireflyClient") as cls:
+    with mock.patch("firefly_reports.cli._options.FireflyClient") as cls:
         cls.return_value.get_transactions.return_value = splits
         yield tmp_path
 

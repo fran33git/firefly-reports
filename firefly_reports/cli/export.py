@@ -1,7 +1,6 @@
 """``export`` subcommand: argument parser and command runner.
 
-Kept out of ``main.py`` so that adding output formats does not grow the main
-CLI module. Credentials/client construction is injected by the caller.
+Credentials/client construction is injected by the caller.
 """
 
 from __future__ import annotations
@@ -16,6 +15,7 @@ from typing import Any
 
 import requests
 
+from firefly_reports.errors import ConfigurationError
 from firefly_reports.i18n import t
 from firefly_reports.ledger.errors import LedgerError
 from firefly_reports.ledger.export import (
@@ -37,23 +37,22 @@ DEFAULT_OUT = "ledger"
 FORMATS = ["beancount"]
 
 
-def add_export_parser(sub: Any) -> None:
-    """Register ``export <format>``. Shared options use SUPPRESS so values given
-    before the subcommand (e.g. ``--lang it export beancount``) are not clobbered."""
+def add_export_parser(sub: Any, common: argparse.ArgumentParser) -> None:
+    """Register ``export <format>``. The global options come from *common* and use SUPPRESS
+    so values given before the subcommand (e.g. ``--lang it export beancount``) are not
+    clobbered."""
     exp = sub.add_parser(
         "export",
+        parents=[common],
         help="Export transactions to a plain-text ledger (beancount)",
         description="Export Firefly III transactions to a plain-text accounting ledger.",
+        epilog="example: firefly-reports export beancount --scaffold",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     exp.add_argument("format", choices=FORMATS, help="Output format")
     sup = argparse.SUPPRESS
-    exp.add_argument("--url", default=sup, help="Firefly III base URL")
-    exp.add_argument("--token", default=sup, help="Personal Access Token")
     exp.add_argument("--start", default=sup, help="Start date (YYYY-MM-DD), default: all")
     exp.add_argument("--end", default=sup, help="End date (YYYY-MM-DD), default: all")
-    exp.add_argument(
-        "--lang", default=sup, choices=["en", "it"], help="Language of labels and messages"
-    )
     exp.add_argument(
         "--out",
         default=sup,
@@ -150,8 +149,12 @@ def run_export_command(
         print(f"Error: {t('ledger.err_scaffold_flags')}", file=sys.stderr)
         return 1
 
-    start = parse_date(args.start, "--start") if args.start else None
-    end = parse_date(args.end, "--end") if args.end else None
+    try:
+        start = parse_date(args.start, "--start") if args.start else None
+        end = parse_date(args.end, "--end") if args.end else None
+    except ConfigurationError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        return 1
     if start and end and start > end:
         print(
             f"Error: {t('ledger.err_start_after_end').format(start=args.start, end=args.end)}",

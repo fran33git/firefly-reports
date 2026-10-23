@@ -6,6 +6,7 @@ import pytest
 import yaml
 
 from firefly_reports import i18n
+from firefly_reports.cli import main as cli_main
 from firefly_reports.ledger import export as export_module
 from firefly_reports.ledger.errors import LedgerError
 from firefly_reports.ledger.export import (
@@ -17,9 +18,16 @@ from firefly_reports.ledger.export import (
 )
 from firefly_reports.ledger.labels import LedgerLabels
 from firefly_reports.ledger.mapping import load_ledger_config, parse_ledger_config
-from firefly_reports.main import main
 from tests.test_ledger_category_mode import deposit, withdrawal
 from tests.test_ledger_mapfile import in_order
+
+
+def main():
+    """Run the CLI on sys.argv like the 1.x entry point: a non-zero code exits."""
+    code = cli_main()
+    if code:
+        raise SystemExit(code)
+
 
 SPLITS = [withdrawal("1", "Cibo"), withdrawal("2", "Auto"), deposit("3", "Fatture")]
 EXISTING = (
@@ -209,7 +217,7 @@ def test_cli_overwrite_regenerates_from_scratch_ignoring_the_old_mapping(cli, mo
         "categories:\n  expense:\n    Cibo: 'Expenses:Vitto'\n",
         encoding="utf-8",
     )
-    monkeypatch.setattr("firefly_reports.ledger.cli._stdin_is_interactive", lambda: True)
+    monkeypatch.setattr("firefly_reports.cli.export._stdin_is_interactive", lambda: True)
     monkeypatch.setattr("builtins.input", lambda prompt="": "beancount_map.yaml")
     run_cli(monkeypatch, "--scaffold", "--overwrite")
     cfg = load_ledger_config(path)
@@ -220,7 +228,7 @@ def test_cli_overwrite_regenerates_from_scratch_ignoring_the_old_mapping(cli, mo
 def test_cli_overwrite_can_repair_an_invalid_mapping(cli, monkeypatch):
     path = cli / "beancount_map.yaml"
     path.write_text("accounts:\n  Conto: 'notanaccount'\n", encoding="utf-8")
-    monkeypatch.setattr("firefly_reports.ledger.cli._stdin_is_interactive", lambda: True)
+    monkeypatch.setattr("firefly_reports.cli.export._stdin_is_interactive", lambda: True)
     monkeypatch.setattr("builtins.input", lambda prompt="": "beancount_map.yaml")
     run_cli(monkeypatch, "--scaffold", "--overwrite")
     assert load_ledger_config(path).classify_by == "category"
@@ -243,8 +251,8 @@ def cli(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     for var in ("FIREFLY_URL", "FIREFLY_TOKEN", "FIREFLY_LANG"):
         monkeypatch.delenv(var, raising=False)
-    monkeypatch.setattr("firefly_reports.main.load_dotenv", lambda *a, **k: None)
-    with mock.patch("firefly_reports.main.FireflyClient") as cls:
+    monkeypatch.setattr("firefly_reports.cli._options.load_dotenv", lambda *a, **k: None)
+    with mock.patch("firefly_reports.cli._options.FireflyClient") as cls:
         cls.return_value.get_transactions.return_value = SPLITS
         cls.return_value.get_transaction_links.return_value = []
         yield tmp_path
@@ -278,7 +286,7 @@ def test_cli_overwrite_non_interactive_refuses(cli, monkeypatch):
 def test_cli_overwrite_confirmed_by_typing_the_file_name(cli, monkeypatch):
     path = cli / "beancount_map.yaml"
     path.write_text(EXISTING, encoding="utf-8")
-    monkeypatch.setattr("firefly_reports.ledger.cli._stdin_is_interactive", lambda: True)
+    monkeypatch.setattr("firefly_reports.cli.export._stdin_is_interactive", lambda: True)
     monkeypatch.setattr("builtins.input", lambda prompt="": "beancount_map.yaml")
     run_cli(monkeypatch, "--scaffold", "--overwrite")
     assert "my mapping" not in path.read_text(encoding="utf-8")
@@ -287,7 +295,7 @@ def test_cli_overwrite_confirmed_by_typing_the_file_name(cli, monkeypatch):
 def test_cli_overwrite_wrong_word_is_a_refusal(cli, monkeypatch):
     path = cli / "beancount_map.yaml"
     path.write_text(EXISTING, encoding="utf-8")
-    monkeypatch.setattr("firefly_reports.ledger.cli._stdin_is_interactive", lambda: True)
+    monkeypatch.setattr("firefly_reports.cli.export._stdin_is_interactive", lambda: True)
     monkeypatch.setattr("builtins.input", lambda prompt="": "yes")
     with pytest.raises(SystemExit) as exc:
         run_cli(monkeypatch, "--scaffold", "--overwrite")
