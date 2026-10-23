@@ -42,6 +42,12 @@ pre-refactor code.
   `get_transaction_links()`
 - New dependency `pyyaml`; optional extra `beancount` for `--validate`
 - CI runs the `bean-check` tests; the coverage threshold is 90%
+- `firefly-reports.toml`: an `[export]` section (`out`, `layout`, `classify_by`, `map`) gives
+  defaults to `export beancount` (CLI > config > built-in default); `firefly-reports init` now
+  writes every supported key as a commented template
+- Keys in `firefly-reports.toml` that nothing reads (typos) produce a translated warning on
+  stderr, with a suggestion, instead of being ignored silently; `.env.example` lists
+  `FIREFLY_LANG` and `FIREFLY_LEGACY_REPORT`
 
 ### Changed
 - Errors (configuration, credentials, dates, API) are printed to stderr; Firefly III request failures no
