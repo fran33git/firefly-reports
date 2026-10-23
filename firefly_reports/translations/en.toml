@@ -498,3 +498,10 @@ err_start_after_end = "--start ({start}) must not be after --end ({end})."
 warn_orphan_files  = "Not produced in this run and left untouched (remove them if obsolete): {files}"
 warn_mapping_root  = "accounts: '{name}' ({type}) is mapped to {account}, whose root differs from the one expected for this account type; the mapping is kept, but check it."
 wrote_files        = "Wrote {count} transactions in {files} file(s) to {path}"
+
+[errors]
+invalid_year           = "invalid year '{year}' (expected e.g. 2025)"
+year_out_of_range      = "invalid year '{year}' (expected 1900-2100)"
+invalid_fiscal_start   = "invalid fiscal year start '{value}' (expected MM-DD)"
+fiscal_start_not_leap  = "fiscal year start '{value}' is not valid for year {year} (02-29 requires a leap year)"
+start_after_end        = "start ({start}) must not be after end ({end})"

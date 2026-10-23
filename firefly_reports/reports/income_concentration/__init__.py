@@ -1,0 +1,1 @@
+"""Report: income_concentration."""
