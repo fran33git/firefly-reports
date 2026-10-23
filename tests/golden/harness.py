@@ -169,7 +169,7 @@ def render_demo_suite(out_dir: Path, lang: str) -> list[Path]:
 
 # ---- CLI pipeline ------------------------------------------------------------------------
 
-CLIENT_PATCH_TARGET = "firefly_reports.main.FireflyClient"
+CLIENT_PATCH_TARGET = "firefly_reports.cli._options.FireflyClient"
 _ENV_VARS = ("FIREFLY_URL", "FIREFLY_TOKEN", "FIREFLY_LANG", "FIREFLY_LEGACY_REPORT")
 
 
@@ -208,7 +208,7 @@ def _digest(payload: object) -> str:
 
 def run_main(argv: list[str], cwd: Path, client: Any = None) -> tuple[int, str, str]:
     """Run ``main()`` offline: DemoClient (or *client*) instead of the API, no .env, clean env."""
-    from firefly_reports.main import main
+    from firefly_reports.cli import main
 
     cwd.mkdir(parents=True, exist_ok=True)
     out, err = io.StringIO(), io.StringIO()
@@ -217,17 +217,16 @@ def run_main(argv: list[str], cwd: Path, client: Any = None) -> tuple[int, str, 
     code = 0
     try:
         os.chdir(cwd)
-        sys.argv = ["firefly-reports", *argv]
         with (
             mock.patch.dict(os.environ, env, clear=True),
             mock.patch(CLIENT_PATCH_TARGET, side_effect=lambda *a, **k: client or DemoClient()),
-            mock.patch("firefly_reports.main.load_dotenv", lambda *a, **k: None),
+            mock.patch("firefly_reports.cli._options.load_dotenv", lambda *a, **k: None),
             clock.frozen(DEMO_CLOCK),
             contextlib.redirect_stdout(out),
             contextlib.redirect_stderr(err),
         ):
             try:
-                main()
+                code = main(argv)
             except SystemExit as exc:
                 code = exc.code if isinstance(exc.code, int) else 1
     finally:

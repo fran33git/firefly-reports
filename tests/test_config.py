@@ -4,7 +4,7 @@ import tomllib
 
 import pytest
 
-from firefly_reports import config as cfg
+from firefly_reports.cli import config as cfg
 
 
 def test_load_config_returns_empty_when_no_file(tmp_path, monkeypatch):

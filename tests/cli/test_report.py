@@ -1,14 +1,11 @@
-"""Unit tests for main.py (CLI entry point).
+"""The ``report`` command end to end (offline): orchestration and argument validation errors.
 
 All collaborators of ``main()`` (FireflyClient plus every build_* / render_*
 function) are patched in the ``firefly_reports.main`` namespace so the tests
 run fully offline.
 """
 
-import argparse
-import getpass
 import logging
-import stat
 import sys
 from dataclasses import dataclass, field
 from datetime import date
@@ -17,20 +14,11 @@ from unittest import mock
 
 import pytest
 
+from firefly_reports.cli import main as cli_main
 from firefly_reports.demo import data as demo_data
 from firefly_reports.demo.client import DemoClient
-from firefly_reports.main import (
-    _csv_list,
-    _parse_cli_date,
-    _prev_year_dates,
-    _resolve_credentials,
-    _setup_debug_log,
-    cmd_init,
-    main,
-    parse_args,
-)
 
-MAIN = "firefly_reports.main"
+OPTIONS = "firefly_reports.cli._options"
 URL = "https://firefly.example.com"
 TOKEN = "test-token"
 CREDS = ["--url", URL, "--token", TOKEN]
@@ -45,7 +33,7 @@ def clean_env(tmp_path, monkeypatch):
         monkeypatch.delenv(var, raising=False)
     # load_dotenv() searches upward from the package, not from cwd: without this a
     # developer's real .env would repopulate the variables removed above.
-    monkeypatch.setattr("firefly_reports.main.load_dotenv", lambda *a, **k: None)
+    monkeypatch.setattr(f"{OPTIONS}.load_dotenv", lambda *a, **k: None)
     return tmp_path
 
 
@@ -74,7 +62,7 @@ def pipeline(clean_env):
         state.rendered.append((spec.key, Path(path).name))
 
     with (
-        mock.patch(f"{MAIN}.FireflyClient", return_value=state.client),
+        mock.patch(f"{OPTIONS}.FireflyClient", return_value=state.client),
         mock.patch("firefly_reports.reports.pipeline._render_one", side_effect=record),
         mock.patch("firefly_reports.reports.pipeline.write_workbook") as workbook,
     ):
@@ -88,399 +76,16 @@ def _tx(tx_id):
 
 
 def _run_main(monkeypatch, *args):
-    """Invoke main() with the given CLI arguments."""
-    monkeypatch.setattr(sys, "argv", ["firefly-reports", *args])
-    main()
-
-
-# ---------------------------------------------------------------------------
-# parse_args
-# ---------------------------------------------------------------------------
-
-
-def test_parse_args_init_subcommand(monkeypatch):
-    """The 'init' subcommand is parsed into args.command."""
-    monkeypatch.setattr(sys, "argv", ["firefly-reports", "init"])
-    args = parse_args()
-    assert args.command == "init"
-
-
-def test_parse_args_defaults(monkeypatch):
-    """All optional flags default to None/False/empty when omitted."""
-    monkeypatch.setattr(sys, "argv", ["firefly-reports", *RANGE_ARGS])
-    args = parse_args()
-    assert args.command is None
-    assert args.url is None
-    assert args.token is None
-    assert args.year is None
-    assert args.owner is None
-    assert args.currency is None
-    assert args.out is None
-    assert args.lang is None
-    assert args.years is None
-    assert args.tags == ""
-    assert args.link_delay is None
-    assert args.accounts_include is None
-    assert args.accounts_exclude is None
-    assert args.categories_include is None
-    assert args.categories_exclude is None
-    assert args.fiscal_year_start is None
-    assert args.debug_file is None
-    for flag in (
-        "legacy_report",
-        "fetch_links",
-        "all_tags",
-        "no_pdf",
-        "no_excel",
-        "hide_transfers",
-        "reconciled_only",
-        "debug",
-    ):
-        assert getattr(args, flag) is False
-
-
-def test_parse_args_all_flags(monkeypatch):
-    """Every CLI flag is parsed into the expected attribute and type."""
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        [
-            "firefly-reports",
-            "--url",
-            URL,
-            "--token",
-            "t",
-            "--year",
-            "2025",
-            "--owner",
-            "Me",
-            "--currency",
-            "$",
-            "--out",
-            "./out",
-            "--lang",
-            "it",
-            "--years",
-            "5",
-            "--legacy-report",
-            "--tags",
-            "a,b",
-            "--fetch-links",
-            "--link-delay",
-            "0.5",
-            "--all-tags",
-            "--no-pdf",
-            "--no-excel",
-            "--accounts-include",
-            "1,2",
-            "--accounts-exclude",
-            "3",
-            "--categories-include",
-            "A",
-            "--categories-exclude",
-            "B",
-            "--hide-transfers",
-            "--reconciled-only",
-            "--fiscal-year-start",
-            "04-01",
-            "--debug",
-            "--debug-file",
-            "x.log",
-        ],
-    )
-    args = parse_args()
-    assert args.url == URL
-    assert args.year == 2025
-    assert args.lang == "it"
-    assert args.years == 5
-    assert args.link_delay == 0.5
-    assert args.accounts_include == "1,2"
-    assert args.accounts_exclude == "3"
-    assert args.categories_include == "A"
-    assert args.categories_exclude == "B"
-    assert args.fiscal_year_start == "04-01"
-    assert args.debug_file == "x.log"
-    for flag in (
-        "legacy_report",
-        "fetch_links",
-        "all_tags",
-        "no_pdf",
-        "no_excel",
-        "hide_transfers",
-        "reconciled_only",
-        "debug",
-    ):
-        assert getattr(args, flag) is True
-
-
-@pytest.mark.parametrize(
-    "bad",
-    [
-        ["--lang", "fr"],
-        ["--years", "4"],
-        ["--year", "abc"],
-        ["--link-delay", "fast"],
-    ],
-    ids=["bad-lang", "bad-years", "bad-year", "bad-link-delay"],
-)
-def test_parse_args_rejects_invalid_values(monkeypatch, bad):
-    """argparse exits with an error on invalid choices or types."""
-    monkeypatch.setattr(sys, "argv", ["firefly-reports", *bad])
-    with pytest.raises(SystemExit):
-        parse_args()
-
-
-# ---------------------------------------------------------------------------
-# _resolve_credentials
-# ---------------------------------------------------------------------------
-
-
-def test_resolve_credentials_cli_wins(monkeypatch):
-    """CLI args take precedence over env vars and config file values."""
-    monkeypatch.setenv("FIREFLY_URL", "https://env.example.com")
-    monkeypatch.setenv("FIREFLY_TOKEN", "env-token")
-    args = argparse.Namespace(url=URL, token=TOKEN)
-    url, token = _resolve_credentials(args, {"url": "https://cfg.example.com", "token": "cfg"})
-    assert (url, token) == (URL, TOKEN)
-
-
-def test_resolve_credentials_env_fallback(monkeypatch):
-    """Env vars are used when CLI args are absent."""
-    monkeypatch.setenv("FIREFLY_URL", "https://env.example.com")
-    monkeypatch.setenv("FIREFLY_TOKEN", "env-token")
-    args = argparse.Namespace(url=None, token=None)
-    url, token = _resolve_credentials(args, {"url": "https://cfg.example.com", "token": "cfg"})
-    assert (url, token) == ("https://env.example.com", "env-token")
-
-
-def test_resolve_credentials_config_fallback(monkeypatch):
-    """Config file values are the last non-interactive fallback."""
-    monkeypatch.delenv("FIREFLY_URL", raising=False)
-    monkeypatch.delenv("FIREFLY_TOKEN", raising=False)
-    args = argparse.Namespace(url=None, token=None)
-    url, token = _resolve_credentials(args, {"url": URL, "token": "cfg-token"})
-    assert (url, token) == (URL, "cfg-token")
-
-
-def test_resolve_credentials_exits_without_url(monkeypatch, capsys):
-    """A missing URL aborts with exit code 1 and a clear message."""
-    monkeypatch.delenv("FIREFLY_URL", raising=False)
-    args = argparse.Namespace(url=None, token=TOKEN)
-    with pytest.raises(SystemExit) as exc:
-        _resolve_credentials(args, {})
-    assert exc.value.code == 1
-    assert "URL is required" in capsys.readouterr().out
-
-
-def test_resolve_credentials_exits_on_invalid_url(monkeypatch, capsys):
-    """A URL without scheme/netloc is rejected."""
-    monkeypatch.delenv("FIREFLY_URL", raising=False)
-    args = argparse.Namespace(url="firefly.example.com", token=TOKEN)
-    with pytest.raises(SystemExit) as exc:
-        _resolve_credentials(args, {})
-    assert exc.value.code == 1
-    assert "invalid Firefly III URL" in capsys.readouterr().out
-
-
-def test_resolve_credentials_exits_without_token_non_tty(monkeypatch, capsys):
-    """A missing token aborts when stdin is not a TTY."""
-    monkeypatch.delenv("FIREFLY_TOKEN", raising=False)
-    monkeypatch.setattr(sys, "stdin", mock.Mock(isatty=lambda: False))
-    args = argparse.Namespace(url=URL, token=None)
-    with pytest.raises(SystemExit) as exc:
-        _resolve_credentials(args, {})
-    assert exc.value.code == 1
-    assert "token is required" in capsys.readouterr().out
-
-
-def test_resolve_credentials_prompts_for_token_on_tty(monkeypatch):
-    """On a TTY the token is asked interactively via getpass."""
-    monkeypatch.delenv("FIREFLY_TOKEN", raising=False)
-    monkeypatch.setattr(sys, "stdin", mock.Mock(isatty=lambda: True))
-    monkeypatch.setattr(getpass, "getpass", lambda prompt="": "prompted-token")
-    args = argparse.Namespace(url=URL, token=None)
-    url, token = _resolve_credentials(args, {})
-    assert (url, token) == (URL, "prompted-token")
-
-
-# ---------------------------------------------------------------------------
-# Small helpers
-# ---------------------------------------------------------------------------
-
-
-def test_parse_cli_date_valid():
-    """A well-formed YYYY-MM-DD string is parsed into a date."""
-    assert _parse_cli_date("2025-02-28", "--start") == date(2025, 2, 28)
-
-
-def test_parse_cli_date_invalid(capsys):
-    """A malformed date aborts with exit code 1."""
-    with pytest.raises(SystemExit) as exc:
-        _parse_cli_date("28/02/2025", "--start")
-    assert exc.value.code == 1
-    assert "invalid date for --start" in capsys.readouterr().out
-
-
-@pytest.mark.parametrize(
-    ("value", "expected"),
-    [
-        (None, []),
-        ("", []),
-        ("a", ["a"]),
-        (" a, b ,,c ", ["a", "b", "c"]),
-    ],
-)
-def test_csv_list(value, expected):
-    """Comma-separated options are split and stripped; blanks are dropped."""
-    assert _csv_list(value) == expected
-
-
-def test_prev_year_dates_plain():
-    """Both dates shift back exactly one year."""
-    start, end = _prev_year_dates(date(2025, 3, 1), date(2025, 12, 31))
-    assert (start, end) == (date(2024, 3, 1), date(2024, 12, 31))
-
-
-def test_prev_year_dates_leap_day():
-    """Feb 29 falls back to Feb 28 in the previous (non-leap) year."""
-    start, end = _prev_year_dates(date(2024, 2, 29), date(2024, 2, 29))
-    assert (start, end) == (date(2023, 2, 28), date(2023, 2, 28))
-
-
-def test_setup_debug_log_disabled():
-    """Without --debug the logger only gets a NullHandler."""
-    logger = _setup_debug_log(False, Path("unused"))
-    assert any(isinstance(h, logging.NullHandler) for h in logger.handlers)
-    for h in list(logger.handlers):
-        logger.removeHandler(h)
-
-
-def test_setup_debug_log_explicit_file(tmp_path, capsys):
-    """With --debug and --debug-file a FileHandler writes to that path."""
-    log_file = tmp_path / "debug.log"
-    logger = _setup_debug_log(True, tmp_path, str(log_file))
-    logger.debug("hello")
-    assert logger.level == logging.DEBUG
-    assert log_file.exists()
-    assert "Debug log" in capsys.readouterr().out
-    for h in list(logger.handlers):
-        logger.removeHandler(h)
-        h.close()
-    logger.setLevel(logging.NOTSET)
-
-
-def test_setup_debug_log_default_file(tmp_path):
-    """Without --debug-file the log goes to <out>/debug_<timestamp>.log."""
-    logger = _setup_debug_log(True, tmp_path)
-    assert len(list(tmp_path.glob("debug_*.log"))) == 1
-    for h in list(logger.handlers):
-        logger.removeHandler(h)
-        h.close()
-    logger.setLevel(logging.NOTSET)
-
-
-# ---------------------------------------------------------------------------
-# cmd_init
-# ---------------------------------------------------------------------------
-
-
-def _mock_wizard(monkeypatch, inputs, token=""):
-    """Feed scripted answers to input() and a fixed token to getpass."""
-    answers = iter(inputs)
-    monkeypatch.setattr("builtins.input", lambda prompt="": next(answers))
-    monkeypatch.setattr(getpass, "getpass", lambda prompt="": token)
-
-
-def test_cmd_init_aborts_when_user_declines_overwrite(tmp_path, monkeypatch, capsys):
-    """An existing config is kept when the user does not answer 'y'."""
-    monkeypatch.chdir(tmp_path)
-    cfg = tmp_path / "firefly-reports.toml"
-    cfg.write_text("old = true\n", encoding="utf-8")
-    _mock_wizard(monkeypatch, ["n"])
-    cmd_init()
-    assert cfg.read_text(encoding="utf-8") == "old = true\n"
-    assert "Aborted" in capsys.readouterr().out
-
-
-def test_cmd_init_happy_path_with_token(tmp_path, monkeypatch, capsys):
-    """Answers are written to the TOML file with owner-only permissions."""
-    monkeypatch.chdir(tmp_path)
-    _mock_wizard(
-        monkeypatch,
-        ["", "Mario Rossi", "", "IT", "y", "", "tax, business"],
-        token="secret",
-    )
-    cmd_init()
-    cfg = tmp_path / "firefly-reports.toml"
-    content = cfg.read_text(encoding="utf-8")
-    assert 'url      = "https://firefly.example.com"' in content
-    assert 'token    = "secret"' in content
-    assert 'owner    = "Mario Rossi"' in content
-    assert 'currency = "€"' in content
-    assert 'lang     = "it"' in content
-    assert "legacy_report = true" in content
-    assert 'out      = "./output"' in content
-    assert 'tags     = ["tax", "business"]' in content
-    assert stat.S_IMODE(cfg.stat().st_mode) == 0o600
-    # No .gitignore present -> the token warning must be shown.
-    assert "WARNING" in capsys.readouterr().out
-
-
-def test_cmd_init_defaults_without_token(tmp_path, monkeypatch):
-    """Blank answers fall back to defaults; the token line stays commented."""
-    monkeypatch.chdir(tmp_path)
-    _mock_wizard(monkeypatch, ["", "", "", "", "", "", ""])
-    cmd_init()
-    content = (tmp_path / "firefly-reports.toml").read_text(encoding="utf-8")
-    assert 'url      = "https://firefly.example.com"' in content
-    assert '# token = ""' in content
-    assert 'token    = "' not in content
-    assert 'owner    = ""' in content
-    assert 'lang     = "en"' in content
-    assert "legacy_report = false" in content
-    assert "tags     = []" in content
-
-
-def test_cmd_init_invalid_lang_falls_back_to_en(tmp_path, monkeypatch):
-    """An unsupported language answer is coerced to 'en'."""
-    monkeypatch.chdir(tmp_path)
-    _mock_wizard(monkeypatch, ["", "", "", "fr", "", "", ""])
-    cmd_init()
-    content = (tmp_path / "firefly-reports.toml").read_text(encoding="utf-8")
-    assert 'lang     = "en"' in content
-
-
-def test_cmd_init_overwrite_accepted(tmp_path, monkeypatch):
-    """Answering 'y' rewrites an existing config file."""
-    monkeypatch.chdir(tmp_path)
-    cfg = tmp_path / "firefly-reports.toml"
-    cfg.write_text("old = true\n", encoding="utf-8")
-    _mock_wizard(monkeypatch, ["y", "", "", "", "", "", "", ""])
-    cmd_init()
-    content = cfg.read_text(encoding="utf-8")
-    assert "old = true" not in content
-    assert 'url      = "https://firefly.example.com"' in content
-
-
-def test_cmd_init_no_warning_when_gitignore_covers_config(tmp_path, monkeypatch, capsys):
-    """No .gitignore warning is printed when the config file is already ignored."""
-    monkeypatch.chdir(tmp_path)
-    (tmp_path / ".gitignore").write_text("firefly-reports.toml\n", encoding="utf-8")
-    _mock_wizard(monkeypatch, ["", "", "", "", "", "", ""], token="secret")
-    cmd_init()
-    assert "WARNING" not in capsys.readouterr().out
+    """Run the CLI (current form: the ``report`` subcommand); a non-zero code exits."""
+    monkeypatch.setattr(sys, "argv", ["firefly-reports", "report", *args])
+    code = cli_main()
+    if code:
+        raise SystemExit(code)
 
 
 # ---------------------------------------------------------------------------
 # main() — orchestration
 # ---------------------------------------------------------------------------
-
-
-def test_main_init_subcommand(clean_env, monkeypatch):
-    """'firefly-reports init' dispatches to cmd_init and returns early."""
-    with mock.patch(f"{MAIN}.cmd_init") as mock_init:
-        _run_main(monkeypatch, "init")
-    mock_init.assert_called_once()
 
 
 def test_main_range_mode_happy_path(pipeline, clean_env, monkeypatch):
@@ -667,7 +272,9 @@ def test_main_debug_log_file(pipeline, clean_env, monkeypatch):
 def test_main_continues_after_render_failure(pipeline, clean_env, monkeypatch, capsys):
     """A failing PDF render is reported but does not stop the pipeline."""
     pipeline.fail = {"cash_flow", "account_statements"}
-    _run_main(monkeypatch, *CREDS, *RANGE_ARGS)
+    with pytest.raises(SystemExit) as exc:
+        _run_main(monkeypatch, *CREDS, *RANGE_ARGS)
+    assert exc.value.code == 3
     out = capsys.readouterr().out
     assert "FAIL" in out
     assert "files failed" in out
@@ -677,7 +284,9 @@ def test_main_continues_after_render_failure(pipeline, clean_env, monkeypatch, c
 def test_main_excel_failure_reported(pipeline, clean_env, monkeypatch, capsys):
     """A failing Excel render is reported in the final summary."""
     pipeline.workbook.side_effect = RuntimeError("xlsx boom")
-    _run_main(monkeypatch, *CREDS, *RANGE_ARGS)
+    with pytest.raises(SystemExit) as exc:
+        _run_main(monkeypatch, *CREDS, *RANGE_ARGS)
+    assert exc.value.code == 3
     out = capsys.readouterr().out
     assert "FAIL" in out
     assert "Re-run with --debug" in out
@@ -703,7 +312,7 @@ def test_main_uses_config_file(pipeline, clean_env, monkeypatch, capsys):
         "show_transfers = false\n",
         encoding="utf-8",
     )
-    with mock.patch(f"{MAIN}.FireflyClient", return_value=pipeline.client) as factory:
+    with mock.patch(f"{OPTIONS}.FireflyClient", return_value=pipeline.client) as factory:
         _run_main(monkeypatch, *RANGE_ARGS, "--out", str(clean_env / "out"))
     assert factory.call_args.args[:2] == ("https://config.example.com", "config-token")
     assert "tagged" in pipeline.keys and "all_tags" in pipeline.keys
@@ -729,14 +338,14 @@ def test_main_exits_without_url(clean_env, monkeypatch, capsys):
     with pytest.raises(SystemExit) as exc:
         _run_main(monkeypatch, "--token", TOKEN, *RANGE_ARGS)
     assert exc.value.code == 1
-    assert "URL is required" in capsys.readouterr().out
+    assert "URL is required" in capsys.readouterr().err
 
 
 def test_main_exits_on_invalid_url(clean_env, monkeypatch, capsys):
     """main() rejects a URL without scheme."""
     with pytest.raises(SystemExit):
         _run_main(monkeypatch, "--url", "firefly.local", "--token", TOKEN, *RANGE_ARGS)
-    assert "invalid Firefly III URL" in capsys.readouterr().out
+    assert "invalid Firefly III URL" in capsys.readouterr().err
 
 
 def test_main_exits_without_token(clean_env, monkeypatch, capsys):
@@ -744,7 +353,7 @@ def test_main_exits_without_token(clean_env, monkeypatch, capsys):
     monkeypatch.setattr(sys, "stdin", mock.Mock(isatty=lambda: False))
     with pytest.raises(SystemExit):
         _run_main(monkeypatch, "--url", URL, *RANGE_ARGS)
-    assert "token is required" in capsys.readouterr().out
+    assert "token is required" in capsys.readouterr().err
 
 
 def test_main_year_and_start_are_mutually_exclusive(clean_env, monkeypatch, capsys):
@@ -752,7 +361,7 @@ def test_main_year_and_start_are_mutually_exclusive(clean_env, monkeypatch, caps
     with pytest.raises(SystemExit) as exc:
         _run_main(monkeypatch, *CREDS, "--year", "2025", "--start", "2025-01-01")
     assert exc.value.code == 1
-    assert "use either --year or --start/--end" in capsys.readouterr().out
+    assert "use either --year or --start/--end" in capsys.readouterr().err
 
 
 def test_main_config_year_conflicts_with_start(clean_env, monkeypatch, capsys):
@@ -760,7 +369,7 @@ def test_main_config_year_conflicts_with_start(clean_env, monkeypatch, capsys):
     (clean_env / "firefly-reports.toml").write_text("year = 2025\n", encoding="utf-8")
     with pytest.raises(SystemExit):
         _run_main(monkeypatch, *CREDS, *RANGE_ARGS)
-    assert "use either --year or --start/--end" in capsys.readouterr().out
+    assert "use either --year or --start/--end" in capsys.readouterr().err
 
 
 def test_main_requires_dates_or_year(clean_env, monkeypatch, capsys):
@@ -768,21 +377,21 @@ def test_main_requires_dates_or_year(clean_env, monkeypatch, capsys):
     with pytest.raises(SystemExit) as exc:
         _run_main(monkeypatch, *CREDS)
     assert exc.value.code == 1
-    assert "provide --year" in capsys.readouterr().out
+    assert "provide --year" in capsys.readouterr().err
 
 
 def test_main_invalid_start_date(clean_env, monkeypatch, capsys):
     """An unparseable --start date aborts."""
     with pytest.raises(SystemExit):
         _run_main(monkeypatch, *CREDS, "--start", "2025-13-01", "--end", "2025-12-31")
-    assert "invalid date for --start" in capsys.readouterr().out
+    assert "invalid date for --start" in capsys.readouterr().err
 
 
 def test_main_start_after_end_rejected(clean_env, monkeypatch, capsys):
     """--start must not be after --end."""
     with pytest.raises(SystemExit):
         _run_main(monkeypatch, *CREDS, "--start", "2025-12-31", "--end", "2025-01-01")
-    assert "must not be after" in capsys.readouterr().out
+    assert "must not be after" in capsys.readouterr().err
 
 
 @pytest.mark.parametrize("year", ["1899", "2101"])
@@ -790,21 +399,21 @@ def test_main_year_out_of_range(clean_env, monkeypatch, capsys, year):
     """Years outside 1900-2100 are rejected."""
     with pytest.raises(SystemExit):
         _run_main(monkeypatch, *CREDS, "--year", year)
-    assert "invalid year" in capsys.readouterr().out
+    assert "invalid year" in capsys.readouterr().err
 
 
 def test_main_invalid_fiscal_year_start(clean_env, monkeypatch, capsys):
     """A malformed MM-DD fiscal year start is rejected."""
     with pytest.raises(SystemExit):
         _run_main(monkeypatch, *CREDS, "--year", "2025", "--fiscal-year-start", "13-40")
-    assert "invalid fiscal year start" in capsys.readouterr().out
+    assert "invalid fiscal year start" in capsys.readouterr().err
 
 
 def test_main_fiscal_feb29_requires_leap_year(clean_env, monkeypatch, capsys):
     """A 02-29 fiscal start is rejected for a non-leap year."""
     with pytest.raises(SystemExit):
         _run_main(monkeypatch, *CREDS, "--year", "2025", "--fiscal-year-start", "02-29")
-    assert "02-29 requires a leap year" in capsys.readouterr().out
+    assert "02-29 requires a leap year" in capsys.readouterr().err
 
 
 def test_main_invalid_year_from_config(clean_env, monkeypatch, capsys):
@@ -813,13 +422,15 @@ def test_main_invalid_year_from_config(clean_env, monkeypatch, capsys):
     with pytest.raises(SystemExit) as exc:
         _run_main(monkeypatch, *CREDS)
     assert exc.value.code == 1
-    assert "invalid year 'abc'" in capsys.readouterr().out
+    assert "invalid year 'abc'" in capsys.readouterr().err
 
 
 def test_main_tagged_render_failure_reported(pipeline, clean_env, monkeypatch, capsys):
     """A failing tagged-report render is reported but does not stop main()."""
     pipeline.fail = {"tagged"}
-    _run_main(monkeypatch, *CREDS, *RANGE_ARGS, "--tags", "tax")
+    with pytest.raises(SystemExit) as exc:
+        _run_main(monkeypatch, *CREDS, *RANGE_ARGS, "--tags", "tax")
+    assert exc.value.code == 3
     out = capsys.readouterr().out
     assert "FAIL" in out
     assert "files failed" in out

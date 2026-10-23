@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [project.scripts]
-firefly-reports = "firefly_reports.main:main"
+firefly-reports = "firefly_reports.cli:main"
 
 [project.urls]
 Homepage = "https://bytesdust.com"
