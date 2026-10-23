@@ -1,5 +1,7 @@
 """Small PDF widgets: chart image and KPI strip."""
 
+from typing import BinaryIO
+
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
@@ -19,7 +21,7 @@ from firefly_reports.render.pdf.palette import (
 )
 
 
-def chart_image(buf, width: float) -> Image:
+def chart_image(buf: BinaryIO, width: float) -> Image:
     """Chart image at a fixed width, aspect ratio preserved."""
     pw, ph = ImageReader(buf).getSize()
     buf.seek(0)

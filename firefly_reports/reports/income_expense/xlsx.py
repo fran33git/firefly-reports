@@ -1,5 +1,7 @@
 """Excel sheet of the income_expense report."""
 
+from typing import Any
+
 from openpyxl import Workbook
 from openpyxl.styles import Font
 
@@ -25,7 +27,7 @@ from firefly_reports.render.xlsx.styles import (
 # ─────────────────────────────────────────────────
 
 
-def write_sheet(wb: Workbook, data: dict):
+def write_sheet(wb: Workbook, data: dict[str, Any]) -> None:
     ws = wb.create_sheet(t("excel.sheet_income"))
     period = period_str(data["period_start"], data["period_end"])
     sym = data["currency"]

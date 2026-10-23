@@ -225,7 +225,7 @@ def _render_legacy_tagged_report(data: dict[str, Any], output_path: str) -> None
     doc.build(story)
 
 
-def render_tagged_report_pdf(data: dict, path: str, legacy: bool = False):
+def render_tagged_report_pdf(data: dict, path: str, legacy: bool = False) -> None:
     if legacy:
         return _render_legacy_tagged_report(data, path)
     return _render_legacy_tagged_report(data, path)  # TODO: Modern

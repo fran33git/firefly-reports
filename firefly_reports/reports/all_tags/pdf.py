@@ -74,6 +74,6 @@ def _render_modern_all_tags(data: dict, path: str) -> None:
     doc.build(story)
 
 
-def render_all_tags_pdf(data: dict, path: str, legacy: bool = False):
+def render_all_tags_pdf(data: dict, path: str, legacy: bool = False) -> None:
     # Tag Ledger is Modern only
     return _render_modern_all_tags(data, path)

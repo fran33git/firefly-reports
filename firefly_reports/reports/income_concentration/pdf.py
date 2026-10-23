@@ -72,7 +72,7 @@ def _render_legacy_income_concentration(data: dict[str, Any], output_path: str) 
     doc.build(story)
 
 
-def render_income_concentration_pdf(data: dict, path: str, legacy: bool = False):
+def render_income_concentration_pdf(data: dict, path: str, legacy: bool = False) -> None:
     if legacy:
         return _render_legacy_income_concentration(data, path)
     return _render_legacy_income_concentration(data, path)  # TODO: Modern

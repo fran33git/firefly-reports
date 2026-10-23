@@ -32,7 +32,7 @@ def _render_legacy_kpi_scorecard(data: dict[str, Any], output_path: str) -> None
     story += title_block(t("titles.kpi_scorecard"), data["owner"], period, t("pdf.section_kpi"), st)
 
     # ── Section 1: Key KPIs in a two-column table
-    def _kpi_row(label, value, note=""):
+    def _kpi_row(label: str, value: str, note: str = "") -> list[Any]:
         return [
             Paragraph(label, st["cell_l"]),
             Paragraph(value, st["cell_r"]),
@@ -137,7 +137,7 @@ def _render_legacy_kpi_scorecard(data: dict[str, Any], output_path: str) -> None
     doc.build(story)
 
 
-def render_kpi_scorecard_pdf(data: dict, path: str, legacy: bool = False):
+def render_kpi_scorecard_pdf(data: dict, path: str, legacy: bool = False) -> None:
     if legacy:
         return _render_legacy_kpi_scorecard(data, path)
     return _render_legacy_kpi_scorecard(data, path)  # TODO: Modern

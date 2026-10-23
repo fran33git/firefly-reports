@@ -1,5 +1,8 @@
 """Excel sheet of the kpi_scorecard report."""
 
+from typing import Any
+
+from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font
 
 from firefly_reports import i18n
@@ -26,7 +29,7 @@ from firefly_reports.render.xlsx.styles import (
 # ─────────────────────────────────────────────────
 
 
-def write_sheet(wb, data):
+def write_sheet(wb: Workbook, data: dict[str, Any]) -> None:
     ws = wb.create_sheet(t("excel.sheet_kpi"))
     period = period_str(data["period_start"], data["period_end"])
     row = title_block(ws, t("titles.kpi_scorecard"), data["owner"], period)

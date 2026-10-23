@@ -40,7 +40,7 @@ def _render_legacy_yoy(data: dict[str, Any], output_path: str) -> None:
 
     CW = [6.5 * cm, 2.8 * cm, 2.8 * cm, 2.5 * cm, 2.3 * cm]
 
-    def _section(title, rows_data, total_a, total_b):
+    def _section(title: str, rows_data: Any, total_a: Any, total_b: Any) -> None:
         story.append(Paragraph(title, st["section"]))
         hdr = [
             [
@@ -156,7 +156,7 @@ def _render_legacy_yoy(data: dict[str, Any], output_path: str) -> None:
     doc.build(story)
 
 
-def render_yoy_pdf(data: dict, path: str, legacy: bool = False):
+def render_yoy_pdf(data: dict, path: str, legacy: bool = False) -> None:
     if legacy:
         return _render_legacy_yoy(data, path)
     return _render_legacy_yoy(data, path)  # TODO: Modern

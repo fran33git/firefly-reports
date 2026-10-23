@@ -50,7 +50,13 @@ def _render_modern_liquidity_forecast(data: dict[str, Any], output_path: str) ->
     col_w = avail / n_months
     CW = [desc_w] + [col_w] * n_months
 
-    def _proj_row(label, key, style_key="cell_l", val_style_key="cell_r", calc_net=False):
+    def _proj_row(
+        label: str,
+        key: str | None,
+        style_key: str = "cell_l",
+        val_style_key: str = "cell_r",
+        calc_net: bool = False,
+    ) -> list[Any]:
         row = [Paragraph(label, st[style_key])]
         for m in months:
             if calc_net:
@@ -97,6 +103,6 @@ def _render_modern_liquidity_forecast(data: dict[str, Any], output_path: str) ->
     doc.build(story)
 
 
-def render_liquidity_forecast_pdf(data: dict, path: str, legacy: bool = False):
+def render_liquidity_forecast_pdf(data: dict, path: str, legacy: bool = False) -> None:
     # Liquidity forecast is Modern only
     return _render_modern_liquidity_forecast(data, path)

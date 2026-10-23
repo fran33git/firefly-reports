@@ -1,27 +1,44 @@
-"""Smoke test for render_all_xlsx_full."""
+"""Smoke test for the workbook (sheets in registry order)."""
 
-from firefly_reports.data_processor import (
-    build_account_statements,
-    build_bills_report,
-    build_budget_vs_actual,
-    build_cash_flow,
-    build_cumulative_cashflow,
-    build_expense_trend,
-    build_income_concentration,
-    build_income_expense,
-    build_kpi_scorecard,
-    build_liabilities_report,
-    build_net_worth,
-    build_savings_goals,
-    build_summary,
-    build_tagged_report,
-    build_tax_summary,
-    build_transaction_register,
-    build_yoy_comparison,
-)
-from firefly_reports.excel_exporter import render_all_xlsx_full
+from pathlib import Path
+
+from firefly_reports.reports import registry
+from firefly_reports.reports.account_statements.build import build_account_statements
+from firefly_reports.reports.bills.build import build_bills_report
+from firefly_reports.reports.budget_vs_actual.build import build_budget_vs_actual
+from firefly_reports.reports.cash_flow.build import build_cash_flow
+from firefly_reports.reports.cumulative_cashflow.build import build_cumulative_cashflow
+from firefly_reports.reports.expense_trend.build import build_expense_trend
+from firefly_reports.reports.income_concentration.build import build_income_concentration
+from firefly_reports.reports.income_expense.build import build_income_expense
+from firefly_reports.reports.kpi_scorecard.build import build_kpi_scorecard
+from firefly_reports.reports.liabilities.build import build_liabilities_report
+from firefly_reports.reports.net_worth.build import build_net_worth
+from firefly_reports.reports.savings_goals.build import build_savings_goals
+from firefly_reports.reports.summary.build import build_summary
+from firefly_reports.reports.tagged.build import build_tagged_report
+from firefly_reports.reports.tax_summary.build import build_tax_summary
+from firefly_reports.reports.transaction_register.build import build_transaction_register
+from firefly_reports.reports.workbook import write_workbook
+from firefly_reports.reports.yoy.build import build_yoy_comparison
 
 MIN_XLSX_BYTES = 5000
+
+# The 1.x workbook keys of render_all_xlsx_full, mapped to registry report keys.
+KEYS = {
+    "cf": "cash_flow", "ie": "income_expense", "reg": "transaction_register",
+    "net_worth": "net_worth", "statements": "account_statements", "tax": "tax_summary",
+    "trend": "expense_trend", "tagged": "tagged", "budget": "budget_vs_actual", "bills": "bills",
+    "savings": "savings_goals", "liabilities": "liabilities", "kpi": "kpi_scorecard", "yoy": "yoy",
+    "cumulative_cf": "cumulative_cashflow", "concentration": "income_concentration",
+    "summary": "summary",
+}  # fmt: skip
+
+
+def render_all_xlsx_full(reports, output_path):
+    by_key = {KEYS[k]: v for k, v in reports.items()}
+    sheets = [(s.sheet, by_key.get(s.key)) for s in registry.REPORTS if s.sheet]
+    write_workbook(sheets, Path(output_path))
 
 
 def test_render_all_xlsx_full(

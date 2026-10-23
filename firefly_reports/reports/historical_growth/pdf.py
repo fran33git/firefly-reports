@@ -49,7 +49,13 @@ def _render_modern_historical_report(data: dict[str, Any], output_path: str) -> 
     CW = [desc_w] + [col_w] * n_years
 
     # Metric Row definition
-    def _metric_row(label, key, show_pct=False, is_total=False, calc_savings_rate=False):
+    def _metric_row(
+        label: str,
+        key: str | None,
+        show_pct: bool = False,
+        is_total: bool = False,
+        calc_savings_rate: bool = False,
+    ) -> list[Any]:
         row = [Paragraph(label, st["total_l"] if is_total else st["cell_l"])]
         for y in years:
             if calc_savings_rate:
@@ -63,7 +69,7 @@ def _render_modern_historical_report(data: dict[str, Any], output_path: str) -> 
             row.append(Paragraph(val_str, st["total_r"] if is_total else st["cell_r"]))
         return row
 
-    def _delta_row(label, key):
+    def _delta_row(label: str, key: str) -> list[Any]:
         row = [Paragraph(label, st["small"])]
         for i, y in enumerate(years):
             val = y.get(key, Decimal("0"))
@@ -108,6 +114,6 @@ def _render_modern_historical_report(data: dict[str, Any], output_path: str) -> 
     doc.build(story)
 
 
-def render_historical_report_pdf(data: dict, path: str, legacy: bool = False):
+def render_historical_report_pdf(data: dict, path: str, legacy: bool = False) -> None:
     # Historical report is Modern only
     return _render_modern_historical_report(data, path)

@@ -9,11 +9,11 @@ TOTAL_BG = "F2F2F2"  # very light grey for total rows
 RULE_HEX = "CCCCCC"
 
 
-def thin(color=RULE_HEX) -> Side:
+def thin(color: str = RULE_HEX) -> Side:
     return Side(border_style="thin", color=color)
 
 
-def medium(color=DARK_HEX) -> Side:
+def medium(color: str = DARK_HEX) -> Side:
     return Side(border_style="medium", color=color)
 
 
@@ -21,7 +21,7 @@ def grand_border() -> Border:
     return Border(top=medium(), bottom=medium())
 
 
-def body_font(bold=False, size=10, color=DARK_HEX) -> Font:
+def body_font(bold: bool = False, size: float = 10, color: str = DARK_HEX) -> Font:
     return Font(name="Calibri", bold=bold, size=size, color=color)
 
 

@@ -1,6 +1,7 @@
 """Excel sheet of the tax_summary report."""
 
 from decimal import Decimal
+from typing import Any
 
 from openpyxl import Workbook
 from openpyxl.styles import Font
@@ -26,7 +27,7 @@ from firefly_reports.render.xlsx.styles import (
 # ─────────────────────────────────────────────────
 
 
-def write_sheet(wb: Workbook, data: dict):
+def write_sheet(wb: Workbook, data: dict[str, Any]) -> None:
     ws = wb.create_sheet(t("excel.sheet_tax"))
     sym = data["currency"]
     row = title_block(

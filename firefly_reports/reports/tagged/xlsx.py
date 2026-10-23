@@ -1,5 +1,7 @@
 """Excel sheet of the tagged report."""
 
+from typing import Any
+
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font
 from openpyxl.utils import get_column_letter
@@ -28,7 +30,7 @@ from firefly_reports.render.xlsx.styles import (
 # ─────────────────────────────────────────────────
 
 
-def write_sheet(wb: Workbook, data: dict):
+def write_sheet(wb: Workbook, data: dict[str, Any]) -> None:
     tag_label = ", ".join(data["tags"])
     sheet_name = safe_sheet_name(f"Tag {tag_label}" if tag_label else t("excel.sheet_tagged"))
     ws = wb.create_sheet(sheet_name)

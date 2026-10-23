@@ -226,7 +226,7 @@ def _render_modern_net_worth(data: dict[str, Any], output_path: str) -> None:
     doc.build(story)
 
 
-def render_net_worth_pdf(data: dict, path: str, legacy: bool = False):
+def render_net_worth_pdf(data: dict, path: str, legacy: bool = False) -> None:
     if legacy:
         return _render_legacy_net_worth(data, path)
     return _render_modern_net_worth(data, path)

@@ -106,6 +106,6 @@ def _render_modern_linkage_audit(data: dict[str, Any], output_path: str) -> None
     doc.build(story)
 
 
-def render_linkage_audit_pdf(data: dict, path: str, legacy: bool = False):
+def render_linkage_audit_pdf(data: dict, path: str, legacy: bool = False) -> None:
     # Linkage Audit is Modern only
     return _render_modern_linkage_audit(data, path)
