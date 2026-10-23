@@ -91,3 +91,23 @@ def test_init_no_warning_when_gitignore_covers_config(tmp_path, monkeypatch, cap
     _mock_wizard(monkeypatch, ["", "", "", "", "", "", ""], token="secret")
     run_init()
     assert "WARNING" not in capsys.readouterr().out
+
+
+def test_init_template_lists_only_known_keys(tmp_path, monkeypatch):
+    """The commented template parses as valid TOML and uncommenting it uses only known keys."""
+    import re
+    import tomllib
+
+    from firefly_reports.cli.config import unknown_keys
+    from firefly_reports.cli.init import OPTIONAL_TEMPLATE
+
+    monkeypatch.chdir(tmp_path)
+    _mock_wizard(monkeypatch, ["", "", "", "", "", "", ""])
+    run_init()
+    written = (tmp_path / "firefly-reports.toml").read_text(encoding="utf-8")
+    assert "[export]" in written and "[filters]" in written
+    assert unknown_keys(tomllib.loads(written)) == []
+    uncommented = re.sub(r"^# (?=\w+ *=)", "", OPTIONAL_TEMPLATE, flags=re.MULTILINE)
+    parsed = tomllib.loads(uncommented)
+    assert unknown_keys(parsed) == []
+    assert set(parsed) == {"year", "reports", "filters", "tax", "export"}

@@ -50,7 +50,7 @@ The old modules `data_processor`, `pdf_exporter`, `excel_exporter`, `chart_engin
 
 ### Configuration precedence
 
-Token/URL come from CLI flags (`--url`, `--token`), env vars `FIREFLY_URL`/`FIREFLY_TOKEN`, a `.env` file, a `firefly-reports.toml` config file, or an interactive prompt. `cli/_options.resolve_report_settings` holds the precedence table for the other settings (CLI > config file > environment > default), pinned by `tests/cli/test_settings.py`. See `.env.example` and `docs/wiki/Configuration.md`.
+Token/URL come from CLI flags (`--url`, `--token`), env vars `FIREFLY_URL`/`FIREFLY_TOKEN`, a `.env` file, a `firefly-reports.toml` config file, or an interactive prompt. `cli/_options.resolve_report_settings` holds the precedence table for the other settings (CLI > config file > environment > default), pinned by `tests/cli/test_settings.py`. URL/token keep the 1.x order CLI > environment > config file (documented on `resolve_credentials`). `cli/config.py::KNOWN_KEYS` lists every key of `firefly-reports.toml` (including the `[export]` section: `out`, `layout`, `classify_by`, `map`, resolved by `cli/export.resolve_export_settings`); an unlisted key only produces a stderr warning with a suggestion. When the CLI reads a new key, add it to `KNOWN_KEYS` and to the commented template in `cli/init.py` (`test_init_template_lists_only_known_keys` guards the pair). See `.env.example` and `docs/wiki/Configuration.md`.
 
 ### Transaction type semantics
 

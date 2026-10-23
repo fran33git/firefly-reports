@@ -26,7 +26,7 @@ from firefly_reports.cli._options import (
     resolve_credentials,
     resolve_language,
 )
-from firefly_reports.cli.config import load_config
+from firefly_reports.cli.config import load_config, unknown_keys
 from firefly_reports.cli.demo import add_demo_parser, run_demo
 from firefly_reports.cli.export import add_export_parser, run_export_command
 from firefly_reports.cli.init import run_init
@@ -119,7 +119,7 @@ def _dispatch(args: argparse.Namespace, config: Mapping[str, Any], env: Mapping[
             )
             return make_client(url, token, logging.getLogger("firefly_reports.client"))
 
-        return run_export_command(args, client, parse_cli_date)
+        return run_export_command(args, client, parse_cli_date, config)
     return run_report(args, config, env)
 
 
@@ -147,6 +147,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
     args = parser.parse_args(argv2)
     i18n.load(resolve_language(args, config, env))
+    for key, suggestion in unknown_keys(config):
+        if suggestion:
+            msg = i18n.t("cli.warn_unknown_config_key_hint").format(key=key, suggestion=suggestion)
+        else:
+            msg = i18n.t("cli.warn_unknown_config_key").format(key=key)
+        print(msg, file=sys.stderr)
     if legacy:
         print(
             i18n.t("cli.deprecated_no_subcommand").format(command=command_hint(raw)),
