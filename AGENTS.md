@@ -147,6 +147,10 @@ pip-audit -r firefly_reports/requirements.txt
 - Release workflow (`.github/workflows/release.yml`): pushing a tag `v*` checks the tag matches the package version, runs tests, builds the sdist/wheel, publishes to PyPI via OIDC Trusted Publishing (configure the Trusted Publisher on pypi.org), builds a standalone Windows executable with PyInstaller, and creates a GitHub Release. The PyPI distribution is named `firefly-iii-reports` (`firefly-reports` was already taken by an unrelated project); the import package stays `firefly_reports` and the CLI command `firefly-reports`.
 - Wiki sync workflow (`.github/workflows/wiki-sync.yml`): a push to `main` touching `docs/wiki/**` pushes the pages to the GitHub Wiki repository automatically.
 
+## Git identity
+
+Commits in this repository are authored as the GitHub account: name `fran33git`, an address under `users.noreply.github.com` (the `<id>+fran33git@users.noreply.github.com` form listed under GitHub > Settings > Emails). Never use a personal address or another name, and do not override `user.name`/`user.email` to get around this. Check with `git config user.name` before the first commit of a session. `tools/check-identity.sh` (no argument: the next commit; `BASE..HEAD`: a range) is run by CI on the maintainer's pull requests. The name on commits made on github.com (merges) comes from the GitHub profile name, so it must be `fran33git` too. Co-author trailers are not covered by the rule.
+
 ## Security considerations
 
 - **Never commit tokens.** The Firefly III Personal Access Token comes from `FIREFLY_TOKEN`, `.env`, or `firefly-reports.toml`; `.env` is gitignored (see `.env.example`). The deprecation hint of the legacy command form masks `--token`.
