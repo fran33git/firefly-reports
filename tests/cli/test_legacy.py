@@ -117,3 +117,26 @@ def test_main_accepts_an_explicit_argv(tmp_path, monkeypatch, capsys):
         main(["--version"])
     assert exc.value.code == 0
     assert "firefly-reports 2.0.0" in capsys.readouterr().out
+
+
+def test_redact_hides_abbreviated_token_spellings():
+    """argparse accepts unique prefixes, so `--tok X` and `--toke=X` must be masked too."""
+    assert redact(["--tok", "s3cret", "--year", "2025"]) == ["--tok", "***", "--year", "2025"]
+    assert redact(["--toke=s3cret"]) == ["--toke", "***"]
+    assert redact(["--tags", "tax"]) == ["--tags", "tax"]  # a different option is untouched
+
+
+def test_hint_masks_credentials_in_the_url():
+    hint = command_hint(["--url", "https://user:pw@firefly.example.com", "--year", "2025"])
+    assert "pw" not in hint and "user" not in hint and "https://***@firefly.example.com" in hint
+    assert "https://firefly.example.com" in command_hint(["--url=https://firefly.example.com"])
+
+
+def test_hint_quoting_is_platform_aware():
+    argv = ["--owner", "Mario Rossi", "--token", "x"]
+    assert command_hint(argv, windows=False) == (
+        "firefly-reports report --owner 'Mario Rossi' --token ***"
+    )
+    assert command_hint(argv, windows=True) == (
+        'firefly-reports report --owner "Mario Rossi" --token ***'
+    )
