@@ -53,7 +53,7 @@ YEAR = 2025
 
 
 def build_demo_suite(lang: str) -> dict[str, Any]:
-    """Every builder called with the demo inputs exactly as ``demo.main()`` does."""
+    """Every builder called with the demo inputs exactly as ``firefly-reports demo`` does (``cli/demo.py``)."""
     start, end = date(YEAR, 1, 1), date(YEAR, 12, 31)
     prev_start, prev_end = date(YEAR - 1, 1, 1), date(YEAR - 1, 12, 31)
     demo.ensure_ids(demo.TXN_2025, "25-")

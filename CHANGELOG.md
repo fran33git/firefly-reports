@@ -50,6 +50,14 @@ pre-refactor code.
   `FIREFLY_LANG` and `FIREFLY_LEGACY_REPORT`
 
 ### Changed
+- Every on/off option can be switched off from the command line: `--no-legacy-report`, `--no-fetch-links`,
+  `--no-all-tags`, `--no-reconciled-only` and `--show-transfers` override a `true` in `firefly-reports.toml`
+  (before, a `true` in the config file or the environment could not be undone from the command line)
+- A range given with `--start`/`--end` now wins over a `year` kept in the config file (before it was an
+  error); `--year` together with a range is still an error
+- Warnings and the failed-files summary (`[!] N files failed`, the missing `deductible_keywords` notice) go to
+  stderr instead of stdout; results and progress lines stay on stdout
+- `firefly-reports demo` warns on stderr that `--url` and `--token` are ignored
 - `--url`/`--token` now follow the same precedence as every other setting: CLI > `firefly-reports.toml` >
   environment (`FIREFLY_URL`/`FIREFLY_TOKEN`, `.env`) > prompt. Before, the environment beat the config file
   for these two: a config file with `url`/`token` now overrides a stale variable in the shell

@@ -29,8 +29,8 @@ def test_exit_code_3_when_a_file_fails(tmp_path):
     from unittest import mock
 
     with mock.patch("firefly_reports.reports.pipeline.write_workbook", side_effect=OSError("disk")):
-        code, out, _ = run_main(["report", *CREDS, "--year", "2025", "--no-pdf"], tmp_path)
-    assert code == 3 and "files failed" in out
+        code, _, err = run_main(["report", *CREDS, "--year", "2025", "--no-pdf"], tmp_path)
+    assert code == 3 and "files failed" in err
 
 
 def test_api_error_exit_1_without_traceback(tmp_path):

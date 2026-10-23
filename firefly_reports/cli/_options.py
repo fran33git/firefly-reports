@@ -99,19 +99,36 @@ def resolve_language(
     return str(getattr(args, "lang", None) or config.get("lang") or env.get("FIREFLY_LANG", "en"))
 
 
+def _first_set(*values: Any, default: bool = False) -> bool:
+    """The first value that is not ``None`` (a flag given or a key present), else *default*."""
+    for value in values:
+        if value is not None:
+            return bool(value)
+    return default
+
+
+def _env_flag(env: Mapping[str, str], name: str) -> bool | None:
+    """An on/off environment variable: ``None`` when unset, else ``true``/``1`` mean on."""
+    raw = env.get(name)
+    return None if raw is None else raw.lower() in ("true", "1")
+
+
 def resolve_report_settings(
     args: argparse.Namespace, config: Mapping[str, Any], env: Mapping[str, str]
 ) -> ReportSettings:
     """Merge CLI flags, config file and environment into immutable report settings.
 
-    Precedence (first non-empty wins): CLI > config file > environment > default.
+    Precedence (first value given wins): CLI > config file > environment > default. Every
+    on/off setting has an explicit "off" on the command line (``--no-...``,
+    ``--show-transfers``), so a ``true`` in the config file can be overridden.
     """
     filters_cfg = config.get("filters", {})
     reports_cfg = config.get("reports", {})
 
-    year = args.year or config.get("year")
-    if year and (args.start or args.end):
+    if args.year and (args.start or args.end):
         raise ConfigurationError("cli.err_year_and_range")
+    # A range given on the command line wins over a ``year`` kept in the config file.
+    year = None if (args.start or args.end) else (args.year or config.get("year"))
     if not year and (not args.start or not args.end):
         raise ConfigurationError("cli.err_missing_period")
 
@@ -126,10 +143,8 @@ def resolve_report_settings(
         period = Period.between(start, end)
 
     tags = csv_list(args.tags) or list(config.get("tags", []))
-    legacy = bool(
-        args.legacy_report
-        or config.get("legacy_report")
-        or env.get("FIREFLY_LEGACY_REPORT", "false").lower() in ("true", "1")
+    legacy = _first_set(
+        args.legacy_report, config.get("legacy_report"), _env_flag(env, "FIREFLY_LEGACY_REPORT")
     )
     link_delay = (
         args.link_delay if args.link_delay is not None else reports_cfg.get("link_delay", 0.2)
@@ -151,8 +166,10 @@ def resolve_report_settings(
             csv_list(args.categories_exclude)
             or [str(c) for c in filters_cfg.get("categories_exclude", [])]
         ),
-        show_transfers=bool(not args.hide_transfers and filters_cfg.get("show_transfers", True)),
-        reconciled_only=bool(args.reconciled_only or filters_cfg.get("reconciled_only", False)),
+        show_transfers=_first_set(
+            args.show_transfers, filters_cfg.get("show_transfers"), default=True
+        ),
+        reconciled_only=_first_set(args.reconciled_only, filters_cfg.get("reconciled_only")),
     )
     options = ReportOptions(
         owner=args.owner or config.get("owner", ""),
@@ -160,8 +177,8 @@ def resolve_report_settings(
         lang=resolve_language(args, config, env),
         legacy=legacy,
         tags=tuple(tags),
-        all_tags=bool(args.all_tags or reports_cfg.get("all_tags_report") or False),
-        fetch_links=bool(args.fetch_links or reports_cfg.get("fetch_links") or False),
+        all_tags=_first_set(args.all_tags, reports_cfg.get("all_tags_report")),
+        fetch_links=_first_set(args.fetch_links, reports_cfg.get("fetch_links")),
         historical_years=args.years or reports_cfg.get("historical_years") or 3,
         deductible_keywords=tuple(config.get("tax", {}).get("deductible_keywords", [])),
         filters=filters,

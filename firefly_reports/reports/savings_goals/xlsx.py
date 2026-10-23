@@ -19,7 +19,7 @@ from firefly_reports.render.xlsx.layout import (
 
 
 # ─────────────────────────────────────────────────
-# Sheet 1 — Cash Flow Statement
+# Savings Goals sheet
 # ─────────────────────────────────────────────────
 
 

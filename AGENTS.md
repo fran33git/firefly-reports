@@ -50,7 +50,7 @@ The old modules `data_processor`, `pdf_exporter`, `excel_exporter`, `chart_engin
 
 ### Configuration precedence
 
-Token/URL come from CLI flags (`--url`, `--token`), a `firefly-reports.toml` config file, env vars `FIREFLY_URL`/`FIREFLY_TOKEN` (a `.env` file feeds the environment), or an interactive prompt (token only). `cli/_options.resolve_report_settings` holds the precedence table for the other settings (CLI > config file > environment > default), pinned by `tests/cli/test_settings.py`. URL/token follow the same order (`resolve_credentials`; before 2.0 the environment beat the config file). `cli/config.py::KNOWN_KEYS` lists every key of `firefly-reports.toml` (including the `[export]` section: `out`, `layout`, `classify_by`, `map`, resolved by `cli/export.resolve_export_settings`); an unlisted key only produces a stderr warning with a suggestion. When the CLI reads a new key, add it to `KNOWN_KEYS` and to the commented template in `cli/init.py` (`test_init_template_lists_only_known_keys` guards the pair). See `.env.example` and `docs/wiki/Configuration.md`.
+Token/URL come from CLI flags (`--url`, `--token`), a `firefly-reports.toml` config file, env vars `FIREFLY_URL`/`FIREFLY_TOKEN` (a `.env` file feeds the environment), or an interactive prompt (token only). `cli/_options.resolve_report_settings` holds the precedence table for the other settings (CLI > config file > environment > default), pinned by `tests/cli/test_settings.py`. Every on/off setting has an explicit off on the command line (`--no-legacy-report`, `--no-fetch-links`, `--no-all-tags`, `--no-reconciled-only`, `--show-transfers`), so a `true` in the config file can be overridden; a range given with `--start/--end` wins over a `year` kept in the config file (`--year` together with a range is still an error). URL/token follow the same order (`resolve_credentials`; before 2.0 the environment beat the config file). `cli/config.py::KNOWN_KEYS` lists every key of `firefly-reports.toml` (including the `[export]` section: `out`, `layout`, `classify_by`, `map`, resolved by `cli/export.resolve_export_settings`); an unlisted key only produces a stderr warning with a suggestion. When the CLI reads a new key, add it to `KNOWN_KEYS` and to the commented template in `cli/init.py` (`test_init_template_lists_only_known_keys` guards the pair). See `.env.example` and `docs/wiki/Configuration.md`.
 
 ### Transaction type semantics
 
@@ -63,7 +63,7 @@ Token/URL come from CLI flags (`--url`, `--token`), a `firefly-reports.toml` con
 
 ### Exit codes
 
-`0` success, `1` error (configuration, credentials, API, ledger), `2` usage error or a bare invocation with nothing to do, `3` the run finished but some files failed, `130` interrupted. Errors go to stderr.
+`0` success, `1` error (configuration, credentials, API, ledger), `2` usage error, a bare invocation with nothing to do, or `export --validate` without `bean-check` installed, `3` the run finished but some files failed, `130` interrupted. Errors, warnings and the failed-files summary go to stderr; results and progress lines go to stdout.
 
 ## Build and test commands
 
@@ -137,8 +137,10 @@ pip-audit -r firefly_reports/requirements.txt
 1. Create `reports/<key>/` with `__init__.py` (the `SPEC`), `build.py` (a pure `build_<key>()` returning a plain dict, plus the `from_source(src, ctx, built)` adapter), `pdf.py` (`render_<key>_pdf(data, path, legacy=False)`) and, if it has a sheet, `xlsx.py` (`write_sheet(wb, data)`). Copy a small existing package (for example `reports/savings_goals/`).
 2. Add one line to `REPORTS` in `reports/registry.py` (the order is the Excel sheet order, then the other reports, then the views; a report must come after the ones it `depends_on`) and the package name to the import list there.
 3. Add the strings to **both** `translations/en.toml` and `translations/it.toml`.
-4. Add `tests/reports/test_<key>.py`; extend the demo data if the report needs a shape it lacks (`demo/data.py`); regenerate the goldens (`FIREFLY_UPDATE_GOLDEN=1 python -m pytest -m golden`) and review the diff.
-5. Update the user docs (`docs/wiki/Reports-Reference.md`, README, CHANGELOG).
+4. Extend the demo data if the report needs a shape it lacks (`demo/data.py`) and add the report's unit tests (builder, PDF, sheet) next to the existing ones in `tests/test_data_processor.py`, `tests/test_pdf_exporter.py` and `tests/test_excel_exporter.py`, or in a new `tests/reports/test_<key>.py`.
+5. Update what counts the reports by hand: `tests/reports/test_registry.py`, `tests/test_api.py`, `tests/cli/test_demo.py`, `tests/reports/test_pipeline.py`, `tests/test_golden_pipeline.py`; the entries of `tests/golden/harness.py` (`build_demo_suite`, `DEMO_PDFS`); and the PDF count (`27`) in the exe probe of `.github/workflows/ci.yml`.
+6. Regenerate the goldens (`FIREFLY_UPDATE_GOLDEN=1 python -m pytest -m golden`) and review the diff.
+7. Update the user docs (`docs/wiki/Reports-Reference.md`, README, CHANGELOG).
 
 ## CI and deployment
 

@@ -22,7 +22,6 @@
  ],
  "stdout": [
   "[i] Range mode: year-only reports skipped (yoy, historical, liquidity forecast)",
-  "[*] Warning: No 'deductible_keywords' defined in [tax] section of config. All expenses will be non-deductible.",
   "[*] Connecting to https://demo.invalid",
   "[*] Downloading data...",
   "    -> 30 transactions (2025-01-01 -> 2025-06-30)",

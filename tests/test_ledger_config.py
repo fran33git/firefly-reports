@@ -65,3 +65,13 @@ def test_duplicate_category_key_after_str_rejected():
 def test_categories_section_must_be_a_mapping():
     with pytest.raises(ConfigError):
         parse_ledger_config({"categories": ["x"]})
+
+
+def test_example_mapping_file_is_valid():
+    """beancount_map.example.yaml stays loadable and shows the category mode."""
+    from pathlib import Path
+
+    from firefly_reports.ledger.mapping import load_ledger_config
+
+    config = load_ledger_config(Path(__file__).parent.parent / "beancount_map.example.yaml")
+    assert config.categories_expense and config.categories_income

@@ -15,7 +15,7 @@ from firefly_reports.render.pdf.styles import classic_styles
 from firefly_reports.render.pdf.tables import accounting_table
 
 # ═══════════════════════════════════════════════════
-# REPORT 1 — Cash Flow Statement
+# Savings Goals report
 # (3 pages: Inflows | Outflows | Monthly summary)
 # ═══════════════════════════════════════════════════
 
@@ -97,6 +97,6 @@ def _render_legacy_savings_goals(data: dict[str, Any], output_path: str) -> None
 
 
 def render_savings_goals_pdf(data: dict, path: str, legacy: bool = False) -> None:
-    if legacy:
-        return _render_legacy_savings_goals(data, path)
-    return _render_legacy_savings_goals(data, path)  # TODO: Modern
+    # One layout only: the modern style has no separate design for this report yet, so
+    # ``legacy`` changes nothing here (kept for the common renderer signature).
+    return _render_legacy_savings_goals(data, path)

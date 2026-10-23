@@ -46,17 +46,11 @@ def test_parse_args_defaults(monkeypatch):
     assert args.categories_exclude is None
     assert args.fiscal_year_start is None
     assert args.debug_file is None
-    for flag in (
-        "legacy_report",
-        "fetch_links",
-        "all_tags",
-        "no_pdf",
-        "no_excel",
-        "hide_transfers",
-        "reconciled_only",
-        "debug",
-    ):
+    for flag in ("no_pdf", "no_excel", "debug"):
         assert getattr(args, flag) is False
+    # Paired on/off flags stay None until given, so the config file can decide.
+    for flag in ("legacy_report", "fetch_links", "all_tags", "show_transfers", "reconciled_only"):
+        assert getattr(args, flag) is None
 
 
 def test_parse_args_all_flags(monkeypatch):
@@ -126,11 +120,11 @@ def test_parse_args_all_flags(monkeypatch):
         "all_tags",
         "no_pdf",
         "no_excel",
-        "hide_transfers",
         "reconciled_only",
         "debug",
     ):
         assert getattr(args, flag) is True
+    assert args.show_transfers is False  # --hide-transfers
 
 
 @pytest.mark.parametrize(

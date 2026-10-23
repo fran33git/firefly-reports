@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -12,6 +13,7 @@ from firefly_reports.cli._options import resolve_language
 from firefly_reports.cli.report import execute
 from firefly_reports.demo import data
 from firefly_reports.demo.client import DemoClient
+from firefly_reports.i18n import t
 from firefly_reports.reports.options import Period, ReportOptions
 
 DEFAULT_YEAR = 2025
@@ -47,6 +49,8 @@ def add_demo_parser(sub: Any, common: argparse.ArgumentParser) -> None:
 
 def run_demo(args: argparse.Namespace, config: Mapping[str, Any], env: Mapping[str, str]) -> int:
     """Run the report pipeline on ``DemoClient``; returns the process exit code."""
+    if getattr(args, "url", None) or getattr(args, "token", None):
+        print(t("cli.warn_demo_ignores_credentials"), file=sys.stderr)
     period = Period.for_year(args.year or DEFAULT_YEAR)
     options = ReportOptions(
         owner=data.OWNER,

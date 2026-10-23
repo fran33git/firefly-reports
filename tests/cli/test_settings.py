@@ -35,12 +35,23 @@ def settings_range(argv=(), config=None, env=None):
         ([], {"legacy_report": True}, {}, "legacy", True),
         ([], {}, {"FIREFLY_LEGACY_REPORT": "true"}, "legacy", True),
         ([], {}, {"FIREFLY_LEGACY_REPORT": "0"}, "legacy", False),
+        # an explicit "off" wins at every level
+        (
+            ["--no-legacy-report"],
+            {"legacy_report": True},
+            {"FIREFLY_LEGACY_REPORT": "1"},
+            "legacy",
+            False,
+        ),
+        ([], {"legacy_report": False}, {"FIREFLY_LEGACY_REPORT": "1"}, "legacy", False),
         # historical years: CLI > [reports] > 3
         (["--years", "5"], {"reports": {"historical_years": 3}}, {}, "historical_years", 5),
         ([], {"reports": {"historical_years": 5}}, {}, "historical_years", 5),
         ([], {}, {}, "historical_years", 3),
-        # flags OR config
+        # on/off flags: CLI (on or off) > config > default
         (["--fetch-links"], {}, {}, "fetch_links", True),
+        (["--no-fetch-links"], {"reports": {"fetch_links": True}}, {}, "fetch_links", False),
+        (["--no-all-tags"], {"reports": {"all_tags_report": True}}, {}, "all_tags", False),
         ([], {"reports": {"fetch_links": True}}, {}, "fetch_links", True),
         ([], {}, {}, "fetch_links", False),
         (["--all-tags"], {}, {}, "all_tags", True),
@@ -80,6 +91,13 @@ def test_option_precedence(argv, config, env, attr, expected):
         (["--hide-transfers"], {}, "show_transfers", False),
         ([], {"filters": {"show_transfers": False}}, "show_transfers", False),
         ([], {}, "show_transfers", True),
+        (["--show-transfers"], {"filters": {"show_transfers": False}}, "show_transfers", True),
+        (
+            ["--no-reconciled-only"],
+            {"filters": {"reconciled_only": True}},
+            "reconciled_only",
+            False,
+        ),
         (["--reconciled-only"], {}, "reconciled_only", True),
         ([], {"filters": {"reconciled_only": True}}, "reconciled_only", True),
     ],
@@ -104,12 +122,20 @@ def test_fiscal_year_start_precedence():
     assert settings(["--fiscal-year-start", "04-01"], cfg).period.start == date(2025, 4, 1)
 
 
-def test_year_comes_from_the_config_file_and_conflicts_with_a_range():
+def test_year_comes_from_the_config_file_and_a_cli_range_overrides_it():
     args = build_parser().parse_args(["report"])
     assert resolve_report_settings(args, {"year": 2024}, {}).period.start == date(2024, 1, 1)
-    clash = build_parser().parse_args(["report", "--start", "2025-01-01"])
+    # A range on the command line wins over the config year...
+    rng = build_parser().parse_args(["report", "--start", "2025-01-01", "--end", "2025-03-31"])
+    got = resolve_report_settings(rng, {"year": 2024}, {})
+    assert got.period.start == date(2025, 1, 1) and not got.period.year_mode
+    # ...but half a range is incomplete, and --year with a range is still a clash.
+    half = build_parser().parse_args(["report", "--start", "2025-01-01"])
+    with pytest.raises(ConfigurationError, match="provide --year"):
+        resolve_report_settings(half, {"year": 2024}, {})
+    clash = build_parser().parse_args(["report", "--year", "2025", "--start", "2025-01-01"])
     with pytest.raises(ConfigurationError, match="either --year or --start/--end"):
-        resolve_report_settings(clash, {"year": 2024}, {})
+        resolve_report_settings(clash, {}, {})
     with pytest.raises(ConfigurationError, match="provide --year"):
         resolve_report_settings(build_parser().parse_args(["report"]), {}, {})
 

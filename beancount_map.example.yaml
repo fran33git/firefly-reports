@@ -9,6 +9,20 @@ accounts:
   "Risparmio / Emergenza": "Assets:Banca:Intesa:Risparmio"
   "Mutuo Casa": "Liabilities:Mutuo"
 
+# Where expense/income accounts come from: "category" (default: the Firefly category) or
+# "account" (the counterpart account). The `--classify-by` flag overrides it.
+# classify_by: category
+
+# Firefly category -> Beancount account, by block (expense: Expenses:..., income: Income:...).
+# `--scaffold` lists your categories with the number of splits each has; the export stops
+# while a category is missing here (or pass --allow-unmapped).
+categories:
+  expense:
+    "Spesa": "Expenses:Alimentari"
+    "Auto": "Expenses:Trasporti:Auto"
+  income:
+    "Stipendio": "Income:Lavoro:Stipendio"
+
 # Firefly investment accounts -> broker name. They become
 # <investment_root>:<Broker>:Cash. Securities positions are NOT generated from
 # Firefly (it has no quantities or prices): keep them in a hand-written file.
