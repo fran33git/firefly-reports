@@ -32,7 +32,7 @@ jobs:
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
           HEAD: ${{ github.event.pull_request.head.sha }}
-        run: tools/check-identity.sh "$BASE..$HEAD"
+        run: bash tools/check-identity.sh "$BASE..$HEAD"
 
   types:
     name: Type check (mypy)

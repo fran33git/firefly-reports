@@ -11,15 +11,19 @@ CONFIG_FILE = Path("./firefly-reports.toml")
 
 # Every key the CLI reads; ``None`` marks a top-level value, a set a ``[section]``.
 KNOWN_KEYS: dict[str, frozenset[str] | None] = {
-    "url": None,
-    "token": None,
-    "owner": None,
-    "currency": None,
-    "lang": None,
-    "legacy_report": None,
-    "out": None,
-    "tags": None,
-    "year": None,
+    **dict.fromkeys(
+        (
+            "url",
+            "token",
+            "owner",
+            "currency",
+            "lang",
+            "legacy_report",
+            "out",
+            "tags",
+            "year",
+        )
+    ),
     "reports": frozenset({"fetch_links", "all_tags_report", "historical_years", "link_delay"}),
     "filters": frozenset(
         {
