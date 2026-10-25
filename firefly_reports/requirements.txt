@@ -38,7 +38,7 @@ pillow==12.3.0
     #   reportlab
 pyparsing==3.3.2
     # via matplotlib
-python-dateutil==2.9.0.post0
+python-dateutil==3.0.0
     # via
     #   -r requirements.in
     #   matplotlib
@@ -49,6 +49,8 @@ reportlab==4.5.1
 requests==2.34.2
     # via -r requirements.in
 six==1.17.0
+    # via python-dateutil
+tzdata==2026.5
     # via python-dateutil
 urllib3==2.7.0
     # via requests
