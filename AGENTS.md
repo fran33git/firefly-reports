@@ -32,6 +32,7 @@ Everything lives in `firefly_reports/` and is imported with package-qualified ab
 | `render/` | What many reports share and that knows nothing about reports: `fmt.py` (number/date/period formats), `charts.py` (matplotlib object-oriented API, no `pyplot`), `pdf/` (palette, styles, page, tables, widgets), `xlsx/` (styles, layout) |
 | `ledger/` | Plain-text-accounting export (`firefly-reports export beancount`): `convert.py` (Firefly splits -> neutral `model.py`, pure), `accounts.py`, `mapping.py` (YAML mapping), `mapfile.py` (safe textual edits of the mapping), `scaffold.py` (mapping draft), `labels.py` (i18n strings), `writers/` (`LedgerWriter` protocol, `BeancountWriter`, `atomic_write`), `validate.py` (optional `bean-check`), `export.py` (orchestration, `--init`) |
 | `firefly_client.py` | `FireflyClient` wraps the Firefly III REST API; the only module (with `api.py` and `cli/`) that imports `requests` |
+| `tlstrust/` | TLS trust lists, standard library only: `spki.py` (`spki_sha256` of a DER certificate), `lists.py` (`TrustEntry`, `ENTRIES` with level `block`/`warn`, `LIST_DATE`, `index`), `chain.py` (`read_verified_chain`: public API on 3.13+, private `_sslobj` binding on 3.11/3.12), `policy.py` (`evaluate` -> `Verdict`). Used by `firefly_client.py` only |
 | `i18n.py` | `Translator` (frozen), process default set by `load(lang)`, per-thread/task override `using(lang)` (a `ContextVar`), `current()`, `t("pdf.category")` (falls back to `en`, then to the key) |
 | `clock.py` | `now()`, `today()`, `frozen(at)`: the only way to read the time, so output can be deterministic |
 | `errors.py` | `FireflyReportsError` (`ConfigurationError`, `FireflyAPIError`, `ReportError`; `ledger.errors.LedgerError` derives from it): a translation key plus parameters, rendered lazily |
@@ -106,6 +107,7 @@ pip-audit -r firefly_reports/requirements.txt
 - Builders (`reports/*/build.py`, `_money`, `_labels`, `filters`, `options`, `spec`) do zero I/O: they import none of `reportlab`, `openpyxl`, `matplotlib`, `requests`, `os`, `pathlib`, `io`, `render`, `cli`.
 - `render/` imports neither `reports`, `api`, `cli` nor `ledger`; `ledger/` imports none of `reports`, `render`, `cli`, `api`.
 - `requests` is imported only by `firefly_client.py`, `api.py` and `cli/`. Nothing outside `cli/`, `main.py` and `demo/__main__.py` imports `cli`.
+- `tlstrust/` imports only the standard library and itself. `urllib3`, like `requests`, is imported only by `firefly_client.py`, `api.py` and `cli/`.
 - `print`, `input` and `sys.exit` live in `cli/` only (grandfathered: `ledger/export.py`).
 - No `importlib` / `__import__`: PyInstaller follows static imports only (the registry imports every report package explicitly).
 
@@ -118,6 +120,14 @@ pip-audit -r firefly_reports/requirements.txt
 - `tools/ab_snapshot.py write|compare DIR` is a local-only byte-level A/B check of the PDFs (ReportLab `invariant` mode and a frozen clock) used while refactoring output code; it is not a test.
 - Ledger tests (`tests/test_ledger*.py`) use `tests/fixtures/firefly_transactions.json` (plus `firefly_account_types.json`); the `bean-check` integration tests need `beancount` (CI installs it; install it locally so they run).
 - `tests/test_packaging.py::test_wheel_contents` builds the wheel with `FIREFLY_BUILD_WHEEL=1`.
+
+## TLS trust lists (`firefly_reports/tlstrust/`)
+
+- Right after the TLS handshake `firefly_client.py` reads the chain OpenSSL verified and compares the SPKI SHA-256 of every certificate with `tlstrust/lists.py`, before any request byte (and therefore the token) is sent. `block` refuses (`UntrustedChainError`, exit 1); `warn` prints a notice on stderr. The check is additive: certificate and hostname verification stay exactly as `requests` does them, and `session.verify` stays `True`.
+- Not readable (private binding gone, resumed session, a proxy that wraps TLS in TLS) means "not checked": the connection continues with an explicit warning, never silently. `tests/test_tls_binding_guard.py` fails in CI if the chain stops being readable on a supported Python, so this mode stays exceptional.
+- `--trust-insecure-ssl` (report and export, command line only, never the config file or the environment) sets `verify=False` and skips the check. Nothing else may disable it.
+- Changing the lists: entries are *keys*, not certificates (a reissued or cross-signed certificate keeps its key). Compute every hash from the certificate itself (fetch it by the fingerprint a primary source publishes, require that it hashes back to it, then `spki_sha256`), cite primary sources (CCADB, Mozilla/Chrome root program, the CA's own statement) in `sources`, update `LIST_DATE`, and never add a hash copied from an article. Tests require that no `block` key is in the current `certifi` bundle and that the `warn` roots are. Promoting `warn` to `block` is a data change plus a release; executables already built keep the lists they shipped with.
+- Tests: the `allow_loopback` fixture lets a test reach `127.0.0.1` only; throwaway certificates come from the `openssl` command line (`tests/tls_helpers.py`), which skips locally and fails under CI when missing. The executable smoke test reads a real chain inside the frozen binary.
 
 ## Ledger export (Beancount)
 
@@ -167,6 +177,7 @@ When it fails: fix the commits that are not published yet (`git commit --amend`,
 - **Never commit tokens.** The Firefly III Personal Access Token comes from `FIREFLY_TOKEN`, `.env`, or `firefly-reports.toml`; `.env` is gitignored (see `.env.example`). The deprecation hint of the legacy command form masks `--token`.
 - Bandit runs in CI (no exclusions except the Windows venv); `pip-audit` audits `firefly_reports/requirements.txt`.
 - Do not introduce network calls outside `firefly_client.py`; keep mock/test data offline.
+- Never weaken the TLS chain check: no config key or environment variable may disable it, and an unreadable chain must always produce a visible warning.
 
 ## Documentation
 

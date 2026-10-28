@@ -20,7 +20,25 @@
 
 - Firefly III is unreachable from the machine running this tool → check network/VPN/firewall.
 - Wrong base URL → the URL must point to the root of the instance (e.g. `https://firefly.example.com`), not to a sub-path.
-- SSL certificate error → if your instance uses a self-signed certificate, you may need to configure requests to trust it.
+- SSL certificate error → if your instance uses a self-signed certificate, trust it properly (`REQUESTS_CA_BUNDLE=/path/to/ca.pem`). `--trust-insecure-ssl` also works but turns off **all** certificate verification.
+
+---
+
+## Refusing to connect: untrusted CA
+
+**Symptom:** `Error: refusing to connect to <host>: its certificate chain contains '<CA>' (...). Nothing was sent.` (exit code 1)
+
+**Cause:** the certificate chain of your Firefly III server contains a CA key on the internal blocklist: a key known to be compromised (for example the eMudhra intermediates of October 2026, including their Sectigo cross-signed certificates). The check runs right after the TLS handshake, so your token was **not** sent.
+
+**Fix:** get a certificate for your instance from another CA (for example Let's Encrypt). `--trust-insecure-ssl` bypasses the check, but it also turns off every other certificate check, so use it only for a server you control and on a network you trust.
+
+## Warnings about the certificate chain
+
+- `... contains '<CA>', a CA under review` → the chain includes a CA that browsers and root programs are reviewing. The connection continues; plan to move to another CA.
+- `... could not be checked against the CA lists (<reason>)` → this Python or proxy does not let the tool read the verified chain, or the TLS session was resumed. The standard certificate verification still applied. If it persists, run with `--debug` and look for the `TLS chain for ...` lines in the log.
+- `--trust-insecure-ssl is active` → verification is off; remove the flag as soon as you can.
+
+Lists ship with each release: an older installation or executable does not know about newer incidents, so keep the tool up to date.
 
 ---
 

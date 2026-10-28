@@ -24,6 +24,7 @@ The plain-text-accounting export is a second, independent branch that starts fro
 | `chart_engine.py` | Matplotlib (Agg) charts for the dashboard PDFs, sharing one visual identity (steel/slate palette, 200 dpi, locale-aware compact labels): donut, bar, line, area and income/expense combo |
 | `config.py` | Loads `./firefly-reports.toml` using `tomllib`; returns an empty dict when absent |
 | `ledger/` | Separate export branch (`firefly-reports export beancount`): Firefly splits → neutral model → `LedgerWriter` (`BeancountWriter`). Details in [[Ledger-Architecture]], usage in [[Beancount-Export]] |
+| `tlstrust/` | TLS trust lists, standard library only: SPKI hashing of a DER certificate, the block/warn lists, reading the verified chain (public API on Python 3.13+, private binding on 3.11/3.12) and the policy that compares them. `firefly_client.py` runs it right after the handshake, before any request is sent |
 | `i18n.py` | Translation singleton; call `i18n.load("en")` once at startup; use `i18n.t("key")` anywhere |
 | `main.py` | CLI argument parsing, credential resolution, orchestration of all pipeline steps |
 | `demo.py` | Standalone runner with hard-coded mock data; produces all 26 reports without a Firefly III instance |
