@@ -102,8 +102,9 @@ def connect(
     The TLS chain of the server is checked against the CA lists of ``firefly_reports.tlstrust``
     before any request is sent; a blocked key raises ``UntrustedChainError``. With
     ``trust_insecure_ssl=True`` certificate verification is turned off altogether (the token can
-    then be intercepted). *on_notice* receives warnings about the TLS connection; the library
-    never prints.
+    then be intercepted). *on_notice* receives warnings about the TLS connection; without it
+    they are raised as ``firefly_reports.firefly_client.TrustWarning`` (a ``UserWarning``), so the
+    library never prints but is never silent either.
     """
     from firefly_reports.firefly_client import FireflyClient
 

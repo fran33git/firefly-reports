@@ -8,7 +8,7 @@ from firefly_reports.cli import build_parser, main
 from firefly_reports.cli._console import print_trust_notice
 from firefly_reports.demo.client import DemoClient
 from firefly_reports.errors import UntrustedChainError
-from firefly_reports.firefly_client import TrustNotice
+from firefly_reports.firefly_client import TrustNotice, TrustWarning
 from tests.golden.harness import run_main
 
 CREDS = ["--url", "https://demo.invalid", "--token", "x"]
@@ -132,6 +132,6 @@ def test_blocked_chain_message_follows_the_language(tmp_path):
 
 def test_connect_passes_the_flag_through_the_library_api():
     assert connect("https://firefly.example.org", "t").session.verify is True
-    assert (
-        connect("https://firefly.example.org", "t", trust_insecure_ssl=True).session.verify is False
-    )
+    with pytest.warns(TrustWarning):  # no on_notice: the library warns instead of staying silent
+        insecure = connect("https://firefly.example.org", "t", trust_insecure_ssl=True)
+    assert insecure.session.verify is False

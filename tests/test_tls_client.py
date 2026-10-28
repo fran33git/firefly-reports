@@ -1,6 +1,7 @@
 """The TLS chain check in FireflyClient: refuse before any request byte, warn, or pass."""
 
 import logging
+import platform
 import warnings
 
 import pytest
@@ -10,7 +11,7 @@ from urllib3.exceptions import InsecureRequestWarning
 
 from firefly_reports import firefly_client
 from firefly_reports.errors import UntrustedChainError
-from firefly_reports.firefly_client import FireflyClient, TrustNotice
+from firefly_reports.firefly_client import FireflyClient, TrustNotice, TrustWarning
 from firefly_reports.tlstrust.lists import TrustEntry
 from firefly_reports.tlstrust.spki import spki_sha256
 from tests.tls_helpers import FakeTlsSocket, cert_der, make_cert
@@ -172,7 +173,8 @@ def test_trust_insecure_ssl_says_nothing_for_a_plain_http_url():
 
 
 def test_urllib3_warning_is_replaced_by_the_project_notice(monkeypatch):
-    client = FireflyClient(URL, TOKEN, trust_insecure_ssl=True)
+    notices: list[TrustNotice] = []
+    client = FireflyClient(URL, TOKEN, trust_insecure_ssl=True, on_notice=notices.append)
 
     class Resp:
         status_code = 200
@@ -200,11 +202,12 @@ def test_debug_log_explains_each_step_and_never_logs_the_token(serve, ders, monk
     chains["firefly.example.org"] = ders
     _lists(monkeypatch, (ders[2], "Some Root", "warn"))
     with caplog.at_level(logging.DEBUG, logger="firefly_reports.client"):
-        _connect(FireflyClient(URL, TOKEN))
+        _connect(FireflyClient(URL, TOKEN, on_notice=lambda notice: None))
     text = caplog.text
     assert "TLS chain for firefly.example.org: path=private certs=3" in text
     assert spki_sha256(ders[0]) in text and "Some Root" in text
     assert "verdict" in text and "lists" in text
+    assert f"Python {platform.python_version()}" in text and "OpenSSL" in text
     assert TOKEN not in text
 
 
@@ -217,3 +220,36 @@ def test_a_blocked_chain_is_never_swallowed_by_the_deep_fetch(monkeypatch):
     monkeypatch.setattr(client, "get_transaction_journal_by_id", blocked)
     with pytest.raises(UntrustedChainError):
         client.fetch_link_details(["1", "2"])
+
+
+def test_without_a_callback_an_unchecked_chain_becomes_a_python_warning(serve, monkeypatch):
+    chains, _ = serve
+    chains["firefly.example.org"] = None
+    _lists(monkeypatch)
+    with pytest.warns(TrustWarning, match=r"firefly\.example\.org.*could not be checked"):
+        _connect(FireflyClient(URL, TOKEN))
+
+
+def test_without_a_callback_a_warn_entry_becomes_a_python_warning(serve, ders, monkeypatch):
+    chains, _ = serve
+    chains["firefly.example.org"] = ders
+    _lists(monkeypatch, (ders[2], "Some Root", "warn"))
+    with pytest.warns(TrustWarning, match="Some Root"):
+        _connect(FireflyClient(URL, TOKEN))
+
+
+def test_without_a_callback_trust_insecure_ssl_warns_loudly():
+    with pytest.warns(TrustWarning, match=r"firefly\.example\.org.*not verified"):
+        FireflyClient(URL, TOKEN, trust_insecure_ssl=True)
+
+
+def test_with_a_callback_no_python_warning_is_added(serve, ders, monkeypatch):
+    chains, _ = serve
+    chains["firefly.example.org"] = ders
+    _lists(monkeypatch, (ders[2], "Some Root", "warn"))
+    notices: list[TrustNotice] = []
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", TrustWarning)
+        _connect(FireflyClient(URL, TOKEN, on_notice=notices.append))
+        FireflyClient(URL, TOKEN, trust_insecure_ssl=True, on_notice=notices.append)
+    assert [n.kind for n in notices] == ["warn_list", "insecure"]

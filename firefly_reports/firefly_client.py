@@ -1,7 +1,9 @@
 """Firefly III REST API client with transparent pagination."""
 
 import logging
+import platform
 import re
+import ssl
 import time
 import warnings
 from collections.abc import Callable
@@ -44,6 +46,23 @@ class TrustNotice:
     detail: str
 
 
+class TrustWarning(UserWarning):
+    """A TLS trust notice raised as a Python warning when the caller supplied no ``on_notice``.
+
+    The library never prints, but it must never be silent either: a user of ``api.connect`` who
+    passes no callback still gets these through the ``warnings`` module.
+    """
+
+
+_NOTICE_TEXT = {
+    "insecure": "--trust-insecure-ssl is active: the certificate of {host} is not verified and "
+    "the CA lists are not applied",
+    "warn_list": "the certificate chain of {host} contains '{detail}', a CA under review",
+    "unchecked": "the certificate chain of {host} could not be checked against the CA lists "
+    "({detail})",
+}
+
+
 class _TrustChecker:
     """The chain check shared by all connections of one client: the lists, the log, the notices."""
 
@@ -61,11 +80,15 @@ class _TrustChecker:
         self._seen.add(notice)
         if self._on_notice is not None:
             self._on_notice(notice)
+            return
+        text = _NOTICE_TEXT[notice.kind].format(host=notice.host, detail=notice.detail)
+        warnings.warn(TrustWarning(text), stacklevel=2)
 
     def inspect(self, host: str, sock: object) -> None:
         """Check the verified chain of a just-handshaken socket; raise on a BLOCK key."""
         log = self._log
         read = read_verified_chain(sock)
+        log.debug("TLS check: Python %s, %s", platform.python_version(), ssl.OPENSSL_VERSION)
         log.debug("TLS chain for %s: path=%s certs=%d", host, read.path, len(read.certs))
         log.debug(
             "TLS lists %s: %d block, %d warn entries",
