@@ -4,7 +4,7 @@ import tomllib
 
 import pytest
 
-from firefly_reports import config as cfg
+from firefly_reports.cli import config as cfg
 
 
 def test_load_config_returns_empty_when_no_file(tmp_path, monkeypatch):
@@ -43,3 +43,20 @@ def test_load_config_raises_on_malformed_toml(tmp_path, monkeypatch):
     config_file.write_text("this is not = valid = toml\n", encoding="utf-8")
     with pytest.raises(tomllib.TOMLDecodeError):
         cfg.load_config()
+
+
+def test_unknown_keys_reports_typos_with_suggestion():
+    """Unknown top-level and section keys are listed, with the closest known key."""
+    found = cfg.unknown_keys(
+        {"url": "x", "ouptut": 1, "export": {"layuot": "single", "out": "l"}, "reports": {"zzz": 1}}
+    )
+    assert ("ouptut", None) in found or ("ouptut", "out") in found
+    assert ("export.layuot", "export.layout") in found
+    assert ("reports.zzz", None) in found
+    assert all(key not in ("url", "export.out") for key, _ in found)
+
+
+def test_unknown_keys_empty_for_known_config():
+    """Every key the CLI reads is accepted."""
+    config = {"url": "u", "year": 2025, "export": {"out": "l"}, "tax": {"deductible_keywords": []}}
+    assert cfg.unknown_keys(config) == []

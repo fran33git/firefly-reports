@@ -1,0 +1,234 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Year-over-Year Comparison"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2024 vs. 2025"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "COMPARISON BETWEEN THE TWO PERIODS"
+  },
+  {
+   "p": "section",
+   "text": "SECTION I — INCOME BY CATEGORY"
+  },
+  {
+   "table": [
+    [
+     "Category",
+     "2025",
+     "2024",
+     "Abs. Δ",
+     "Δ %"
+    ],
+    [
+     "Professional Fees",
+     "€ 15,050.00",
+     "€ 10,700.00",
+     "€ 4,350.00",
+     "40.7 %"
+    ],
+    [
+     "Consulting",
+     "1,500.00",
+     "0.00",
+     "1,500.00",
+     "—"
+    ],
+    [
+     "Reimbursements",
+     "600.00",
+     "0.00",
+     "600.00",
+     "—"
+    ],
+    [
+     "Total",
+     "€ 17,150.00",
+     "€ 10,700.00",
+     "€ 6,450.00",
+     "60.3 %"
+    ]
+   ],
+   "colWidths": [
+    184.25,
+    79.37,
+    79.37,
+    70.87,
+    65.2
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "SECTION II — EXPENSES BY CATEGORY"
+  },
+  {
+   "table": [
+    [
+     "Category",
+     "2025",
+     "2024",
+     "Abs. Δ",
+     "Δ %"
+    ],
+    [
+     "Office Rent",
+     "€ 1,400.00",
+     "€ 260.00",
+     "€ 1,140.00",
+     "438.5 %"
+    ],
+    [
+     "Taxes",
+     "1,200.00",
+     "900.00",
+     "300.00",
+     "33.3 %"
+    ],
+    [
+     "Taxes & Contributions",
+     "780.08",
+     "0.00",
+     "780.08",
+     "—"
+    ],
+    [
+     "Travel & Transport",
+     "685.00",
+     "0.00",
+     "685.00",
+     "—"
+    ],
+    [
+     "Social Security Contributions",
+     "650.00",
+     "580.00",
+     "70.00",
+     "12.1 %"
+    ],
+    [
+     "Accountant Fees",
+     "320.00",
+     "0.00",
+     "320.00",
+     "—"
+    ],
+    [
+     "Software & Subscriptions",
+     "288.00",
+     "75.00",
+     "213.00",
+     "284.0 %"
+    ],
+    [
+     "Office Supplies",
+     "155.00",
+     "0.00",
+     "155.00",
+     "—"
+    ],
+    [
+     "Professional Training",
+     "120.00",
+     "200.00",
+     "(80.00)",
+     "-40.0 %"
+    ],
+    [
+     "Total",
+     "€ 5,598.08",
+     "€ 2,015.00",
+     "€ 3,583.08",
+     "177.8 %"
+    ]
+   ],
+   "colWidths": [
+    184.25,
+    79.37,
+    79.37,
+    70.87,
+    65.2
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "NET"
+  },
+  {
+   "table": [
+    [
+     "",
+     "2025",
+     "2024",
+     "Abs. Δ",
+     "Δ %"
+    ],
+    [
+     "Total Income",
+     "€ 17,150.00",
+     "€ 10,700.00",
+     "€ 6,450.00",
+     "60.3 %"
+    ],
+    [
+     "Total Expenses",
+     "€ 5,598.08",
+     "€ 2,015.00",
+     "€ 3,583.08",
+     "177.8 %"
+    ],
+    [
+     "Net Flow",
+     "€ 11,551.92",
+     "€ 8,685.00",
+     "€ 2,866.92",
+     ""
+    ]
+   ],
+   "colWidths": [
+    184.25,
+    79.37,
+    79.37,
+    70.87,
+    65.2
+   ]
+  },
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "small",
+   "text": "Abs. Δ: 2025 − 2024. Positive value = growth in the more recent period. Values in parentheses = negative change."
+  }
+ ],
+ "strings": [
+  "YEAR-OVER-YEAR COMPARISON",
+  "Sample User — Freelancer",
+  "Period: 2024 vs 2025   ·   Generated on 2026-01-15",
+  "Page 1"
+ ],
+ "pages": 1
+}

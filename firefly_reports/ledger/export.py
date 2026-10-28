@@ -15,7 +15,7 @@ from typing import Any, Protocol
 
 import yaml
 
-from firefly_reports import i18n
+from firefly_reports import clock, i18n
 from firefly_reports.i18n import t
 from firefly_reports.ledger.accounts import AccountResolver
 from firefly_reports.ledger.convert import build_ledger
@@ -145,7 +145,7 @@ def render_main_beancount(
         f'option "title" "{t("ledger.init_title")}"',
         *(f'option "operating_currency" "{cur}"' for cur in operating),
         # Beancount rejects unknown options; Fava reads its own settings from custom directives.
-        f'{FAVA_OPTION_DATE} custom "fava-option" "language" "{i18n.CURRENT_LANG}"',
+        f'{FAVA_OPTION_DATE} custom "fava-option" "language" "{i18n.current().lang}"',
         "",
         *(f'include "{name}"' for name in generated),
         f'include "{INVESTMENTS_FILE}"',
@@ -236,7 +236,7 @@ def run_export(
     request: ExportRequest,
     labels: LedgerLabels,
     writer: LedgerWriter | None = None,
-    now: Callable[[], datetime] = datetime.now,
+    now: Callable[[], datetime] = clock.now,
 ) -> int:
     """Run the full export; returns the process exit code."""
     writer = writer or BeancountWriter()
@@ -451,7 +451,7 @@ def run_scaffold(
         if confirm is None or not confirm(map_path):
             print(t("ledger.overwrite_aborted").format(path=map_path), file=sys.stderr)
             return 1
-        stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        stamp = clock.now().strftime("%Y%m%d-%H%M%S")
         backup = _backup(map_path, f".bak-{stamp}", unique=True)
         _write_mapping(map_path, content)
         print(t("ledger.overwrite_done").format(path=map_path, backup=backup))

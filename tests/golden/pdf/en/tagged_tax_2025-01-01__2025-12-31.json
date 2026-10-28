@@ -1,0 +1,246 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Tagged Transactions Report"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "TAG FILTER: [TAX] (AT LEAST ONE TAG)"
+  },
+  {
+   "p": "small",
+   "text": "This report includes all transactions matching at least one tag: tax."
+  },
+  {
+   "spacer": 8.5
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Type",
+     "Category",
+     "Amount",
+     "Running Bal."
+    ],
+    [
+     "2025-01-15",
+     "Invoice #001 - Rossi LLC",
+     "DEP",
+     "Professional Fees",
+     "3,200.00",
+     "3,200.00"
+    ],
+    [
+     "2025-01-22",
+     "Social security contributions Q1",
+     "WIT",
+     "Social Security Contributi…",
+     "(650.00)",
+     "2,550.00"
+    ],
+    [
+     "2025-03-28",
+     "Invoice #003 - Rossi LLC",
+     "DEP",
+     "Professional Fees",
+     "2,900.00",
+     "5,450.00"
+    ],
+    [
+     "2025-03-30",
+     "Milan business trip",
+     "WIT",
+     "Travel & Transport",
+     "(450.00)",
+     "5,000.00"
+    ],
+    [
+     "2025-04-15",
+     "Income tax advance",
+     "WIT",
+     "Taxes",
+     "(1,200.00)",
+     "3,800.00"
+    ],
+    [
+     "",
+     "Total net of filtered transactions",
+     "",
+     "",
+     "€ 3,800.00",
+     ""
+    ]
+   ],
+   "colWidths": [
+    59.53,
+    155.91,
+    56.69,
+    90.71,
+    70.87,
+    73.7
+   ]
+  },
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "small",
+   "text": "WIT = Withdrawal DEP = Deposit TRF = Transfer · Running balance calculated on filtered transactions only."
+  },
+  {
+   "flowable": "PageBreak"
+  },
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Tagged Transactions Report"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "SECTION II — CATEGORY SUMMARY [[TAX]]"
+  },
+  {
+   "p": "section",
+   "text": "INCOME"
+  },
+  {
+   "table": [
+    [
+     "Category",
+     "Amount",
+     "Share"
+    ],
+    [
+     "Professional Fees",
+     "€ 6,100.00",
+     "100.0 %"
+    ],
+    [
+     "Total Income",
+     "€ 6,100.00",
+     "100.0 %"
+    ]
+   ],
+   "colWidths": [
+    297.64,
+    99.21,
+    110.55
+   ]
+  },
+  {
+   "spacer": 17.01
+  },
+  {
+   "p": "section",
+   "text": "EXPENSES"
+  },
+  {
+   "table": [
+    [
+     "Category",
+     "Amount",
+     "Share"
+    ],
+    [
+     "Taxes",
+     "€ 1,200.00",
+     "52.2 %"
+    ],
+    [
+     "Social Security Contributions",
+     "650.00",
+     "28.3 %"
+    ],
+    [
+     "Travel & Transport",
+     "450.00",
+     "19.6 %"
+    ],
+    [
+     "Total Expenses",
+     "€ 2,300.00",
+     "100.0 %"
+    ]
+   ],
+   "colWidths": [
+    297.64,
+    99.21,
+    110.55
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "SUMMARY"
+  },
+  {
+   "table": [
+    [
+     "Total Income with selected tags",
+     "€ 6,100.00"
+    ],
+    [
+     "Total Expenses with selected tags",
+     "(€ 2,300.00)"
+    ],
+    [
+     "Net",
+     "€ 3,800.00"
+    ]
+   ],
+   "colWidths": [
+    382.68,
+    124.72
+   ]
+  }
+ ],
+ "strings": [
+  "TAGGED TRANSACTIONS REPORT",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1",
+  "TAGGED TRANSACTIONS REPORT",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 2"
+ ],
+ "pages": 2
+}

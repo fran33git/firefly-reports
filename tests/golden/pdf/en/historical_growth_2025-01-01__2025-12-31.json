@@ -1,0 +1,97 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Historical Growth Analysis"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2023 – 2025"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "table": [
+    [
+     "",
+     "2023",
+     "2024",
+     "2025"
+    ],
+    [
+     "Total Income",
+     "45,000.00",
+     "48,000.00",
+     "52,000.00"
+    ],
+    [
+     "YoY Growth %",
+     "—",
+     "+6.7%",
+     "+8.3%"
+    ],
+    [
+     "Total Expenses",
+     "38,000.00",
+     "39,000.00",
+     "41,000.00"
+    ],
+    [
+     "YoY Change %",
+     "—",
+     "+2.6%",
+     "+5.1%"
+    ],
+    [
+     "Net Savings / Deficit",
+     "0.00",
+     "0.00",
+     "0.00"
+    ],
+    [
+     "YoY Growth %",
+     "—",
+     "+0.0%",
+     "+0.0%"
+    ],
+    [
+     "Savings Rate",
+     "0.0%",
+     "0.0%",
+     "0.0%"
+    ]
+   ],
+   "colWidths": [
+    124.72,
+    122.83,
+    122.83,
+    122.83
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "small",
+   "text": "YoY (Year-over-Year): percentage change compared to the previous fiscal year. Positive growth in Income and Net Savings is considered favorable."
+  }
+ ],
+ "strings": [
+  "HISTORICAL GROWTH ANALYSIS",
+  "Sample User — Freelancer",
+  "Period: 2023 – 2025   ·   Generated on 2026-01-15",
+  "Page 1"
+ ],
+ "pages": 1
+}

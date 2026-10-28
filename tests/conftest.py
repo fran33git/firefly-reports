@@ -1,6 +1,6 @@
 """Shared pytest fixtures for firefly-reports tests.
 
-All fixtures are derived from the mock data in demo.py so tests run
+All fixtures are derived from the mock data in ``firefly_reports.demo.data`` so tests run
 without a live Firefly III instance.
 """
 
@@ -12,9 +12,9 @@ import pytest
 from firefly_reports import i18n
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(autouse=True)
 def setup_i18n():
-    """Load English translations once for the entire test session."""
+    """Load English translations before every test, so one test's language never leaks."""
     i18n.load("en")
 
 

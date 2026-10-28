@@ -4,23 +4,85 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [2.0.0] - 2026-10-23
+
+Major release: uniform subcommands, a registry of report packages, a Beancount export and a
+provisional library facade. Report content (PDF layout, Excel sheets) is unchanged by the
+restructuring: with the same dependency versions the PDFs and workbooks are identical to the
+pre-refactor code.
 
 ### Added
-- `firefly-reports export beancount`: export all transactions to a Beancount v3 ledger (Fava-ready) with
-  a neutral intermediate model and pluggable writers (`firefly_reports/ledger/`). Includes a YAML account
-  mapping (`beancount_map.example.yaml`), investment-account support, foreign amounts via `@@`, explicit
-  account-name collision errors, deterministic output, atomic writes, `--dry-run`, `--validate`
-  (`bean-check`), `--init` and `--no-timestamp`. Fully translated (en/it). See
-  `docs/wiki/Beancount-Export.md`
-- Ledger layouts: `--layout yearly` (default: `accounts.beancount` + one `firefly-YYYY.beancount` per year, glob
-  include in `main.beancount`) and `--layout single`; `--out` is a directory; only changed files are rewritten;
-  stale generated files are reported, never deleted
-- Two-pass flow: `--scaffold` drafts `beancount_map.yaml` from the Firefly accounts (collisions as `TODO` lines,
-  never overwrites an existing mapping, then lists only the not-yet-mapped accounts) without writing any ledger file
-- Mermaid diagrams in the wiki for the export flows
-- `FireflyClient.get_transactions()` accepts optional `start`/`end` (default: whole history)
-- New dependency: `pyyaml`; optional extra `beancount` for validation
+- Subcommands `firefly-reports report | export | init | demo`, `--version`, and
+  `python -m firefly_reports`. Global options (`--url`, `--token`, `--lang`, `--debug`,
+  `--debug-file`) work before or after the subcommand
+- `firefly-reports demo`: every report from built-in sample data, no Firefly III needed
+  (`--out`, `--lang`, `--year`, `--legacy-report`, `--no-pdf`, `--no-excel`)
+- `firefly-reports export beancount`: export the transactions to a Beancount v3 ledger (Fava-ready)
+  - expense and income accounts come from the Firefly **category** (`--classify-by account` keeps the
+    counterpart accounts); transfers never touch the profit and loss accounts
+  - two-pass mapping: `--scaffold` drafts `beancount_map.yaml` with the number of splits per category,
+    `--append` adds the missing entries (keeps a `.bak` copy), `--overwrite` regenerates it after an
+    explicit confirmation; the export stops without a mapping or with unlisted categories unless
+    `--allow-unmapped`
+  - layouts `--layout yearly` (default: `accounts.beancount` plus one `firefly-YYYY.beancount` per year,
+    closed years stay byte-identical) and `single`; atomic writes; `--dry-run`, `--validate`
+    (`bean-check`), `--init` (creates `main.beancount` with a Fava `language` setting plus empty
+    `investments.beancount` and `prices.beancount`) and `--no-timestamp`
+  - payee, tags, notes, bill, reference, dates and IBAN as native Beancount data; linked transactions share
+    a `^firefly-link-<id>` link; the transaction flag is always `*`
+  - investment accounts, foreign amounts via `@@`, explicit account-name collision errors, deterministic
+    output, translated (en/it). See `docs/wiki/Beancount-Export.md`
+- Provisional library facade (`firefly_reports.api`, names in `firefly_reports.__all__`): `connect`,
+  `fetch_data`, `build_reports`, `write_reports`, `generate_reports`, `available_reports`, with immutable
+  `Period`, `ReportOptions` and `ReportResult`. Typed (`py.typed`); not covered by semantic versioning
+  until declared stable
+- Error hierarchy `FireflyReportsError` (`ConfigurationError`, `FireflyAPIError`, `ReportError`,
+  `LedgerError`) with messages translated at display time
+- `FireflyClient.get_transactions()` accepts optional `start`/`end` and a type filter;
+  `get_transaction_links()`
+- New dependency `pyyaml`; optional extra `beancount` for `--validate`
+- CI runs the `bean-check` tests; the coverage threshold is 90%
+- `firefly-reports.toml`: an `[export]` section (`out`, `layout`, `classify_by`, `map`) gives
+  defaults to `export beancount` (CLI > config > built-in default); `firefly-reports init` now
+  writes every supported key as a commented template
+- Keys in `firefly-reports.toml` that nothing reads (typos) produce a translated warning on
+  stderr, with a suggestion, instead of being ignored silently; `.env.example` lists
+  `FIREFLY_LANG` and `FIREFLY_LEGACY_REPORT`
+
+### Changed
+- Every on/off option can be switched off from the command line: `--no-legacy-report`, `--no-fetch-links`,
+  `--no-all-tags`, `--no-reconciled-only` and `--show-transfers` override a `true` in `firefly-reports.toml`
+  (before, a `true` in the config file or the environment could not be undone from the command line)
+- A range given with `--start`/`--end` now wins over a `year` kept in the config file (before it was an
+  error); `--year` together with a range is still an error
+- Warnings and the failed-files summary (`[!] N files failed`, the missing `deductible_keywords` notice) go to
+  stderr instead of stdout; results and progress lines stay on stdout
+- `firefly-reports demo` warns on stderr that `--url` and `--token` are ignored
+- `--url`/`--token` now follow the same precedence as every other setting: CLI > `firefly-reports.toml` >
+  environment (`FIREFLY_URL`/`FIREFLY_TOKEN`, `.env`) > prompt. Before, the environment beat the config file
+  for these two: a config file with `url`/`token` now overrides a stale variable in the shell
+- Errors (configuration, credentials, dates, API) are printed to stderr; Firefly III request failures no
+  longer end in a traceback. Messages follow `--lang`
+- Exit codes: `3` when the run finished but some files could not be written (was `0`), `2` for a bare
+  `firefly-reports` without a configured year (prints the help; was `1`), `130` on Ctrl-C
+- The PDFs are written in registry order, so the order of the console `OK` lines differs; the set of
+  files is unchanged
+- `demo` writes the same file names as `report` (`yoy_<prev>_vs_<year>.pdf`,
+  `firefly_reports_<period>.xlsx`) and produces the `audit_log` only with `--legacy-report`
+- The matplotlib backend is no longer switched at import time (charts use the object-oriented API) and
+  the translation catalog is context-local instead of a module global
+
+### Deprecated (removed in 3.0.0)
+- Running reports without a subcommand (`firefly-reports --year 2025 ...`): it still works and prints the
+  equivalent `report` command on stderr (the token is masked)
+- The hidden root-level `--out`, `--start`, `--end` placed before a subcommand
+- `python -m firefly_reports.main` and `python -m firefly_reports.demo`
+
+### Removed
+- Internal modules `data_processor`, `pdf_exporter`, `excel_exporter`, `chart_engine` and `config`
+  (replaced by `firefly_reports.reports`, `firefly_reports.render` and `firefly_reports.cli`). The command
+  line is the stable interface; these modules were never public
+- The legacy workbook entry points `render_all_xlsx` and `render_all_xlsx_extended` (unused)
 
 ## [1.0.2] - 2026-08-10
 

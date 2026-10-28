@@ -1,0 +1,89 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Income by Client"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "INCOME BREAKDOWN BY CLIENT"
+  },
+  {
+   "table": [
+    [
+     "Client / Source",
+     "Amount",
+     "Share",
+     "No. Transactions",
+     "Avg Transaction (€)"
+    ],
+    [
+     "Rossi LLC",
+     "€ 6,700.00",
+     "39.1 %",
+     "4",
+     "€ 1,675.00"
+    ],
+    [
+     "Verde Inc.",
+     "5,900.00",
+     "34.4 %",
+     "2",
+     "2,950.00"
+    ],
+    [
+     "Giallo Ltd",
+     "3,050.00",
+     "17.8 %",
+     "1",
+     "3,050.00"
+    ],
+    [
+     "Blue Startup",
+     "1,500.00",
+     "8.7 %",
+     "1",
+     "1,500.00"
+    ],
+    [
+     "Total",
+     "€ 17,150.00",
+     "100.0 %",
+     "",
+     ""
+    ]
+   ],
+   "colWidths": [
+    184.25,
+    85.04,
+    70.87,
+    70.87,
+    96.38
+   ]
+  }
+ ],
+ "strings": [
+  "INCOME BY CLIENT",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1"
+ ],
+ "pages": 1
+}

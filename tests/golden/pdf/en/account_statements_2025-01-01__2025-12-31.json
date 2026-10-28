@@ -1,0 +1,488 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Account Statement"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "CHECKING ACCOUNT — BANKX CHECKING"
+  },
+  {
+   "table": [
+    [
+     "IBAN / Reference",
+     "IT60X0542811101000000123456"
+    ],
+    [
+     "Currency",
+     "EUR"
+    ],
+    [
+     "Opening balance for period",
+     "(€ 1,399.42)"
+    ]
+   ],
+   "colWidths": [
+    141.73,
+    453.54
+   ]
+  },
+  {
+   "spacer": 11.34
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Type",
+     "Counterpart",
+     "Amount",
+     "Balance"
+    ],
+    [
+     "2025-01-05",
+     "Office rent - January",
+     "WIT",
+     "Office Landlord",
+     "(280.00)",
+     "(1,679.42)"
+    ],
+    [
+     "2025-01-10",
+     "Adobe Creative Cloud",
+     "WIT",
+     "Adobe Systems",
+     "(89.00)",
+     "(1,768.42)"
+    ],
+    [
+     "2025-01-15",
+     "Invoice #001 - Rossi LLC",
+     "DEP",
+     "Rossi LLC",
+     "3,200.00",
+     "1,431.58"
+    ],
+    [
+     "2025-01-20",
+     "Emergency fund transfer",
+     "TRA",
+     "BankX Savings",
+     "(500.00)",
+     "931.58"
+    ],
+    [
+     "2025-01-22",
+     "Social security contributions Q1",
+     "WIT",
+     "Social Security",
+     "(650.00)",
+     "281.58"
+    ],
+    [
+     "2025-01-25",
+     "Mortgage payment - January",
+     "TRA",
+     "Home Mortgage",
+     "(520.00)",
+     "(238.42)"
+    ],
+    [
+     "2025-01-31",
+     "Transfer to savings account",
+     "TRA",
+     "BankX Savings",
+     "(500.00)",
+     "(738.42)"
+    ],
+    [
+     "2025-02-05",
+     "Office rent - February",
+     "WIT",
+     "Office Landlord",
+     "(280.00)",
+     "(1,018.42)"
+    ],
+    [
+     "2025-02-10",
+     "Invoice #002 - Verde Inc.",
+     "DEP",
+     "Verde Inc.",
+     "2,800.00",
+     "1,781.58"
+    ],
+    [
+     "2025-02-14",
+     "Technical books and online courses",
+     "WIT",
+     "Amazon/Udemy",
+     "(120.00)",
+     "1,661.58"
+    ],
+    [
+     "2025-02-15",
+     "Travel expense advance",
+     "WIT",
+     "BankX Checking",
+     "150.00",
+     "1,811.58"
+    ],
+    [
+     "2025-02-28",
+     "Fuel and tolls",
+     "WIT",
+     "Various",
+     "(85.00)",
+     "1,726.58"
+    ],
+    [
+     "2025-03-05",
+     "Consulting - Blue Startup",
+     "DEP",
+     "Blue Startup",
+     "1,500.00",
+     "3,226.58"
+    ],
+    [
+     "2025-03-05",
+     "Office rent - March",
+     "WIT",
+     "Office Landlord",
+     "(280.00)",
+     "2,946.58"
+    ],
+    [
+     "2025-03-10",
+     "Travel expense reimbursement",
+     "DEP",
+     "Rossi LLC",
+     "150.00",
+     "3,096.58"
+    ],
+    [
+     "2025-03-15",
+     "Tax withholdings",
+     "WIT",
+     "Tax Authority",
+     "(557.44)",
+     "2,539.14"
+    ],
+    [
+     "2025-03-15",
+     "Supplementary benefit installment recovery",
+     "WIT",
+     "Tax Authority",
+     "(220.74)",
+     "2,318.40"
+    ],
+    [
+     "2025-03-15",
+     "Other withholdings",
+     "WIT",
+     "Tax Authority",
+     "(1.90)",
+     "2,316.50"
+    ],
+    [
+     "2025-03-15",
+     "Accountant fees Q1",
+     "WIT",
+     "Bianchi & Partners",
+     "(320.00)",
+     "1,996.50"
+    ],
+    [
+     "2025-03-28",
+     "Invoice #003 - Rossi LLC",
+     "DEP",
+     "Rossi LLC",
+     "2,900.00",
+     "4,896.50"
+    ],
+    [
+     "2025-03-30",
+     "Milan business trip",
+     "WIT",
+     "Various",
+     "(450.00)",
+     "4,446.50"
+    ],
+    [
+     "2025-03-31",
+     "Transfer to savings account",
+     "TRA",
+     "BankX Savings",
+     "(500.00)",
+     "3,946.50"
+    ],
+    [
+     "2025-04-05",
+     "Office rent - April",
+     "WIT",
+     "Office Landlord",
+     "(280.00)",
+     "3,666.50"
+    ],
+    [
+     "2025-04-12",
+     "Invoice #004 - Verde Inc.",
+     "DEP",
+     "Verde Inc.",
+     "3,100.00",
+     "6,766.50"
+    ],
+    [
+     "2025-04-15",
+     "Income tax advance",
+     "WIT",
+     "Tax Authority",
+     "(1,200.00)",
+     "5,566.50"
+    ],
+    [
+     "2025-04-22",
+     "Annual hosting and domain",
+     "WIT",
+     "Hetzner Online",
+     "(199.00)",
+     "5,367.50"
+    ],
+    [
+     "2025-05-05",
+     "Office rent - May",
+     "WIT",
+     "Office Landlord",
+     "(280.00)",
+     "5,087.50"
+    ],
+    [
+     "2025-05-08",
+     "Travel expense reimbursement",
+     "DEP",
+     "Rossi LLC",
+     "450.00",
+     "5,537.50"
+    ],
+    [
+     "2025-05-18",
+     "Office supplies",
+     "WIT",
+     "Amazon",
+     "(155.00)",
+     "5,382.50"
+    ],
+    [
+     "2025-05-20",
+     "Invoice #005 - Giallo Ltd",
+     "DEP",
+     "Giallo Ltd",
+     "3,050.00",
+     "8,432.50"
+    ],
+    [
+     "",
+     "Closing balance for period",
+     "",
+     "",
+     "",
+     "€ 8,432.50"
+    ]
+   ],
+   "colWidths": [
+    68.03,
+    283.46,
+    62.36,
+    155.91,
+    99.21,
+    87.87
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "table": [
+    [
+     "Opening balance",
+     "",
+     "",
+     "(€ 1,399.42)"
+    ],
+    [
+     "+ Income for the period",
+     "",
+     "",
+     "€ 17,300.00"
+    ],
+    [
+     "- Expenses for the period",
+     "",
+     "",
+     "(€ 7,468.08)"
+    ],
+    [
+     "Closing balance",
+     "",
+     "",
+     "€ 8,432.50"
+    ]
+   ],
+   "colWidths": [
+    425.2,
+    99.21,
+    99.21,
+    119.06
+   ]
+  },
+  {
+   "flowable": "PageBreak"
+  },
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Account Statement"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "SAVINGS ACCOUNT — BANKX SAVINGS"
+  },
+  {
+   "table": [
+    [
+     "IBAN / Reference",
+     "IT60X0542811101000000789012"
+    ],
+    [
+     "Currency",
+     "EUR"
+    ],
+    [
+     "Opening balance for period",
+     "€ 12,150.00"
+    ]
+   ],
+   "colWidths": [
+    141.73,
+    453.54
+   ]
+  },
+  {
+   "spacer": 11.34
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Type",
+     "Counterpart",
+     "Amount",
+     "Balance"
+    ],
+    [
+     "",
+     "Closing balance for period",
+     "",
+     "",
+     "",
+     "€ 12,150.00"
+    ]
+   ],
+   "colWidths": [
+    68.03,
+    283.46,
+    62.36,
+    155.91,
+    99.21,
+    87.87
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "table": [
+    [
+     "Opening balance",
+     "",
+     "",
+     "€ 12,150.00"
+    ],
+    [
+     "+ Income for the period",
+     "",
+     "",
+     "€ 0.00"
+    ],
+    [
+     "- Expenses for the period",
+     "",
+     "",
+     "(€ 0.00)"
+    ],
+    [
+     "Closing balance",
+     "",
+     "",
+     "€ 12,150.00"
+    ]
+   ],
+   "colWidths": [
+    425.2,
+    99.21,
+    99.21,
+    119.06
+   ]
+  }
+ ],
+ "strings": [
+  "ACCOUNT STATEMENT",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1",
+  "ACCOUNT STATEMENT",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 2",
+  "ACCOUNT STATEMENT",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 3"
+ ],
+ "pages": 3
+}
