@@ -506,6 +506,7 @@ invalid_fiscal_start   = "inizio anno fiscale non valido '{value}' (atteso MM-GG
 fiscal_start_not_leap  = "l'inizio anno fiscale '{value}' non è valido per l'anno {year} (02-29 richiede un anno bisestile)"
 start_after_end        = "l'inizio ({start}) non può essere successivo alla fine ({end})"
 api_error              = "Richiesta a Firefly III non riuscita: {reason}"
+untrusted_chain        = "connessione a {host} rifiutata: la sua catena di certificati contiene '{label}' ({reason}). Non è stato inviato nulla. Usa un certificato di un'altra CA; --trust-insecure-ssl aggira questo controllo ma disattiva TUTTA la verifica dei certificati."
 
 [cli]
 deprecated_no_subcommand = "Attenzione: generare i report senza sottocomando è deprecato e smetterà di funzionare in firefly-reports 3.0. Usa: {command}"
