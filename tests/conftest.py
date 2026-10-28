@@ -11,6 +11,8 @@ import pytest
 
 from firefly_reports import i18n
 
+_REAL_CONNECT = socket.socket.connect  # captured before ``block_network`` replaces it
+
 
 @pytest.fixture(autouse=True)
 def setup_i18n():
@@ -30,6 +32,19 @@ def block_network(monkeypatch):
         raise RuntimeError("network access is disabled in tests")
 
     monkeypatch.setattr(socket.socket, "connect", refuse)
+
+
+@pytest.fixture
+def allow_loopback(monkeypatch, block_network):
+    """Let a test connect to 127.0.0.1 / ::1 only, for the TLS tests that run a local server."""
+
+    def loopback_only(self, address, *args, **kwargs):
+        host = address[0] if isinstance(address, tuple) else address
+        if host not in ("127.0.0.1", "::1", "localhost"):
+            raise RuntimeError("network access is disabled in tests (only loopback is allowed)")
+        return _REAL_CONNECT(self, address, *args, **kwargs)
+
+    monkeypatch.setattr(socket.socket, "connect", loopback_only)
 
 
 @pytest.fixture
