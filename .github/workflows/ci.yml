@@ -88,6 +88,23 @@ jobs:
           name: coverage-${{ matrix.python-version }}
           path: coverage.xml
 
+  # The TLS chain check reads the verified chain through the public ssl API on Python 3.13+ and
+  # through a private binding on 3.11/3.12 (the matrix above). The lock file targets 3.11, so this
+  # job installs only what the TLS tests need and runs them on a real handshake.
+  tls-trust-public-api:
+    name: TLS trust tests (Python 3.13)
+    runs-on: ubuntu-latest
+    needs: [lint, types]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - run: pip install requests pytest
+      - run: pytest tests/tlstrust tests/test_tls_binding_guard.py tests/test_tls_client.py tests/test_tls_loopback.py -v
+        env:
+          CI: "true"
+
   audit:
     name: Dependency audit (pip-audit)
     runs-on: ubuntu-latest
