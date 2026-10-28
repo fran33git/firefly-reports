@@ -1,7 +1,9 @@
 """``firefly-reports demo``: the real pipeline on the built-in sample data."""
 
+import os
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -55,11 +57,15 @@ def test_demo_default_output_directory_is_output(cli):
 
 
 def test_python_m_demo_still_works_with_a_deprecation(tmp_path):
+    # The child process does not get pytest's ``pythonpath``: point it at the repo root so the
+    # test also passes where the package is not installed (CI).
+    env = {**os.environ, "PYTHONPATH": str(Path(__file__).resolve().parents[2])}
     proc = subprocess.run(
         [sys.executable, "-m", "firefly_reports.demo", "--out", str(tmp_path), "--no-pdf"],
         capture_output=True,
         text=True,
         cwd=tmp_path,
+        env=env,
     )
     assert proc.returncode == 0, proc.stderr
     assert "deprecated" in proc.stderr and "firefly-reports demo" in proc.stderr
