@@ -85,3 +85,25 @@ def test_a_certificate_that_cannot_be_converted_is_unavailable():
     read = read_verified_chain(PrivateSocket(chain=[object()]))
     assert read.path == "unavailable"
     assert not read.checked
+
+
+class Transport:
+    """urllib3's ``SSLTransport`` (TLS inside TLS): no chain API of its own, the TLS object is ``sslobj``."""
+
+    def __init__(self, sslobj):
+        self.sslobj = sslobj
+
+
+def test_tls_in_tls_transport_is_read_through_its_ssl_object():
+    read = read_verified_chain(Transport(PrivateSocket()))
+    assert read.path == "private" and read.certs == tuple(CHAIN)
+
+
+def test_tls_in_tls_transport_with_a_public_ssl_object():
+    read = read_verified_chain(Transport(PublicSocket()))
+    assert read.path == "public" and read.certs == tuple(CHAIN)
+
+
+def test_tls_in_tls_transport_without_any_chain_api_is_unavailable():
+    read = read_verified_chain(Transport(object()))
+    assert read.path == "unavailable" and not read.checked

@@ -1,5 +1,6 @@
 """End to end on loopback: a blocked key means the server receives zero application bytes."""
 
+import select
 import socket
 import ssl
 import threading
@@ -81,3 +82,90 @@ def test_blocked_chain_sends_zero_bytes(server, monkeypatch):
         _client(srv, cert)._get("about")
     srv.finish()
     assert srv.received == b""
+
+
+class HttpsProxy:
+    """A CONNECT proxy that speaks TLS itself: the client's TLS to the origin runs inside it."""
+
+    def __init__(self, cert, key):
+        self.ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        self.ctx.load_cert_chain(cert, key)
+        self.listener = socket.socket()
+        self.listener.bind(("127.0.0.1", 0))
+        self.listener.listen(1)
+        self.port = self.listener.getsockname()[1]
+        self.thread = threading.Thread(target=self._serve, daemon=True)
+        self.thread.start()
+
+    def _serve(self):
+        try:
+            conn, _ = self.listener.accept()
+            conn = self.ctx.wrap_socket(conn, server_side=True)
+            request = b""
+            while b"\r\n\r\n" not in request:
+                chunk = conn.recv(4096)
+                if not chunk:
+                    return
+                request += chunk
+            host, port = request.split()[1].decode().rsplit(":", 1)
+            upstream = socket.create_connection((host, int(port)), timeout=10)
+            conn.sendall(b"HTTP/1.1 200 Connection established\r\n\r\n")
+            self._relay(conn, upstream)
+        except OSError:
+            pass
+
+    @staticmethod
+    def _relay(client, upstream):
+        # ``client`` is TLS: bytes can wait in its buffer, so poll with pending() as well
+        client.settimeout(0.2)
+        upstream.settimeout(0.2)
+        idle = 0
+        while idle < 25:
+            moved = False
+            for src, dst in ((client, upstream), (upstream, client)):
+                try:
+                    data = src.recv(65536)
+                except (TimeoutError, ssl.SSLWantReadError):
+                    continue
+                if not data:
+                    return
+                dst.sendall(data)
+                moved = True
+            idle = 0 if moved else idle + 1
+        select.select([], [], [], 0)
+
+    def finish(self):
+        self.listener.close()
+        self.thread.join(timeout=10)
+
+
+def test_blocked_chain_behind_an_https_proxy_sends_zero_bytes(
+    tmp_path, allow_loopback, monkeypatch
+):
+    """TLS inside TLS: the origin chain must still be read, and refused before any request byte."""
+    origin_cert, origin_key = make_cert(tmp_path, name="origin")
+    proxy_cert, proxy_key = make_cert(tmp_path, name="proxy")
+    bundle = tmp_path / "ca.pem"
+    bundle.write_text(origin_cert.read_text() + proxy_cert.read_text())
+    origin = Server(origin_cert, origin_key)
+    proxy = HttpsProxy(proxy_cert, proxy_key)
+    blocked = TrustEntry(
+        spki_sha256(cert_der(origin_cert)),
+        "Test CA",
+        "block",
+        "test",
+        ("https://example.org",),
+        "d",
+    )
+    monkeypatch.setattr(firefly_client, "ENTRIES", (blocked,))
+    client = FireflyClient(f"https://127.0.0.1:{origin.port}", "SECRET-TOKEN", request_delay=0)
+    client.session.trust_env = False
+    client.session.verify = str(bundle)
+    client.session.proxies = {"https": f"https://127.0.0.1:{proxy.port}"}
+    try:
+        with pytest.raises(UntrustedChainError):
+            client._get("about")
+    finally:
+        origin.finish()
+        proxy.finish()
+    assert origin.received == b""
