@@ -73,3 +73,45 @@ def openssl_spki_sha256(cert: Path) -> str:
         [exe, "pkey", "-pubin", "-outform", "der"], input=pub, check=True, capture_output=True
     ).stdout
     return hashlib.sha256(spki).hexdigest()
+
+
+class FakeCertificate:
+    """Stands in for ``ssl._ssl.Certificate``, what the private OpenSSL binding returns."""
+
+    def __init__(self, der: bytes) -> None:
+        self._der = der
+
+    def public_bytes(self) -> str:
+        return ssl.DER_cert_to_PEM_cert(self._der)
+
+
+class _SslObj:
+    """The private ``_sslobj`` of Python 3.11/3.12: the only place the chain can be read."""
+
+    def __init__(self, chain: list[bytes]) -> None:
+        self._chain = chain
+
+    def get_verified_chain(self) -> list[FakeCertificate]:
+        return [FakeCertificate(der) for der in self._chain]
+
+
+class FakeTlsSocket:
+    """A connected TLS socket as the client sees it: a verified chain, and a record of what is sent.
+
+    ``chain`` is a list of DER certificates, ``None`` for a socket with no chain API at all.
+    """
+
+    def __init__(self, chain: list[bytes] | None) -> None:
+        self.sent: list[bytes] = []
+        self.closed = False
+        if chain is not None:
+            self._sslobj = _SslObj(chain)
+
+    def sendall(self, data: bytes) -> None:
+        self.sent.append(data)
+
+    def close(self) -> None:
+        self.closed = True
+
+    def shutdown(self, how: int) -> None:
+        pass

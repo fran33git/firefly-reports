@@ -55,7 +55,27 @@ def test_requests_only_in_client_api_and_cli():
         rel = _rel(path)
         if rel in allowed or rel.startswith("cli/"):
             continue
-        assert not _matches(_imports(path), ("requests",)), rel
+        assert not _matches(_imports(path), ("requests", "urllib3")), rel
+
+
+def test_tlstrust_is_standard_library_only_and_self_contained():
+    """The trust lists import nothing of the application and no HTTP library."""
+    forbidden = (
+        "requests",
+        "urllib3",
+        "firefly_reports.reports",
+        "firefly_reports.render",
+        "firefly_reports.cli",
+        "firefly_reports.api",
+        "firefly_reports.ledger",
+        "firefly_reports.firefly_client",
+        "firefly_reports.errors",
+        "firefly_reports.i18n",
+    )
+    files = [p for p in _sources() if _rel(p).startswith("tlstrust/")]
+    assert files, "tlstrust package not found"
+    for path in files:
+        assert not _matches(_imports(path), forbidden), _rel(path)
 
 
 def test_builders_are_pure():
