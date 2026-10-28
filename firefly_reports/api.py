@@ -16,11 +16,11 @@ explicitly unstable.
 from __future__ import annotations
 
 import logging
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from firefly_reports import i18n
 from firefly_reports.errors import FireflyAPIError
@@ -89,12 +89,32 @@ class ReportInfo:
 
 
 def connect(
-    url: str, token: str, *, request_delay: float = 0.2, logger: logging.Logger | None = None
+    url: str,
+    token: str,
+    *,
+    request_delay: float = 0.2,
+    logger: logging.Logger | None = None,
+    trust_insecure_ssl: bool = False,
+    on_notice: Callable[[Any], None] | None = None,
 ) -> FireflySource:
-    """A Firefly III API client (``requests`` is imported here, not at package import)."""
+    """A Firefly III API client (``requests`` is imported here, not at package import).
+
+    The TLS chain of the server is checked against the CA lists of ``firefly_reports.tlstrust``
+    before any request is sent; a blocked key raises ``UntrustedChainError``. With
+    ``trust_insecure_ssl=True`` certificate verification is turned off altogether (the token can
+    then be intercepted). *on_notice* receives warnings about the TLS connection; the library
+    never prints.
+    """
     from firefly_reports.firefly_client import FireflyClient
 
-    return FireflyClient(url, token, logger=logger, request_delay=request_delay)
+    return FireflyClient(
+        url,
+        token,
+        logger=logger,
+        request_delay=request_delay,
+        trust_insecure_ssl=trust_insecure_ssl,
+        on_notice=on_notice,
+    )
 
 
 def fetch_data(

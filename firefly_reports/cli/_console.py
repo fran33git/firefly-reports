@@ -6,7 +6,8 @@ import logging
 import sys
 from pathlib import Path
 
-from firefly_reports import clock
+from firefly_reports import clock, i18n
+from firefly_reports.firefly_client import TrustNotice
 from firefly_reports.reports import events
 
 
@@ -19,6 +20,12 @@ def reconfigure_streams() -> None:
 
 def print_error(message: object) -> None:
     print(f"Error: {message}", file=sys.stderr)
+
+
+def print_trust_notice(notice: TrustNotice) -> None:
+    """A warning about the TLS connection, always on stderr and translated."""
+    template = i18n.t(f"cli.trust_{notice.kind}")
+    print(template.format(host=notice.host, detail=notice.detail), file=sys.stderr)
 
 
 def setup_debug_log(debug: bool, out_dir: Path, debug_file: str | None = None) -> logging.Logger:

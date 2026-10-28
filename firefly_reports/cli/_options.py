@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 from dotenv import load_dotenv
 
 from firefly_reports.errors import ConfigurationError
-from firefly_reports.firefly_client import FireflyClient
+from firefly_reports.firefly_client import FireflyClient, TrustNotice
 from firefly_reports.reports.options import GlobalFilters, Period, ReportOptions
 
 
@@ -77,9 +77,21 @@ def resolve_credentials(
 
 
 def make_client(
-    url: str, token: str, logger: logging.Logger | None = None, request_delay: float = 0.2
+    url: str,
+    token: str,
+    logger: logging.Logger | None = None,
+    request_delay: float = 0.2,
+    trust_insecure_ssl: bool = False,
+    on_notice: Callable[[TrustNotice], None] | None = None,
 ) -> FireflyClient:
-    return FireflyClient(url, token, logger=logger, request_delay=request_delay)
+    return FireflyClient(
+        url,
+        token,
+        logger=logger,
+        request_delay=request_delay,
+        trust_insecure_ssl=trust_insecure_ssl,
+        on_notice=on_notice,
+    )
 
 
 @dataclass(frozen=True)
