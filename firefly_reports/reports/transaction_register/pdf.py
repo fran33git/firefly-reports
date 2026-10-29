@@ -157,7 +157,7 @@ def _render_legacy_transaction_register(data: dict[str, Any], output_path: str) 
     story.append(
         Paragraph(
             t("pdf.total_transactions").format(count=data["total_transactions"])
-            + "WIT = Prelievo   DEP = Versamento   TRF = Giroconto",
+            + t("pdf.register_legacy_legend"),
             st["small"],
         )
     )
