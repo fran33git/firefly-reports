@@ -1,11 +1,14 @@
 # Installation & Quick Start
 
+This page is for users: it shows how to install firefly-reports, try it on built-in sample data without a
+Firefly III instance, and produce the reports from your own instance. Configuration details are in
+[[Configuration]]; the list of reports is in [[Reports-Reference|Reports Reference]].
+
 ## Prerequisites
 
 - Python 3.11 or later
-- A running [Firefly III](https://www.firefly-iii.org/) instance (v6.x recommended)
-- A Firefly III **Personal Access Token** (PAT): Profile → OAuth → Personal Access Tokens → Create
-- `pip`
+- For your own data: a running [Firefly III](https://www.firefly-iii.org/) instance (v6.x recommended) and
+  a Firefly III **Personal Access Token** (Profile -> OAuth -> Personal Access Tokens -> Create)
 
 ## Install
 
@@ -17,88 +20,108 @@ pip install firefly-iii-reports
 pip install "firefly-iii-reports[beancount]"
 ```
 
-This installs the `firefly-reports` command. Alternatively, install from source:
+The distribution is called `firefly-iii-reports`; it installs the `firefly-reports` command. Check it:
+
+```bash
+firefly-reports --version
+```
+
+From a source checkout, install the pinned dependencies and run the package as a module; every
+`firefly-reports ...` command on this wiki then becomes `python -m firefly_reports ...`:
 
 ```bash
 git clone https://github.com/fran33git/firefly-reports.git
 cd firefly-reports
 pip install -r firefly_reports/requirements.txt
+python -m firefly_reports --version
 ```
 
-## First run
+## Commands
 
-With the PyPI install, use the `firefly-reports` command:
+| Command | Does |
+|---|---|
+| `firefly-reports report` | Generates the PDF reports and the Excel workbook from a Firefly III instance |
+| `firefly-reports export beancount` | Exports the transactions to a Beancount ledger (see [[Beancount-Export\|Beancount Export]]) |
+| `firefly-reports init` | Creates `./firefly-reports.toml` interactively (see [[Configuration]]) |
+| `firefly-reports demo` | Generates every report from built-in sample data, no Firefly III needed |
+
+`firefly-reports --help` lists them, and `firefly-reports <command> --help` shows the options of one
+command. The global options `--url`, `--token`, `--lang`, `--debug` and `--debug-file` work before or
+after the command name.
+
+## Try it without Firefly III
 
 ```bash
-firefly-reports \
-  --url https://your-firefly-instance.example.com \
-  --start 2025-01-01 \
-  --end 2025-12-31 \
-  --owner "Your Name" \
-  --out ./output
+firefly-reports demo --out ./output
 ```
 
-From a source checkout, run the same command as `python -m firefly_reports.main ...` from the repo root.
+The demo runs the real report pipeline on built-in sample data (a freelancer's year, 2025 by default)
+and writes 27 PDFs plus the Excel workbook. Options: `--year YYYY`, `--lang en|it`, `--legacy-report`,
+`--no-pdf`, `--no-excel`. Example output (abridged):
 
-You will be prompted for your Personal Access Token if it is not set via `--token` or environment variables. See [[Configuration]] for the full credential chain.
-
-The tool prints a progress summary as it runs:
-
-```
-[*] Connecting to https://your-firefly-instance.example.com
+```text
+[*] Demo mode: built-in sample data (no Firefly III needed)
 [*] Downloading data...
-    -> 847 transactions (2025-01-01 -> 2025-12-31)
-    -> 847 transactions previous year (2024-01-01 -> 2024-12-31)
+    -> 30 transactions (2025-01-01 -> 2025-12-31)
+    -> 9 transactions previous year (2024-01-01 -> 2024-12-31)
     -> 4 asset accounts
-    -> 2 liabilities
-    -> Account statements: 4 accounts
-    -> 5 budgets
-    -> 12 bills/subscriptions
-    -> 3 savings goals
-
+    ...
 [*] Summary 2025-01-01 -> 2025-12-31:
-   Income:       € 48,500.00
-   Expenses:     € 31,200.00
-   Net:          € 17,300.00
-   Transactions: 634
-   Savings rate: 35.7%  |  Runway: 8.4 months
+   Income:       €    17,150.00
+   Expenses:     €     5,598.08
+   Net:          €    11,551.92
+   Transactions: 30
+   Savings rate: 67.4%  |  Runway: 18.5 months
 
 [*] Generating PDF reports...
     OK  cash_flow_2025-01-01__2025-12-31.pdf
     ...
+[*] Generating Excel...
+    OK  firefly_reports_2025-01-01__2025-12-31.xlsx
+
 [*] All reports written to /path/to/output
 ```
 
-## Demo mode (no Firefly III required)
-
-Run the demo to see all reports generated from built-in mock data (from the repo root of a source checkout):
+## First run against your instance
 
 ```bash
-python -m firefly_reports.demo --out ./output
+firefly-reports report \
+  --url https://your-firefly-instance.example.com \
+  --year 2025 \
+  --owner "Your Name" \
+  --out ./output
 ```
 
-This uses realistic English freelancer mock data and produces all 26 PDF reports plus the Excel workbook (full year via `--year 2025`, override with `--year YYYY`). Useful for evaluating the tool before connecting it to a live instance.
+- `--year YYYY` produces every report for a full calendar year. `--start YYYY-MM-DD --end YYYY-MM-DD`
+  produces a custom range instead; in range mode the year-only reports (Year-over-Year, Historical
+  Growth, Liquidity Forecast) are skipped. The two forms cannot be combined.
+- If no token is given (`--token`, `firefly-reports.toml`, `FIREFLY_TOKEN` or `.env`), you are asked
+  for it when the terminal is interactive. See [[Configuration]] for the full precedence.
 
-## Expected output
+The run prints the same kind of progress as the demo, starting with `[*] Connecting to <url>`. When it
+ends with `[*] All reports written to ...` the exit code is `0`; if some files could not be written they
+are listed and the exit code is `3`.
 
-After a successful run the output directory contains:
+## Output
 
-```
+```text
 output/
-├── *.pdf          — one file per report (up to 26 PDFs depending on flags)
-└── firefly_reports_<start>__<end>.xlsx
+├── cash_flow_2025-01-01__2025-12-31.pdf
+├── ...                                    one PDF per generated report
+└── firefly_reports_2025-01-01__2025-12-31.xlsx
 ```
 
-See [[Reports-Reference|Reports Reference]] for the full list of output files and what each report contains.
+Which PDFs appear depends on the mode and the flags; see [[Reports-Reference|Reports Reference]].
+
+## Upgrading from 1.x
+
+- Reports now have their own command: `firefly-reports report --year 2025 ...`. The 1.x form without a
+  command (`firefly-reports --year 2025 ...`) still works in 2.x but prints a deprecation warning with the
+  equivalent command (the token is masked); it will be removed in 3.0.
+- `python -m firefly_reports.main` and `python -m firefly_reports.demo` are deprecated as well (removed
+  in 3.0): use `python -m firefly_reports report ...` and `firefly-reports demo`.
+- The order of precedence of `url` and `token` changed: see [[Configuration]].
 
 ## Developer install
 
-For contributors who want to run tests and linters:
-
-```bash
-cd firefly-reports
-pip install -e ".[dev]"
-pre-commit install
-```
-
-See [[Testing]] and [[Contributing]] for next steps.
+To run the tests and the linters, see [[Contributing]] (development venv and local gate) and [[Testing]].
