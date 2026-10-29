@@ -14,13 +14,19 @@ Generate **26 financial reports** (PDF + Excel) from a [Firefly III](https://www
 ```bash
 pip install firefly-iii-reports
 
-firefly-reports \
+firefly-reports report \
   --url https://your-firefly-instance.example.com \
   --year 2025 \
   --owner "Your Name" --out ./output
 ```
 
-To run from source instead, clone the repo and use `python -m firefly_reports.main` in place of `firefly-reports` (dependencies: `pip install -r firefly_reports/requirements.txt`).
+Commands: `report` (PDF + Excel), `export beancount` (plain-text ledger), `init` (config wizard) and `demo` (sample data, no Firefly III needed). `--lang en|it` sets the language of the output.
+
+A standalone **Windows executable** (`firefly-reports.exe`, no Python needed) is attached to every [GitHub Release](https://github.com/fran33git/firefly-reports/releases).
+
+To run from source instead, clone the repo and use `python -m firefly_reports` in place of `firefly-reports` (dependencies: `pip install -r firefly_reports/requirements.txt`). Python 3.11 or newer.
+
+> The 1.x form without a subcommand (`firefly-reports --year 2025 ...`) still works until 3.0.0 and prints the equivalent `report` command.
 
 Use `--year YYYY` for a full calendar year (all reports), or `--start`/`--end` for a custom date range — in date-range mode the year-only reports (YoY, Historical Growth, Liquidity Forecast) are skipped.
 
@@ -65,6 +71,10 @@ The token can be provided via `--token`, the `FIREFLY_TOKEN` environment variabl
 
 > **Report 17 — Transaction Audit Log** (`audit_log_<period>.pdf`) is now generated only when `--legacy-report` is active. The Summary report takes its slot in standard mode.
 
+### Dashboards
+
+Two one-page views are produced alongside the reports: an income/expense dashboard and a KPI trend dashboard.
+
 ## Beancount / Fava export
 
 Export every transaction to a [Beancount](https://beancount.github.io/) v3 ledger for [Fava](https://beancount.github.io/fava/):
@@ -107,7 +117,7 @@ messages. Full user guide (options, mapping reference, worked example, Fava quer
 ## Demo (no Firefly III required)
 
 ```bash
-python -m firefly_reports.demo --out ./output --year 2025 --lang en
+firefly-reports demo --out ./output --year 2025 --lang en
 ```
 
 ## Config file
@@ -115,6 +125,8 @@ python -m firefly_reports.demo --out ./output --year 2025 --lang en
 ```bash
 firefly-reports init     # interactive wizard — creates firefly-reports.toml
 ```
+
+Settings resolve in this order: command line, `firefly-reports.toml`, environment (`FIREFLY_*`, `.env`), default. The token is never read from a file you commit: use `--token`, `FIREFLY_TOKEN` or the prompt.
 
 ## TLS and untrusted CAs
 
@@ -140,10 +152,10 @@ Full documentation is on the [GitHub Wiki](https://github.com/fran33git/firefly-
 ```bash
 pip install -e ".[dev]"
 pre-commit install
-pytest tests/ -v
+python -m pytest tests -q
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and the [Developer Guide](https://github.com/fran33git/firefly-reports/wiki/Contributing) on the wiki.
+Agent and contributor guidance (architecture, layering rules, TLS trust lists, publishing hygiene) lives in [AGENTS.md](AGENTS.md). See [CONTRIBUTING.md](CONTRIBUTING.md) and the [Developer Guide](https://github.com/fran33git/firefly-reports/wiki/Contributing) on the wiki.
 
 ## License
 
