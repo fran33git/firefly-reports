@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `--trust-insecure-ssl` for `report` and `export`: turns TLS certificate verification (and the lists)
   off. Command line only (not in `firefly-reports.toml`, not an environment variable); a warning is
   printed on every run
+- `TrustNotice`, `TrustWarning` and `UntrustedChainError` in the provisional library facade
+  (`firefly_reports.__all__`), for library users of `connect(..., on_notice=...)`
 
 ### Security
 - A connection whose chain contains a blocked key is refused before the Personal Access Token is sent

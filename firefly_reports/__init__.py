@@ -33,6 +33,9 @@ __all__ = [
     "ReportOptions",
     "ReportResult",
     "SourceData",
+    "TrustNotice",
+    "TrustWarning",
+    "UntrustedChainError",
     "available_reports",
     "build_reports",
     "connect",
@@ -58,7 +61,9 @@ if TYPE_CHECKING:
         FireflyAPIError,
         FireflyReportsError,
         ReportError,
+        UntrustedChainError,
     )
+    from firefly_reports.firefly_client import TrustNotice, TrustWarning
     from firefly_reports.reports.options import GlobalFilters, Period, ReportOptions
     from firefly_reports.reports.pipeline import FailedFile, GeneratedFile
     from firefly_reports.reports.spec import FireflySource, SourceData
@@ -80,7 +85,16 @@ _API = frozenset(
         "available_reports",
     ]
 )
-_ERRORS = frozenset(["FireflyReportsError", "ConfigurationError", "FireflyAPIError", "ReportError"])
+_CLIENT = frozenset(["TrustNotice", "TrustWarning"])
+_ERRORS = frozenset(
+    [
+        "FireflyReportsError",
+        "ConfigurationError",
+        "FireflyAPIError",
+        "ReportError",
+        "UntrustedChainError",
+    ]
+)
 
 
 def __getattr__(name: str) -> Any:
@@ -93,6 +107,8 @@ def __getattr__(name: str) -> Any:
         from firefly_reports.reports import pipeline as module  # type: ignore[no-redef]
     elif name in _API:
         from firefly_reports import api as module  # type: ignore[no-redef]
+    elif name in _CLIENT:
+        from firefly_reports import firefly_client as module  # type: ignore[no-redef]
     elif name in _ERRORS:
         from firefly_reports import errors as module  # type: ignore[no-redef]
     else:
