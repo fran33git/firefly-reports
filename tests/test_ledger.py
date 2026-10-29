@@ -37,8 +37,8 @@ BASE = "https://firefly.test"
 
 MAP = {
     "classify_by": "account",  # these tests pin the counterpart-account naming rules
-    "accounts": {"Mutuo Casa": "Liabilities:Mutuo"},
-    "investment_accounts": {"Fineco Investimenti": "Fineco"},
+    "accounts": {"Home Mortgage": "Liabilities:Mortgage"},
+    "investment_accounts": {"Acme Investments": "Acme"},
     "operating_currency": ["EUR"],
     "commodities": ["EUR", "USD"],
 }
@@ -89,10 +89,10 @@ def tx_by_id(ledger, firefly_id):
 @pytest.mark.parametrize(
     "raw, expected",
     [
-        ("Conto Corrente", "Conto-Corrente"),
-        ("Caffè Münch & Söhne", "Caffe-Munch-Sohne"),
+        ("Checking Account", "Checking-Account"),
+        ("Café Münch & Söhne", "Cafe-Munch-Sohne"),
         ("straße ø æ ł", "Strasse-o-ae-l"),
-        ("  --risparmio--  ", "Risparmio"),
+        ("  --savings--  ", "Savings"),
         ("2025 budget", "2025-budget"),
         ("été", "Ete"),
         ("???", ""),
@@ -144,39 +144,39 @@ def test_classify_every_firefly_api_type(firefly_type, kind):
 
 
 def test_liability_credit_split_goes_to_opening_balances(config, labels):
-    sp = _split("20", "Liability credit", "Mutuo Casa", source_type="Liability credit account")
+    sp = _split("20", "Liability credit", "Home Mortgage", source_type="Liability credit account")
     tx = build_ledger([sp], AccountResolver(config, labels)).transactions[0]
     assert tx.postings[0].account == "Equity:Opening-Balances"
-    assert tx.postings[1].account == "Liabilities:Mutuo"
+    assert tx.postings[1].account == "Liabilities:Mortgage"
 
 
 def test_import_account_resolves_to_equity_imports(config, labels):
-    sp = _split("21", "Import Conto", "Supermercato Più", source_type="Import account")
+    sp = _split("21", "Import Account", "Green Supermarket", source_type="Import account")
     tx = build_ledger([sp], AccountResolver(config, labels)).transactions[0]
     assert tx.postings[0].account == "Equity:Imports"
 
 
 def test_import_account_can_be_remapped_explicitly(labels):
-    cfg = parse_ledger_config({"accounts": {"Import Conto": "Assets:Banca:Import"}})
-    sp = _split("21", "Import Conto", "Supermercato Più", source_type="Import account")
+    cfg = parse_ledger_config({"accounts": {"Import Account": "Assets:Bank:Import"}})
+    sp = _split("21", "Import Account", "Green Supermarket", source_type="Import account")
     resolver = AccountResolver(cfg, labels)
     tx = build_ledger([sp], resolver).transactions[0]
-    assert tx.postings[0].account == "Assets:Banca:Import"
+    assert tx.postings[0].account == "Assets:Bank:Import"
     assert resolver.warnings()  # Equity expected for the type, Assets chosen: reported
 
 
 def test_normalize_tag():
-    assert normalize_tag("tasse 2025") == "tasse-2025"
+    assert normalize_tag("taxes 2025") == "taxes-2025"
     assert normalize_tag("a/b.c_d") == "a/b.c_d"
     assert normalize_tag("  ") == ""
 
 
 def test_resolver_roots_and_special_accounts(config, labels):
     r = AccountResolver(parse_ledger_config(None), labels)
-    assert r.resolve("Mio Conto", "Asset account") == "Assets:Mio-Conto"
+    assert r.resolve("My Account", "Asset account") == "Assets:My-Account"
     assert r.resolve("Amazon", "Expense account") == "Expenses:Amazon"
-    assert r.resolve("Cliente", "Revenue account") == "Income:Cliente"
-    assert r.resolve("Mutuo", "Mortgage") == "Liabilities:Mutuo"
+    assert r.resolve("Customer", "Revenue account") == "Income:Customer"
+    assert r.resolve("Mortgage", "Mortgage") == "Liabilities:Mortgage"
     assert r.resolve("x initial balance", "Initial balance account") == "Equity:Opening-Balances"
     assert r.resolve("Reconciliation (X)", "Reconciliation account") == "Equity:Reconciliation"
     assert r.resolve("(cash)", "Cash account") == "Assets:Cash"
@@ -185,15 +185,15 @@ def test_resolver_roots_and_special_accounts(config, labels):
 def test_resolver_override_investment_and_fallback(labels):
     cfg = parse_ledger_config(
         {
-            "accounts": {"7": "Assets:Sette"},
-            "investment_accounts": {"Broker X": "Banca Ünica"},
-            "fallback": {"expense": "Expenses:Altro"},
+            "accounts": {"7": "Assets:Seven"},
+            "investment_accounts": {"Broker X": "Grüne Bank"},
+            "fallback": {"expense": "Expenses:Other"},
         }
     )
     r = AccountResolver(cfg, labels)
-    assert r.resolve("Qualsiasi", "Asset account", 7) == "Assets:Sette"  # match by id
-    assert r.resolve("Broker X", "Asset account") == f"{labels.investment_root}:Banca-Unica:Cash"
-    assert r.resolve("(no name)", "Expense account") == "Expenses:Altro"
+    assert r.resolve("Anything", "Asset account", 7) == "Assets:Seven"  # match by id
+    assert r.resolve("Broker X", "Asset account") == f"{labels.investment_root}:Grune-Bank:Cash"
+    assert r.resolve("(no name)", "Expense account") == "Expenses:Other"
     assert r.resolve("", "Revenue account") == labels.fallback_income
 
 
@@ -201,26 +201,26 @@ def test_resolver_strict_fallback(labels):
     cfg = parse_ledger_config({"accounts": {"Bar": "Expenses:Bar"}, "fallback": {"strict": True}})
     r = AccountResolver(cfg, labels)
     assert r.resolve("Bar", "Expense account") == "Expenses:Bar"
-    assert r.resolve("Altro", "Expense account") == labels.fallback_expense
-    assert r.resolve("Conto", "Asset account") == "Assets:Conto"  # strict only hits expense/income
+    assert r.resolve("Other", "Expense account") == labels.fallback_expense
+    assert r.resolve("Bank", "Asset account") == "Assets:Bank"  # strict only hits expense/income
 
 
 def test_collision_is_an_explicit_error(labels):
     r = AccountResolver(parse_ledger_config(None), labels)
-    r.resolve("Conto A", "Asset account")
-    r.resolve("Conto-A", "Asset account")
-    r.resolve("Conto A", "Asset account")  # same account twice is fine
+    r.resolve("Account A", "Asset account")
+    r.resolve("Account-A", "Asset account")
+    r.resolve("Account A", "Asset account")  # same account twice is fine
     with pytest.raises(AccountCollisionError) as exc:
         r.raise_on_collisions()
-    assert "Assets:Conto-A" in str(exc.value)
-    assert "'Conto A'" in str(exc.value)
+    assert "Assets:Account-A" in str(exc.value)
+    assert "'Account A'" in str(exc.value)
 
 
 def test_collision_between_auto_name_and_explicit_mapping(labels):
-    cfg = parse_ledger_config({"accounts": {"Cassa": "Assets:Contanti"}})
+    cfg = parse_ledger_config({"accounts": {"Cash Box": "Assets:Petty-Cash"}})
     r = AccountResolver(cfg, labels)
-    r.resolve("Cassa", "Asset account")
-    r.resolve("Contanti", "Asset account")
+    r.resolve("Cash Box", "Asset account")
+    r.resolve("Petty Cash", "Asset account")
     with pytest.raises(AccountCollisionError):
         r.raise_on_collisions()
 
@@ -249,15 +249,15 @@ def test_cross_root_name_mapping_is_kept_with_a_warning(labels):
     assert r.resolve("PayPal", "Asset account", 5) == "Expenses:Fees:PayPal"
     assert r.warnings() == [("PayPal", "Asset account", "Expenses:Fees:PayPal")]
     # coherent root: no warning
-    coherent = AccountResolver(parse_ledger_config({"accounts": {"Banca": "Assets:Banca"}}), labels)
-    assert coherent.resolve("Banca", "Asset account") == "Assets:Banca"
+    coherent = AccountResolver(parse_ledger_config({"accounts": {"Bank": "Assets:Bank"}}), labels)
+    assert coherent.resolve("Bank", "Asset account") == "Assets:Bank"
     assert coherent.warnings() == []
 
 
 def test_collision_aborts_build_ledger(labels):
     splits = [
-        _split("1", "Conto A", "Conto-A"),
-        _split("2", "Conto-A", "Conto A"),
+        _split("1", "Account A", "Account-A"),
+        _split("2", "Account-A", "Account A"),
     ]
     with pytest.raises(AccountCollisionError):
         build_ledger(splits, AccountResolver(parse_ledger_config(None), labels))
@@ -308,21 +308,21 @@ def test_config_rejects_non_boolean_strict():
 
 def test_config_rejects_keys_colliding_after_str(tmp_path):
     # YAML '12:' (int) and "'12':" (string) overwrite each other silently
-    text = "accounts:\n  12: 'Assets:Dodici'\n  '12': 'Assets:Altro'\n"
+    text = "accounts:\n  12: 'Assets:Twelve'\n  '12': 'Assets:Other'\n"
     path = tmp_path / "map.yaml"
     path.write_text(text, encoding="utf-8")
     with pytest.raises(ConfigError) as exc:
         load_ledger_config(path)
     assert "'12'" in str(exc.value)
-    direct = {12: "Assets:Dodici", "12": "Assets:Altro"}
+    direct = {12: "Assets:Twelve", "12": "Assets:Other"}
     with pytest.raises(ConfigError):
         parse_ledger_config({"accounts": direct})
 
 
 def test_load_config_from_yaml_file(tmp_path):
     path = tmp_path / "map.yaml"
-    path.write_text("accounts:\n  12: 'Assets:Dodici'\n", encoding="utf-8")
-    assert load_ledger_config(path).accounts == {"12": "Assets:Dodici"}
+    path.write_text("accounts:\n  12: 'Assets:Twelve'\n", encoding="utf-8")
+    assert load_ledger_config(path).accounts == {"12": "Assets:Twelve"}
     assert load_ledger_config(None) == LedgerConfig()
     path.write_text("accounts: [unclosed", encoding="utf-8")
     with pytest.raises(ConfigError):
@@ -333,7 +333,7 @@ def test_load_config_from_yaml_file(tmp_path):
 
 def test_shipped_example_mapping_is_valid():
     cfg = load_ledger_config(Path(__file__).parent.parent / "beancount_map.example.yaml")
-    assert cfg.investment_accounts == {"Fineco Investimenti": "Fineco"}
+    assert cfg.investment_accounts == {"Acme Investments": "Acme"}
 
 
 # ---------- conversion ----------
@@ -371,16 +371,16 @@ def test_amounts_are_decimal(ledger):
 def test_withdrawal_destination_plus_source_minus(ledger):
     tx = tx_by_id(ledger, "3")
     src, dst = tx.postings
-    assert (src.account, src.amount.number) == ("Assets:Conto-Corrente", Decimal("-42.50"))
-    assert (dst.account, dst.amount.number) == ("Expenses:Caffe-Munch-Sohne", Decimal("42.50"))
-    assert tx.payee == "Caffè Münch & Söhne"
-    assert tx.category == "Ristoranti" and tx.budget == "Svago"
+    assert (src.account, src.amount.number) == ("Assets:Checking-Account", Decimal("-42.50"))
+    assert (dst.account, dst.amount.number) == ("Expenses:Cafe-Munch-Sohne", Decimal("42.50"))
+    assert tx.payee == "Café Münch & Söhne"
+    assert tx.category == "Restaurants" and tx.budget == "Leisure"
 
 
 def test_deposit_and_tags(ledger):
     tx = tx_by_id(ledger, "2")
-    assert tx.tags == ("fattura", "tasse-2025")
-    assert tx.postings[0].account == "Income:Rossi-S-r-l"
+    assert tx.tags == ("invoice", "taxes-2025")
+    assert tx.postings[0].account == "Income:Acme-Consulting-LLC"
     assert tx.postings[1].amount.number == Decimal("3200.00")
 
 
@@ -388,27 +388,27 @@ def test_transfer_has_no_payee(ledger):
     tx = tx_by_id(ledger, "4")
     assert tx.payee is None
     assert [p.account for p in tx.postings] == [
-        "Assets:Conto-Corrente",
-        "Assets:Risparmio-Emergenza",
+        "Assets:Checking-Account",
+        "Assets:Savings-Emergency-Fund",
     ]
 
 
 def test_multi_split_group_is_one_transaction(ledger):
     tx = tx_by_id(ledger, "5")
     assert tx.firefly_group_id == "5"
-    assert tx.narration == "Spesa del sabato"
+    assert tx.narration == "Saturday shopping"
     # three splits, one shared source -> aggregated into a single -49.50 posting
     assert len(tx.postings) == 4
     assert tx.postings[0].amount.number == Decimal("-49.50")
     assert {p.account for p in tx.postings[1:]} == {
-        "Expenses:Supermercato-Piu",
-        "Expenses:Farmacia-Centrale",
+        "Expenses:Green-Supermarket",
+        "Expenses:City-Pharmacy",
     }
     # category differs across splits -> per-posting metadata, none at transaction level
     assert tx.category is None
     assert sum(p.amount.number for p in tx.postings) == 0
     # the two splits towards the same supermarket stay distinct: they carry different metadata
-    assert [p.category for p in tx.postings[1:]] == ["Alimentari", "Casa", "Salute"]
+    assert [p.category for p in tx.postings[1:]] == ["Groceries", "Home", "Health"]
 
 
 def test_foreign_amount_withdrawal_uses_total_price(ledger):
@@ -450,7 +450,7 @@ def test_opening_balance_and_reconciliation_use_equity(ledger):
 
 def test_investment_account_maps_to_broker_cash(ledger, labels):
     tx = tx_by_id(ledger, "10")
-    assert tx.postings[1].account == f"{labels.investment_root}:Fineco:Cash"
+    assert tx.postings[1].account == f"{labels.investment_root}:Acme:Cash"
 
 
 def test_placeholder_and_cash_counterparts(ledger, labels):
@@ -460,7 +460,7 @@ def test_placeholder_and_cash_counterparts(ledger, labels):
 
 
 def test_liability_source(ledger):
-    assert tx_by_id(ledger, "14").postings[0].account == "Liabilities:Mutuo"
+    assert tx_by_id(ledger, "14").postings[0].account == "Liabilities:Mortgage"
 
 
 def test_ordering_is_by_date_then_numeric_id(config, labels):
@@ -540,7 +540,7 @@ def test_output_structure(ledger, labels, config):
     assert "2024-12-31 commodity EUR" in out
     assert "2025-03-03 commodity USD" in out
     assert "2024-12-31 open Equity:Opening-Balances" in out
-    assert "2024-12-31 open Assets:Conto-Corrente" in out
+    assert "2024-12-31 open Assets:Checking-Account" in out
     first_tx = out.index(" * ")
     assert out.index("commodity EUR") < first_tx and out.index(" open ") < first_tx
     assert out.endswith("\n") and not out.endswith("\n\n")
@@ -549,18 +549,18 @@ def test_output_structure(ledger, labels, config):
 def test_open_date_is_first_use(ledger, labels):
     out = render(ledger, labels)
     assert "2025-03-03 open Expenses:Hotel-Lisboa" in out
-    assert "2024-12-31 open Assets:Conto-Corrente" in out
+    assert "2024-12-31 open Assets:Checking-Account" in out
 
 
 def test_transaction_text(ledger, labels):
     out = render(ledger, labels)
-    assert '2025-01-15 * "Rossi S.r.l." "Fattura #001" #fattura #tasse-2025' in out
+    assert '2025-01-15 * "Acme Consulting LLC" "Invoice #001" #invoice #taxes-2025' in out
     assert 'firefly_id: "2"' in out
-    assert '2025-01-20 * "Caffè Münch & Söhne" "Cena \\"da Mario\\""' in out
+    assert '2025-01-20 * "Café Münch & Söhne" "Dinner \\"with friends\\""' in out
     assert "  categoria" not in out  # English labels in tests
-    assert '  category: "Ristoranti"' in out
-    assert '  budget: "Svago"' in out
-    assert '  note: "Riga uno Riga due con \\\\ backslash"' in out
+    assert '  category: "Restaurants"' in out
+    assert '  budget: "Leisure"' in out
+    assert '  note: "Line one Line two with \\\\ backslash"' in out
     assert "100.00 USD @@ 91.75 EUR" in out
     assert '  firefly_group_id: "5"' in out
 
@@ -650,10 +650,10 @@ def test_italian_output_and_technical_keys_stay_fixed(splits, config):
     finally:
         i18n.load("en")
     assert out.startswith("; GENERATO - NON MODIFICARE A MANO")
-    assert '  categoria: "Ristoranti"' in out
+    assert '  categoria: "Restaurants"' in out
     assert '  nota: "' in out
     assert 'firefly_id: "3"' in out
-    assert "Assets:Investimenti:Fineco:Cash" in out
+    assert "Assets:Investimenti:Acme:Cash" in out
 
 
 def test_label_overrides_and_validation():
@@ -662,7 +662,7 @@ def test_label_overrides_and_validation():
     with pytest.raises(ConfigError):
         LedgerLabels.from_i18n({"category": "Categoria"})
     with pytest.raises(ConfigError):
-        LedgerLabels.from_i18n({"note": "nòta"})
+        LedgerLabels.from_i18n({"note": "nóte"})
 
 
 def test_label_overrides_reject_duplicate_and_reserved_keys():
@@ -771,14 +771,14 @@ def test_empty_export_writes_nothing_and_exits_1(tmp_path, config, labels, capsy
     out = tmp_path / "ledger"
     out.mkdir()
     accounts = out / "accounts.beancount"
-    accounts.write_text("2024-12-31 open Assets:Conto\n")
+    accounts.write_text("2024-12-31 open Assets:Bank\n")
     year_file = out / "firefly-2024.beancount"
-    year_file.write_text('2024-12-31 * "x"\n  Assets:Conto  1 EUR\n')
+    year_file.write_text('2024-12-31 * "x"\n  Assets:Bank  1 EUR\n')
     req = export_request(None, None, out, config, timestamp=False)
     assert run_export(FakeClient([]), req, labels) == 1
     # existing files are left intact (no header-only accounts.beancount, no orphan years)
-    assert accounts.read_text() == "2024-12-31 open Assets:Conto\n"
-    assert year_file.read_text() == '2024-12-31 * "x"\n  Assets:Conto  1 EUR\n'
+    assert accounts.read_text() == "2024-12-31 open Assets:Bank\n"
+    assert year_file.read_text() == '2024-12-31 * "x"\n  Assets:Bank  1 EUR\n'
     assert "No transactions found" in capsys.readouterr().err
 
 
@@ -805,7 +805,7 @@ def test_run_export_warns_once_per_cross_root_account(tmp_path, labels, capsys):
     cfg = parse_ledger_config(
         {"classify_by": "account", "accounts": {"Bar": "Assets:Bar"}}
     )  # expense mapped under Assets
-    splits = [_split("1", "Conto", "Bar"), _split("2", "Conto", "Bar")]
+    splits = [_split("1", "Bank", "Bar"), _split("2", "Bank", "Bar")]
     req = export_request(None, None, tmp_path / "out", cfg, layout="single", timestamp=False)
     assert run_export(FakeClient(splits), req, labels) == 0
     err = capsys.readouterr().err

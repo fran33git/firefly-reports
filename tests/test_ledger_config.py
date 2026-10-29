@@ -14,12 +14,12 @@ def test_categories_blocks_parsed():
         {
             "categories": {
                 "expense": {"Automobile": "Expenses:Veicoli:Auto"},
-                "income": {"Fatture": "Income:Professione:Fatture"},
+                "income": {"Invoices": "Income:Professione:Invoices"},
             }
         }
     )
     assert cfg.categories_expense == {"Automobile": "Expenses:Veicoli:Auto"}
-    assert cfg.categories_income == {"Fatture": "Income:Professione:Fatture"}
+    assert cfg.categories_income == {"Invoices": "Income:Professione:Invoices"}
 
 
 def test_defaults_are_empty_and_category_mode():
@@ -40,7 +40,7 @@ def test_classify_by_invalid_rejected():
 
 def test_category_value_must_match_block_root():
     with pytest.raises(ConfigError) as exc:
-        parse_ledger_config({"categories": {"expense": {"Fatture": "Income:Fatture"}}})
+        parse_ledger_config({"categories": {"expense": {"Invoices": "Income:Invoices"}}})
     assert exc.value.message_key == "ledger.err_config_category_root"
     with pytest.raises(ConfigError):
         parse_ledger_config({"categories": {"income": {"Auto": "Expenses:Auto"}}})

@@ -101,6 +101,7 @@ pip-audit -r firefly_reports/requirements.txt
 - Use package-qualified absolute imports.
 - Monetary values are always `Decimal` (2 decimal places) produced via `_d()` (`reports/_money.py`) — never raw floats for money.
 - No 3.12-only syntax or APIs (the floor is 3.11).
+- All repository content is in English: code, comments, docstrings, documentation, examples, fixtures and test data. The only exceptions are `firefly_reports/translations/it.toml` (and whatever depends on it for the `--lang it` output) and the tests/goldens that verify the Italian output (`tests/golden/**/it/`, tests calling `i18n.load("it")` or passing `--lang it`, and the Italian labels they assert).
 
 ### Layering rules (enforced by `tests/test_architecture.py`)
 

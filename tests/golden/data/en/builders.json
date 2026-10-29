@@ -275,9 +275,9 @@
     "group_id": "25-g1",
     "journal_id": "25-j1",
     "date": "2025-01-15",
-    "description": "Invoice #001 - Rossi LLC",
+    "description": "Invoice #001 - Acme Consulting LLC",
     "type": "deposit",
-    "source": "Rossi LLC",
+    "source": "Acme Consulting LLC",
     "destination": "BankX Checking",
     "total": "D:3200.00",
     "total_abs": "D:3200.00",
@@ -287,7 +287,7 @@
     "splits": [
      {
       "id": "25-j1",
-      "description": "Invoice #001 - Rossi LLC",
+      "description": "Invoice #001 - Acme Consulting LLC",
       "category": "Professional Fees",
       "budget": "",
       "amount": "D:3200.00",
@@ -687,7 +687,7 @@
     "date": "2025-03-10",
     "description": "Travel expense reimbursement",
     "type": "deposit",
-    "source": "Rossi LLC",
+    "source": "Acme Consulting LLC",
     "destination": "BankX Checking",
     "total": "D:150.00",
     "total_abs": "D:150.00",
@@ -786,7 +786,7 @@
     "description": "Accountant fees Q1",
     "type": "withdrawal",
     "source": "BankX Checking",
-    "destination": "Bianchi & Partners",
+    "destination": "Baker & Partners",
     "total": "D:-320.00",
     "total_abs": "D:320.00",
     "currency": "EUR",
@@ -816,9 +816,9 @@
     "group_id": "25-g9",
     "journal_id": "25-j9",
     "date": "2025-03-28",
-    "description": "Invoice #003 - Rossi LLC",
+    "description": "Invoice #003 - Acme Consulting LLC",
     "type": "deposit",
-    "source": "Rossi LLC",
+    "source": "Acme Consulting LLC",
     "destination": "BankX Checking",
     "total": "D:2900.00",
     "total_abs": "D:2900.00",
@@ -828,7 +828,7 @@
     "splits": [
      {
       "id": "25-j9",
-      "description": "Invoice #003 - Rossi LLC",
+      "description": "Invoice #003 - Acme Consulting LLC",
       "category": "Professional Fees",
       "budget": "",
       "amount": "D:2900.00",
@@ -1097,7 +1097,7 @@
     "date": "2025-05-08",
     "description": "Travel expense reimbursement",
     "type": "deposit",
-    "source": "Rossi LLC",
+    "source": "Acme Consulting LLC",
     "destination": "BankX Checking",
     "total": "D:450.00",
     "total_abs": "D:450.00",
@@ -1318,9 +1318,9 @@
     {
      "id": "25-j1",
      "date": "2025-01-15",
-     "description": "Invoice #001 - Rossi LLC",
+     "description": "Invoice #001 - Acme Consulting LLC",
      "type": "Deposit",
-     "counterpart": "Rossi LLC",
+     "counterpart": "Acme Consulting LLC",
      "category": "Professional Fees",
      "amount": "D:3200.00",
      "notes": "",
@@ -1476,7 +1476,7 @@
      "date": "2025-03-10",
      "description": "Travel expense reimbursement",
      "type": "Deposit",
-     "counterpart": "Rossi LLC",
+     "counterpart": "Acme Consulting LLC",
      "category": "Reimbursements",
      "amount": "D:150.00",
      "notes": "",
@@ -1528,7 +1528,7 @@
      "date": "2025-03-15",
      "description": "Accountant fees Q1",
      "type": "Withdrawal",
-     "counterpart": "Bianchi & Partners",
+     "counterpart": "Baker & Partners",
      "category": "Accountant Fees",
      "amount": "D:-320.00",
      "notes": "",
@@ -1539,9 +1539,9 @@
     {
      "id": "25-j9",
      "date": "2025-03-28",
-     "description": "Invoice #003 - Rossi LLC",
+     "description": "Invoice #003 - Acme Consulting LLC",
      "type": "Deposit",
-     "counterpart": "Rossi LLC",
+     "counterpart": "Acme Consulting LLC",
      "category": "Professional Fees",
      "amount": "D:2900.00",
      "notes": "",
@@ -1645,7 +1645,7 @@
      "date": "2025-05-08",
      "description": "Travel expense reimbursement",
      "type": "Deposit",
-     "counterpart": "Rossi LLC",
+     "counterpart": "Acme Consulting LLC",
      "category": "Reimbursements",
      "amount": "D:450.00",
      "notes": "",
@@ -1721,7 +1721,7 @@
   ],
   "income_by_client": [
    {
-    "client": "Rossi LLC",
+    "client": "Acme Consulting LLC",
     "amount": "D:6700.00"
    },
    {
@@ -1923,9 +1923,9 @@
   "rows": [
    {
     "date": "2025-01-15",
-    "description": "Invoice #001 - Rossi LLC",
+    "description": "Invoice #001 - Acme Consulting LLC",
     "type": "Deposit",
-    "source": "Rossi LLC",
+    "source": "Acme Consulting LLC",
     "destination": "BankX Checking",
     "category": "Professional Fees",
     "budget": "",
@@ -1949,9 +1949,9 @@
    },
    {
     "date": "2025-03-28",
-    "description": "Invoice #003 - Rossi LLC",
+    "description": "Invoice #003 - Acme Consulting LLC",
     "type": "Deposit",
-    "source": "Rossi LLC",
+    "source": "Acme Consulting LLC",
     "destination": "BankX Checking",
     "category": "Professional Fees",
     "budget": "",
@@ -2213,7 +2213,7 @@
   "net_worth": "D:-66767.50",
   "liquidity_ratio": "D:0.24",
   "hhi": "D:3102.5",
-  "top1_client": "Rossi LLC",
+  "top1_client": "Acme Consulting LLC",
   "top1_pct": "D:39.1",
   "n_months": 5,
   "monthly_trend": [
@@ -2443,7 +2443,7 @@
   "currency": "€",
   "rows": [
    {
-    "client": "Rossi LLC",
+    "client": "Acme Consulting LLC",
     "amount": "D:6700.00",
     "pct": "D:39.1",
     "count": 4,
@@ -2524,9 +2524,9 @@
     "group_id": "25-g1",
     "date": "2025-01-15",
     "book_date": "2025-01-15",
-    "description": "Invoice #001 - Rossi LLC",
+    "description": "Invoice #001 - Acme Consulting LLC",
     "type": "Deposit",
-    "source": "Rossi LLC",
+    "source": "Acme Consulting LLC",
     "destination": "BankX Checking",
     "amount": "D:3200.00",
     "currency": "EUR",
@@ -2754,7 +2754,7 @@
     "book_date": "2025-03-10",
     "description": "Travel expense reimbursement",
     "type": "Deposit",
-    "source": "Rossi LLC",
+    "source": "Acme Consulting LLC",
     "destination": "BankX Checking",
     "amount": "D:150.00",
     "currency": "EUR",
@@ -2774,7 +2774,7 @@
     "description": "Accountant fees Q1",
     "type": "Withdrawal",
     "source": "BankX Checking",
-    "destination": "Bianchi & Partners",
+    "destination": "Baker & Partners",
     "amount": "D:320.00",
     "currency": "EUR",
     "category": "Accountant Fees",
@@ -2847,9 +2847,9 @@
     "group_id": "25-g9",
     "date": "2025-03-28",
     "book_date": "2025-03-28",
-    "description": "Invoice #003 - Rossi LLC",
+    "description": "Invoice #003 - Acme Consulting LLC",
     "type": "Deposit",
-    "source": "Rossi LLC",
+    "source": "Acme Consulting LLC",
     "destination": "BankX Checking",
     "amount": "D:2900.00",
     "currency": "EUR",
@@ -3001,7 +3001,7 @@
     "book_date": "2025-05-08",
     "description": "Travel expense reimbursement",
     "type": "Deposit",
-    "source": "Rossi LLC",
+    "source": "Acme Consulting LLC",
     "destination": "BankX Checking",
     "amount": "D:450.00",
     "currency": "EUR",
@@ -3134,7 +3134,7 @@
    {
     "n": 3,
     "date": "2025-01-15",
-    "description": "Invoice #001 - Rossi LLC",
+    "description": "Invoice #001 - Acme Consulting LLC",
     "account": "BankX Checking",
     "debit": "D:3200.00",
     "credit": null,
@@ -3144,7 +3144,7 @@
     "n": 3,
     "date": "2025-01-15",
     "description": "",
-    "account": "Rossi LLC",
+    "account": "Acme Consulting LLC",
     "debit": null,
     "credit": "D:3200.00",
     "notes": ""
@@ -3360,7 +3360,7 @@
     "n": 15,
     "date": "2025-03-10",
     "description": "",
-    "account": "Rossi LLC",
+    "account": "Acme Consulting LLC",
     "debit": null,
     "credit": "D:150.00",
     "notes": ""
@@ -3369,7 +3369,7 @@
     "n": 16,
     "date": "2025-03-15",
     "description": "Accountant fees Q1",
-    "account": "Bianchi & Partners",
+    "account": "Baker & Partners",
     "debit": "D:320.00",
     "credit": null,
     "notes": ""
@@ -3440,7 +3440,7 @@
    {
     "n": 20,
     "date": "2025-03-28",
-    "description": "Invoice #003 - Rossi LLC",
+    "description": "Invoice #003 - Acme Consulting LLC",
     "account": "BankX Checking",
     "debit": "D:2900.00",
     "credit": null,
@@ -3450,7 +3450,7 @@
     "n": 20,
     "date": "2025-03-28",
     "description": "",
-    "account": "Rossi LLC",
+    "account": "Acme Consulting LLC",
     "debit": null,
     "credit": "D:2900.00",
     "notes": ""
@@ -3594,7 +3594,7 @@
     "n": 28,
     "date": "2025-05-08",
     "description": "",
-    "account": "Rossi LLC",
+    "account": "Acme Consulting LLC",
     "debit": null,
     "credit": "D:450.00",
     "notes": ""
@@ -3825,7 +3825,7 @@
       "date": "2025-03-15",
       "description": "Accountant fees Q1",
       "type": "Withdrawal",
-      "counterpart": "Bianchi & Partners",
+      "counterpart": "Baker & Partners",
       "amount": "D:-320.00",
       "reconciled": false
      }
@@ -3915,9 +3915,9 @@
     "rows": [
      {
       "date": "2025-01-15",
-      "description": "Invoice #001 - Rossi LLC",
+      "description": "Invoice #001 - Acme Consulting LLC",
       "type": "Deposit",
-      "counterpart": "Rossi LLC",
+      "counterpart": "Acme Consulting LLC",
       "amount": "D:3200.00",
       "reconciled": false
      },
@@ -3931,9 +3931,9 @@
      },
      {
       "date": "2025-03-28",
-      "description": "Invoice #003 - Rossi LLC",
+      "description": "Invoice #003 - Acme Consulting LLC",
       "type": "Deposit",
-      "counterpart": "Rossi LLC",
+      "counterpart": "Acme Consulting LLC",
       "amount": "D:2900.00",
       "reconciled": false
      },
@@ -3979,7 +3979,7 @@
       "date": "2025-03-10",
       "description": "Travel expense reimbursement",
       "type": "Deposit",
-      "counterpart": "Rossi LLC",
+      "counterpart": "Acme Consulting LLC",
       "amount": "D:150.00",
       "reconciled": false
      },
@@ -3987,7 +3987,7 @@
       "date": "2025-05-08",
       "description": "Travel expense reimbursement",
       "type": "Deposit",
-      "counterpart": "Rossi LLC",
+      "counterpart": "Acme Consulting LLC",
       "amount": "D:450.00",
       "reconciled": false
      }
@@ -4120,6 +4120,45 @@
   "currency": "€",
   "sections": [
    {
+    "payee_name": "Acme Consulting LLC",
+    "rows": [
+     {
+      "date": "2025-01-15",
+      "description": "Invoice #001 - Acme Consulting LLC",
+      "type": "Deposit",
+      "category": "Professional Fees",
+      "amount": "D:3200.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-03-10",
+      "description": "Travel expense reimbursement",
+      "type": "Deposit",
+      "category": "Reimbursements",
+      "amount": "D:150.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-03-28",
+      "description": "Invoice #003 - Acme Consulting LLC",
+      "type": "Deposit",
+      "category": "Professional Fees",
+      "amount": "D:2900.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-05-08",
+      "description": "Travel expense reimbursement",
+      "type": "Deposit",
+      "category": "Reimbursements",
+      "amount": "D:450.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:6700.00",
+    "count": 4
+   },
+   {
     "payee_name": "Adobe Systems",
     "rows": [
      {
@@ -4165,7 +4204,7 @@
     "count": 1
    },
    {
-    "payee_name": "Bianchi & Partners",
+    "payee_name": "Baker & Partners",
     "rows": [
      {
       "date": "2025-03-15",
@@ -4285,45 +4324,6 @@
     ],
     "total": "D:-150.00",
     "count": 1
-   },
-   {
-    "payee_name": "Rossi LLC",
-    "rows": [
-     {
-      "date": "2025-01-15",
-      "description": "Invoice #001 - Rossi LLC",
-      "type": "Deposit",
-      "category": "Professional Fees",
-      "amount": "D:3200.00",
-      "reconciled": false
-     },
-     {
-      "date": "2025-03-10",
-      "description": "Travel expense reimbursement",
-      "type": "Deposit",
-      "category": "Reimbursements",
-      "amount": "D:150.00",
-      "reconciled": false
-     },
-     {
-      "date": "2025-03-28",
-      "description": "Invoice #003 - Rossi LLC",
-      "type": "Deposit",
-      "category": "Professional Fees",
-      "amount": "D:2900.00",
-      "reconciled": false
-     },
-     {
-      "date": "2025-05-08",
-      "description": "Travel expense reimbursement",
-      "type": "Deposit",
-      "category": "Reimbursements",
-      "amount": "D:450.00",
-      "reconciled": false
-     }
-    ],
-    "total": "D:6700.00",
-    "count": 4
    },
    {
     "payee_name": "Social Security",
@@ -4469,7 +4469,7 @@
     "rows": [
      {
       "date": "2025-01-15",
-      "description": "Invoice #001 - Rossi LLC",
+      "description": "Invoice #001 - Acme Consulting LLC",
       "category": "Professional Fees",
       "amount": "D:3200.00"
      },
@@ -4481,7 +4481,7 @@
      },
      {
       "date": "2025-03-28",
-      "description": "Invoice #003 - Rossi LLC",
+      "description": "Invoice #003 - Acme Consulting LLC",
       "category": "Professional Fees",
       "amount": "D:2900.00"
      },
@@ -4504,7 +4504,7 @@
     "rows": [
      {
       "date": "2025-01-15",
-      "description": "Invoice #001 - Rossi LLC",
+      "description": "Invoice #001 - Acme Consulting LLC",
       "category": "Professional Fees",
       "amount": "D:3200.00"
      },
@@ -4516,7 +4516,7 @@
      },
      {
       "date": "2025-03-28",
-      "description": "Invoice #003 - Rossi LLC",
+      "description": "Invoice #003 - Acme Consulting LLC",
       "category": "Professional Fees",
       "amount": "D:2900.00"
      },

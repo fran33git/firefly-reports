@@ -36,8 +36,8 @@ def test_all_fixed_keys_are_mapped():
 def test_diverging_bill_goes_on_category_postings():
     g = {"group_id": "G"}
     splits = [
-        withdrawal("1", "Cibo", "A", "10.00", bill_name="Luce", **g),
-        withdrawal("2", "Casa", "A", "5.00", **g),
+        withdrawal("1", "Food", "A", "10.00", bill_name="Luce", **g),
+        withdrawal("2", "Home", "A", "5.00", **g),
     ]
     (tx,) = convert(splits).transactions
     assert tx.extra == ()
@@ -47,8 +47,8 @@ def test_diverging_bill_goes_on_category_postings():
 def test_agreeing_bill_moves_to_transaction():
     g = {"group_id": "G"}
     splits = [
-        withdrawal("1", "Cibo", "A", "10.00", bill_name="Luce", **g),
-        withdrawal("2", "Casa", "A", "5.00", bill_name="Luce", **g),
+        withdrawal("1", "Food", "A", "10.00", bill_name="Luce", **g),
+        withdrawal("2", "Home", "A", "5.00", bill_name="Luce", **g),
     ]
     (tx,) = convert(splits).transactions
     assert dict(tx.extra) == {"bill": "Luce"}
@@ -69,19 +69,19 @@ def _with_ibans(*pairs):
 
 def test_iban_of_real_account_is_exported():
     ledger = convert(_with_ibans(("IT01", "IT99")))
-    assert ledger.ibans == {"Assets:Conto": "IT01"}
+    assert ledger.ibans == {"Assets:Bank": "IT01"}
 
 
 def test_counterpart_iban_not_exported_in_either_mode():
     for mode in ("category", "account"):
-        assert "Expenses:Bar-Sport" not in convert(_with_ibans(("IT01", "IT99")), mode).ibans
+        assert "Expenses:Sports-Bar" not in convert(_with_ibans(("IT01", "IT99")), mode).ibans
 
 
 def test_iban_most_frequent_wins_tie_alphabetical():
     assert convert(_with_ibans(("IT02", None), ("IT01", None), ("IT02", None))).ibans == {
-        "Assets:Conto": "IT02"
+        "Assets:Bank": "IT02"
     }
-    assert convert(_with_ibans(("IT02", None), ("IT01", None))).ibans == {"Assets:Conto": "IT01"}
+    assert convert(_with_ibans(("IT02", None), ("IT01", None))).ibans == {"Assets:Bank": "IT01"}
 
 
 def test_missing_iban_gives_no_entry():
@@ -100,7 +100,7 @@ def test_link_names_shared_on_both_transactions():
 
 def test_link_to_split_inside_multi_split_group():
     g = {"group_id": "G"}
-    splits = [withdrawal("1", "Cibo", "A", **g), withdrawal("2", "Casa", "A", **g), deposit("3")]
+    splits = [withdrawal("1", "Food", "A", **g), withdrawal("2", "Home", "A", **g), deposit("3")]
     ledger = convert(splits, links=[link("7", "2", "3")])
     assert {tx.firefly_id: tx.links for tx in ledger.transactions} == {
         "1": ("firefly-link-7",),

@@ -23,6 +23,59 @@
   },
   {
    "p": "section",
+   "text": "ACME CONSULTING LLC"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Description",
+     "Category",
+     "Amount"
+    ],
+    [
+     "2025-01-15",
+     "Invoice #001 - Acme Consulting LLC",
+     "Professional Fees",
+     "3,200.00"
+    ],
+    [
+     "2025-03-10",
+     "Travel expense reimbursement",
+     "Reimbursements",
+     "150.00"
+    ],
+    [
+     "2025-03-28",
+     "Invoice #003 - Acme Consulting LLC",
+     "Professional Fees",
+     "2,900.00"
+    ],
+    [
+     "2025-05-08",
+     "Travel expense reimbursement",
+     "Reimbursements",
+     "450.00"
+    ],
+    [
+     "Total",
+     "",
+     "",
+     "€ 6,700.00"
+    ]
+   ],
+   "colWidths": [
+    62.36,
+    232.44,
+    113.39,
+    85.04
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
    "text": "ADOBE SYSTEMS"
   },
   {
@@ -128,7 +181,7 @@
   },
   {
    "p": "section",
-   "text": "BIANCHI & PARTNERS"
+   "text": "BAKER & PARTNERS"
   },
   {
    "table": [
@@ -348,59 +401,6 @@
      "",
      "",
      "(€ 150.00)"
-    ]
-   ],
-   "colWidths": [
-    62.36,
-    232.44,
-    113.39,
-    85.04
-   ]
-  },
-  {
-   "spacer": 14.17
-  },
-  {
-   "p": "section",
-   "text": "ROSSI LLC"
-  },
-  {
-   "table": [
-    [
-     "Date",
-     "Description",
-     "Category",
-     "Amount"
-    ],
-    [
-     "2025-01-15",
-     "Invoice #001 - Rossi LLC",
-     "Professional Fees",
-     "3,200.00"
-    ],
-    [
-     "2025-03-10",
-     "Travel expense reimbursement",
-     "Reimbursements",
-     "150.00"
-    ],
-    [
-     "2025-03-28",
-     "Invoice #003 - Rossi LLC",
-     "Professional Fees",
-     "2,900.00"
-    ],
-    [
-     "2025-05-08",
-     "Travel expense reimbursement",
-     "Reimbursements",
-     "450.00"
-    ],
-    [
-     "Total",
-     "",
-     "",
-     "€ 6,700.00"
     ]
    ],
    "colWidths": [

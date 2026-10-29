@@ -58,10 +58,10 @@ def test_extra_metadata_on_transaction_and_posting(labels):
 def test_posting_payee_metadata(labels):
     postings = (
         Posting("Assets:A", Amount(Decimal("-10.00"), "EUR")),
-        Posting("Expenses:B", Amount(Decimal("10.00"), "EUR"), payee="Bar Sport"),
+        Posting("Expenses:B", Amount(Decimal("10.00"), "EUR"), payee="Sports Bar"),
     )
     out = render(Ledger((_tx(postings=postings),)), labels)
-    assert '    payee: "Bar Sport"\n' in out
+    assert '    payee: "Sports Bar"\n' in out
 
 
 def test_iban_on_open_directive(labels):

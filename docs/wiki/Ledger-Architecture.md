@@ -276,7 +276,7 @@ flowchart TD
     E -- no --> G["per file: write only if the content changed<br/>(atomic_write)"]
     G --> H["warn about orphan generated files"]
     H --> I{"--init?"}
-    I -- yes --> J["create main / investimenti / prices if absent"]
+    I -- yes --> J["create main / investments / prices if absent"]
     I -- no --> K
     J --> K{"--validate?"}
     K -- yes --> L["bean-check: file (single)<br/>or aggregator include (yearly)"]
@@ -287,7 +287,7 @@ flowchart TD
 
 * `atomic_write()`: temp file in the target directory, `os.replace`, mode of an existing target preserved
   (default 0644), temp file removed on failure. The previous file survives any error.
-* `--init` creates `main.beancount` / `investimenti.beancount` / `prices.beancount` only when absent.
+* `--init` creates `main.beancount` / `investments.beancount` / `prices.beancount` only when absent.
 * `run_export` renders **every** file before writing the first one; unchanged files are not rewritten; files it did
   not produce are only reported (`find_orphans`), never deleted.
 * The scaffold never writes into an existing mapping file.

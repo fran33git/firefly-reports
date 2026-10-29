@@ -39,7 +39,7 @@ def main():
 FIXTURE = Path(__file__).parent / "fixtures" / "firefly_transactions.json"
 MAP = {
     "classify_by": "account",  # these tests pin the counterpart-account naming rules
-    "investment_accounts": {"Fineco Investimenti": "Fineco"},
+    "investment_accounts": {"Acme Investments": "Acme"},
     "commodities": ["EUR", "USD"],
 }
 needs_bean_check = pytest.mark.skipif(
@@ -211,7 +211,7 @@ def test_changed_year_is_the_only_rewritten_file(tmp_path, splits, config, label
     changed = [dict(s) for s in splits]
     for s in changed:
         if s["transaction_journal_id"] == "14":  # April 2025 payment
-            s["description"] = "Rata aggiornata"
+            s["description"] = "Updated installment"
     run_export(FakeClient(changed), request(out, config), labels)
     after = {p.name: p.stat().st_mtime_ns for p in out.iterdir()}
     assert after["firefly-2025.beancount"] != mtimes["firefly-2025.beancount"]
@@ -302,8 +302,8 @@ def test_scaffold_creates_yaml_and_no_ledger_files(tmp_path, splits, labels, cap
     assert code == 0 and map_path.is_file()
     assert not (tmp_path / "ledger").exists()
     cfg = load_ledger_config(map_path)
-    assert cfg.accounts["Conto Corrente"] == "Assets:Conto-Corrente"
-    assert cfg.accounts["Caffè Münch & Söhne"] == "Expenses:Caffe-Munch-Sohne"
+    assert cfg.accounts["Checking Account"] == "Assets:Checking-Account"
+    assert cfg.accounts["Café Münch & Söhne"] == "Expenses:Cafe-Munch-Sohne"
     assert cfg.operating_currency == ("EUR",) and cfg.commodities == ("EUR", "USD")
     err = capsys.readouterr().err
     assert "Firefly account" in err and "Beancount account" in err
@@ -327,7 +327,7 @@ def test_scaffold_lists_only_automatic_accounts(tmp_path, splits, labels):
     text = map_path.read_text(encoding="utf-8")
     assert "Equity:" not in text and "Assets:Cash" not in text  # special accounts
     assert "(no name)" not in text
-    assert "# investment_accounts:" in text and '#   "Conto Corrente": "Broker"' in text
+    assert "# investment_accounts:" in text and '#   "Checking Account": "Broker"' in text
     assert "# fallback:" in text
 
 
@@ -338,14 +338,14 @@ def test_scaffold_dry_run_prints_and_writes_nothing(tmp_path, splits, labels, ca
 
 
 def test_scaffold_never_modifies_an_existing_mapping(tmp_path, splits, labels, capsys):
-    original = 'accounts:\n  "Conto Corrente": "Assets:Banca"\n'
+    original = 'accounts:\n  "Checking Account": "Assets:Bank"\n'
     code, map_path = scaffold(tmp_path, splits, labels, map_text=original)
     assert code == 0
     assert map_path.read_text() == original
     captured = capsys.readouterr()
     assert "left untouched" in captured.err
-    assert '"Conto Corrente"' not in captured.out  # already mapped
-    assert '"Mutuo Casa": "Liabilities:Mutuo-Casa"' in captured.out  # new account
+    assert '"Checking Account"' not in captured.out  # already mapped
+    assert '"Home Mortgage": "Liabilities:Home-Mortgage"' in captured.out  # new account
 
 
 def test_scaffold_reports_nothing_new_when_mapping_is_complete(tmp_path, splits, labels, capsys):
@@ -358,8 +358,8 @@ def test_scaffold_reports_nothing_new_when_mapping_is_complete(tmp_path, splits,
 
 def _colliding():
     return [
-        _split("1", "Conto A", "Bar"),
-        _split("2", "Conto-A", "Bar", date="2025-01-02"),
+        _split("1", "Account A", "Bar"),
+        _split("2", "Account-A", "Bar", date="2025-01-02"),
     ]
 
 
@@ -367,40 +367,40 @@ def test_scaffold_comments_out_collisions_and_export_stops_until_resolved(tmp_pa
     data = _colliding()
     _, map_path = scaffold(tmp_path, data, labels)
     text = map_path.read_text(encoding="utf-8")
-    assert '# "Conto A": "Assets:Conto-A"  # TODO collision' in text
+    assert '# "Account A": "Assets:Account-A"  # TODO collision' in text
     assert "collision(s)" in capsys.readouterr().err
 
     config = load_ledger_config(map_path)  # parses fine
-    assert "Conto A" not in config.accounts
+    assert "Account A" not in config.accounts
     with pytest.raises(AccountCollisionError):
         build_ledger(data, AccountResolver(config, labels))
 
-    fixed = text.replace('# "Conto A": "Assets:Conto-A"', '"Conto A": "Assets:Conto-A-1"')
+    fixed = text.replace('# "Account A": "Assets:Account-A"', '"Account A": "Assets:Account-A-1"')
     map_path.write_text(fixed, encoding="utf-8")
     config = load_ledger_config(map_path)
     ledger = build_ledger(data, AccountResolver(config, labels))
     accounts = {p.account for tx in ledger.transactions for p in tx.postings}
-    assert {"Assets:Conto-A-1", "Assets:Conto-A"} <= accounts
+    assert {"Assets:Account-A-1", "Assets:Account-A"} <= accounts
 
 
 def test_scaffold_leaves_names_shared_by_several_account_types_automatic(tmp_path, labels):
     data = [
-        _split("1", "Conto", "Amazon"),
-        _split("2", "Amazon", "Conto", src_type="Asset account", dst_type="Expense account"),
+        _split("1", "Bank", "Amazon"),
+        _split("2", "Amazon", "Bank", src_type="Asset account", dst_type="Expense account"),
     ]
-    data[1]["destination_name"] = "Conto"
+    data[1]["destination_name"] = "Bank"
     _, map_path = scaffold(tmp_path, data, labels)
     text = map_path.read_text(encoding="utf-8")
-    assert '# "Conto"  # left automatic' in text
-    assert '"Conto":' not in re.sub(r"^\s*#.*$", "", text, flags=re.M)
+    assert '# "Bank"  # left automatic' in text
+    assert '"Bank":' not in re.sub(r"^\s*#.*$", "", text, flags=re.M)
     config = load_ledger_config(map_path)
-    assert "Conto" not in config.accounts
+    assert "Bank" not in config.accounts
 
 
 def test_scaffold_quotes_awkward_names(tmp_path, labels):
-    data = [_split("1", 'Conto "uno": #2', "Bar")]
+    data = [_split("1", 'Bank "one": #2', "Bar")]
     _, map_path = scaffold(tmp_path, data, labels)
-    assert load_ledger_config(map_path).accounts['Conto "uno": #2'] == "Assets:Conto-uno-2"
+    assert load_ledger_config(map_path).accounts['Bank "one": #2'] == "Assets:Bank-one-2"
 
 
 def test_scaffold_is_translated(tmp_path, splits):

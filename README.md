@@ -88,18 +88,18 @@ Example `beancount_map.yaml`:
 
 ```yaml
 accounts:                       # Firefly account (name or id) -> Beancount account
-  "Conto Corrente": "Assets:Banca:Intesa:Corrente"
-investment_accounts:            # -> Assets:Investimenti:<Broker>:Cash
-  "Fineco Investimenti": "Fineco"
+  "Checking Account": "Assets:Bank:Main:Checking"
+investment_accounts:            # -> Assets:Investments:<Broker>:Cash
+  "Acme Investments": "Acme"
 fallback:
-  expense: "Expenses:Non-Classificato"
-  income: "Income:Non-Classificato"
+  expense: "Expenses:Uncategorized"
+  income: "Income:Uncategorized"
 operating_currency: [EUR]
 commodities: [EUR, USD]
 ```
 
 Recommended layout: `main.beancount` (options + includes, yours) · `accounts.beancount` and `firefly-YYYY.beancount`
-(**generated**, replaced atomically, closed years never change) · `investimenti.beancount` (securities, hand-written) ·
+(**generated**, replaced atomically, closed years never change) · `investments.beancount` (securities, hand-written) ·
 `prices.beancount`.
 `--dry-run` prints to stdout, `--no-timestamp` gives byte-identical reruns, `--lang en|it` translates metadata and
 messages. Full user guide (options, mapping reference, worked example, Fava queries, troubleshooting): [Beancount Export](docs/wiki/Beancount-Export.md). Internals and how to add hledger/ledger: [Ledger Architecture](docs/wiki/Ledger-Architecture.md).

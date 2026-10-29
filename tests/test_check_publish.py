@@ -139,7 +139,7 @@ def test_a_message_line_that_looks_like_a_delimiter_does_not_hide_the_rest(repo:
 
 def test_an_added_line_in_an_oddly_named_file_is_caught(repo: Path) -> None:
     _branch(repo)
-    (repo / 'caffè "x".txt').write_text(f"{SECRET}\n")
+    (repo / 'café "x".txt').write_text(f"{SECRET}\n")
     _commit(repo, "add")
     result = _check(repo, PUBLISH_DENY_PATTERNS=SECRET)
     assert result.returncode == 1

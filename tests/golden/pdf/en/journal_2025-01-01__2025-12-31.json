@@ -86,7 +86,7 @@
     [
      "3",
      "2025-01-15",
-     "Invoice #001 - Rossi LLC",
+     "Invoice #001 - Acme Consulting LLC",
      "BankX Checking",
      "3,200.00",
      ""
@@ -95,7 +95,7 @@
      "",
      "",
      "",
-     "Rossi LLC",
+     "Acme Consulting LLC",
      "",
      "3,200.00"
     ],
@@ -375,7 +375,7 @@
      "",
      "",
      "",
-     "Rossi LLC",
+     "Acme Consulting LLC",
      "",
      "150.00"
     ],
@@ -391,7 +391,7 @@
      "16",
      "2025-03-15",
      "Accountant fees Q1",
-     "Bianchi & Partners",
+     "Baker & Partners",
      "320.00",
      ""
     ],
@@ -462,7 +462,7 @@
     [
      "20",
      "2025-03-28",
-     "Invoice #003 - Rossi LLC",
+     "Invoice #003 - Acme Consulting LLC",
      "BankX Checking",
      "2,900.00",
      ""
@@ -471,7 +471,7 @@
      "",
      "",
      "",
-     "Rossi LLC",
+     "Acme Consulting LLC",
      "",
      "2,900.00"
     ],
@@ -663,7 +663,7 @@
      "",
      "",
      "",
-     "Rossi LLC",
+     "Acme Consulting LLC",
      "",
      "450.00"
     ],

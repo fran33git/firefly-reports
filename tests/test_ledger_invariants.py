@@ -21,8 +21,8 @@ from tests.ledger_helpers import export_request
 
 FIXTURES = Path(__file__).parent / "fixtures"
 MAP = {
-    "accounts": {"Mutuo Casa": "Liabilities:Mutuo"},
-    "investment_accounts": {"Fineco Investimenti": "Fineco"},
+    "accounts": {"Home Mortgage": "Liabilities:Mortgage"},
+    "investment_accounts": {"Acme Investments": "Acme"},
     "operating_currency": ["EUR"],
     "commodities": ["EUR", "USD"],
 }

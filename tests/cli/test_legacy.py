@@ -135,10 +135,10 @@ def test_hint_masks_credentials_in_the_url():
 
 
 def test_hint_quoting_is_platform_aware():
-    argv = ["--owner", "Mario Rossi", "--token", "x"]
+    argv = ["--owner", "Jane Doe", "--token", "x"]
     assert command_hint(argv, windows=False) == (
-        "firefly-reports report --owner 'Mario Rossi' --token ***"
+        "firefly-reports report --owner 'Jane Doe' --token ***"
     )
     assert command_hint(argv, windows=True) == (
-        'firefly-reports report --owner "Mario Rossi" --token ***'
+        'firefly-reports report --owner "Jane Doe" --token ***'
     )

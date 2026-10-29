@@ -29,15 +29,15 @@ def main():
         raise SystemExit(code)
 
 
-SPLITS = [withdrawal("1", "Cibo"), withdrawal("2", "Auto"), deposit("3", "Fatture")]
+SPLITS = [withdrawal("1", "Food"), withdrawal("2", "Auto"), deposit("3", "Invoices")]
 EXISTING = (
     "# my mapping\n"
     "classify_by: category\n"
     "accounts:\n"
-    '  "Conto": "Assets:Conto"  # keep me\n'
+    '  "Bank": "Assets:Bank"  # keep me\n'
     "categories:\n"
     "  expense:\n"
-    '    "Cibo": "Expenses:Cibo"  # mine\n'
+    '    "Food": "Expenses:Food"  # mine\n'
 )
 
 
@@ -82,9 +82,9 @@ def test_append_adds_missing_and_preserves_existing_lines(tmp_path, labels):
     new = path.read_text(encoding="utf-8")
     assert rc == 0 and in_order(EXISTING, new)
     cfg = parse_ledger_config(yaml.safe_load(new))
-    assert cfg.categories_expense == {"Cibo": "Expenses:Cibo", "Auto": "Expenses:Auto"}
-    assert cfg.categories_income == {"Fatture": "Income:Fatture"}
-    assert cfg.accounts["Conto"] == "Assets:Conto"
+    assert cfg.categories_expense == {"Food": "Expenses:Food", "Auto": "Expenses:Auto"}
+    assert cfg.categories_income == {"Invoices": "Income:Invoices"}
+    assert cfg.accounts["Bank"] == "Assets:Bank"
 
 
 def test_append_creates_backup(tmp_path, labels):
@@ -93,7 +93,7 @@ def test_append_creates_backup(tmp_path, labels):
 
 
 def test_append_unsafe_file_prints_snippet_and_writes_nothing(tmp_path, labels, capsys):
-    flow = 'classify_by: category\ncategories: {expense: {"Cibo": "Expenses:Cibo"}}\n'
+    flow = 'classify_by: category\ncategories: {expense: {"Food": "Expenses:Food"}}\n'
     rc, path = scaffold(tmp_path, labels, text=flow, mode=SCAFFOLD_APPEND)
     out = capsys.readouterr()
     assert rc == 0 and path.read_text(encoding="utf-8") == flow
@@ -125,7 +125,7 @@ def test_append_that_loses_a_new_entry_writes_nothing(tmp_path, labels, monkeypa
 
 
 def test_append_nothing_new_writes_nothing(tmp_path, labels):
-    full = EXISTING + '    "Auto": "Expenses:Auto"\n  income:\n    "Fatture": "Income:Fatture"\n'
+    full = EXISTING + '    "Auto": "Expenses:Auto"\n  income:\n    "Invoices": "Income:Invoices"\n'
     rc, path = scaffold(tmp_path, labels, text=full, mode=SCAFFOLD_APPEND)
     assert rc == 0 and path.read_text(encoding="utf-8") == full
     assert siblings(path) == ["m.yaml"]
@@ -179,7 +179,7 @@ def test_overwrite_confirmed_makes_timestamped_backup_then_replaces(tmp_path, la
     )
     new = path.read_text(encoding="utf-8")
     assert rc == 0 and asked == [path]
-    assert "my mapping" not in new and '"Cibo": "Expenses:Cibo"' in new
+    assert "my mapping" not in new and '"Food": "Expenses:Food"' in new
     (backup,) = [p for p in tmp_path.iterdir() if p.name.startswith("m.yaml.bak-")]
     assert backup.read_text(encoding="utf-8") == EXISTING
 
@@ -213,21 +213,21 @@ def test_overwrite_dry_run_neither_asks_nor_writes(tmp_path, labels, capsys):
 def test_cli_overwrite_regenerates_from_scratch_ignoring_the_old_mapping(cli, monkeypatch):
     path = cli / "beancount_map.yaml"
     path.write_text(
-        "classify_by: category\naccounts:\n  Conto: 'Assets:Banca:Conto'\n"
-        "categories:\n  expense:\n    Cibo: 'Expenses:Vitto'\n",
+        "classify_by: category\naccounts:\n  Bank: 'Assets:Bank:Main'\n"
+        "categories:\n  expense:\n    Food: 'Expenses:Vitto'\n",
         encoding="utf-8",
     )
     monkeypatch.setattr("firefly_reports.cli.export._stdin_is_interactive", lambda: True)
     monkeypatch.setattr("builtins.input", lambda prompt="": "beancount_map.yaml")
     run_cli(monkeypatch, "--scaffold", "--overwrite")
     cfg = load_ledger_config(path)
-    assert cfg.categories_expense["Cibo"] == "Expenses:Cibo"  # not the user's old value
-    assert "Conto" not in cfg.accounts or cfg.accounts["Conto"] != "Assets:Banca:Conto"
+    assert cfg.categories_expense["Food"] == "Expenses:Food"  # not the user's old value
+    assert "Bank" not in cfg.accounts or cfg.accounts["Bank"] != "Assets:Bank:Bank"
 
 
 def test_cli_overwrite_can_repair_an_invalid_mapping(cli, monkeypatch):
     path = cli / "beancount_map.yaml"
-    path.write_text("accounts:\n  Conto: 'notanaccount'\n", encoding="utf-8")
+    path.write_text("accounts:\n  Bank: 'notanaccount'\n", encoding="utf-8")
     monkeypatch.setattr("firefly_reports.cli.export._stdin_is_interactive", lambda: True)
     monkeypatch.setattr("builtins.input", lambda prompt="": "beancount_map.yaml")
     run_cli(monkeypatch, "--scaffold", "--overwrite")
@@ -306,5 +306,5 @@ def test_cli_append_end_to_end(cli, monkeypatch):
     path = cli / "beancount_map.yaml"
     path.write_text(EXISTING, encoding="utf-8")
     run_cli(monkeypatch, "--scaffold", "--append")
-    assert '"Fatture": "Income:Fatture"' in path.read_text(encoding="utf-8")
+    assert '"Invoices": "Income:Invoices"' in path.read_text(encoding="utf-8")
     assert (cli / "beancount_map.yaml.bak").exists()

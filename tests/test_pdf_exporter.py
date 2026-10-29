@@ -2,6 +2,7 @@
 
 from datetime import date
 
+from firefly_reports import i18n
 from firefly_reports.reports.account_statements.build import build_account_statements
 from firefly_reports.reports.account_statements.pdf import render_account_statements_pdf
 from firefly_reports.reports.all_tags.build import build_all_tags_report
@@ -54,6 +55,7 @@ from firefly_reports.reports.transaction_register.build import build_transaction
 from firefly_reports.reports.transaction_register.pdf import render_transaction_register_pdf
 from firefly_reports.reports.yoy.build import build_yoy_comparison
 from firefly_reports.reports.yoy.pdf import render_yoy_pdf
+from tests.golden.snapshot import story_recorder
 
 MIN_PDF_BYTES = 1000
 
@@ -82,6 +84,49 @@ def test_render_transaction_register_pdf(tmp_path, txn_2025, period, owner, curr
     p = tmp_path / "register_legacy.pdf"
     render_transaction_register_pdf(data, str(p), legacy=True)
     _check_pdf(p)
+
+
+def _legend_text(snaps):
+    return [
+        f["text"]
+        for s in snaps
+        for f in s.story
+        if isinstance(f, dict) and "text" in f and "WIT" in f["text"]
+    ]
+
+
+def test_render_transaction_register_legacy_legend_is_translated(
+    tmp_path, txn_2025, period, owner, currency
+):
+    data = build_transaction_register(txn_2025, *period, owner, currency)
+    p = tmp_path / "register_legacy.pdf"
+    with story_recorder() as snaps:
+        render_transaction_register_pdf(data, str(p), legacy=True)
+    legends = _legend_text(snaps)
+    assert len(legends) == 1
+    legend = legends[0]
+    assert legend.startswith("Total transactions in period:")
+    # getPlainText() collapses whitespace runs: compare the normalized form in the
+    # story, and the exact spacing (three-space separators) in the catalog values.
+    assert " ".join(legend.split()) == (
+        f"Total transactions in period: {data['total_transactions']} · "
+        "WIT = Withdrawal DEP = Deposit TRF = Transfer"
+    )
+    assert "Prelievo" not in legend
+    assert (
+        i18n.t("pdf.register_legacy_legend") == "WIT = Withdrawal   DEP = Deposit   TRF = Transfer"
+    )
+    with i18n.using("it"):
+        assert (
+            i18n.t("pdf.register_legacy_legend")
+            == "WIT = Prelievo   DEP = Versamento   TRF = Giroconto"
+        )
+        p_it = tmp_path / "register_legacy_it.pdf"
+        with story_recorder() as snaps_it:
+            render_transaction_register_pdf(data, str(p_it), legacy=True)
+    legends_it = _legend_text(snaps_it)
+    assert len(legends_it) == 1
+    assert legends_it[0].endswith("WIT = Prelievo DEP = Versamento TRF = Giroconto")
 
 
 def test_render_transaction_register_modern_pdf(tmp_path, txn_2025, period, owner, currency):
