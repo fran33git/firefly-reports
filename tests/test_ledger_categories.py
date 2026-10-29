@@ -15,7 +15,7 @@ MAPPED = {
     "classify_by": "category",
     "categories": {
         "expense": {"Automobile": "Expenses:Veicoli:Auto", "Carburante": "Expenses:Veicoli:Auto"},
-        "income": {"Fatture": "Income:Professione:Fatture"},
+        "income": {"Invoices": "Income:Professione:Invoices"},
     },
 }
 
@@ -29,13 +29,13 @@ def test_classify_by_comes_from_config():
 def test_mapped_category_uses_mapping():
     r = resolver(**MAPPED)
     assert r.resolve_category("Automobile", "expense") == "Expenses:Veicoli:Auto"
-    assert r.resolve_category("Fatture", "income") == "Income:Professione:Fatture"
+    assert r.resolve_category("Invoices", "income") == "Income:Professione:Invoices"
 
 
 def test_unmapped_category_gets_auto_name():
     r = resolver()
-    assert r.resolve_category("Bar e Ristoranti", "expense") == "Expenses:Bar-e-Ristoranti"
-    assert r.resolve_category("Bar e Ristoranti", "income") == "Income:Bar-e-Ristoranti"
+    assert r.resolve_category("Bar e Restaurants", "expense") == "Expenses:Bar-e-Restaurants"
+    assert r.resolve_category("Bar e Restaurants", "income") == "Income:Bar-e-Restaurants"
 
 
 @pytest.mark.parametrize("name", [None, "", "  "])
@@ -95,7 +95,7 @@ def test_explicit_grouping_is_allowed():
 def test_unused_mapping_keys_are_reported():
     r = resolver(**MAPPED)
     r.resolve_category("Automobile", "expense")
-    assert r.unused_category_keys() == [("expense", "Carburante"), ("income", "Fatture")]
+    assert r.unused_category_keys() == [("expense", "Carburante"), ("income", "Invoices")]
 
 
 def test_split_counts_and_ordering():
@@ -130,8 +130,8 @@ def test_category_origin_values():
 def test_resolutions_exclude_categories():
     r = resolver()
     r.resolve_category("Bar", "expense")
-    r.resolve("Conto", "Asset account")
-    assert [x.name for x in r.resolutions()] == ["Conto"]
+    r.resolve("Bank", "Asset account")
+    assert [x.name for x in r.resolutions()] == ["Bank"]
 
 
 @pytest.mark.parametrize(

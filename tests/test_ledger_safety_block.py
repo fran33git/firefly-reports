@@ -43,11 +43,11 @@ def request(tmp_path, cfg, **kw):
     return ExportRequest(None, None, tmp_path / "out", cfg, **kw)
 
 
-SPLITS = [withdrawal("1", "Cibo"), withdrawal("2", "Nuova"), deposit("3", "Fatture")]
+SPLITS = [withdrawal("1", "Food"), withdrawal("2", "Nuova"), deposit("3", "Invoices")]
 FULL_MAP = {
     "categories": {
-        "expense": {"Cibo": "Expenses:Cibo", "Nuova": "Expenses:Nuova"},
-        "income": {"Fatture": "Income:Fatture"},
+        "expense": {"Food": "Expenses:Food", "Nuova": "Expenses:Nuova"},
+        "income": {"Invoices": "Income:Invoices"},
     }
 }
 
@@ -74,22 +74,22 @@ def test_missing_map_message_points_to_scaffold(labels, tmp_path):
 
 
 def test_unmapped_category_blocks_and_lists_it(labels, tmp_path):
-    cfg = config(categories={"expense": {"Cibo": "Expenses:Cibo"}})
+    cfg = config(categories={"expense": {"Food": "Expenses:Food"}})
     with pytest.raises(LedgerError) as exc:
         run_export(Client(SPLITS), request(tmp_path, cfg), labels)
     assert exc.value.message_key == "ledger.err_unmapped_categories"
     text = str(exc.value)
-    assert "Nuova" in text and "Fatture" in text and "Cibo" not in text
+    assert "Nuova" in text and "Invoices" in text and "Food" not in text
     assert "--scaffold --append" in text and "--allow-unmapped" in text
     assert not (tmp_path / "out").exists()
 
 
 def test_allow_unmapped_proceeds_with_one_warning_per_category(labels, tmp_path, capsys):
-    cfg = config(categories={"expense": {"Cibo": "Expenses:Cibo"}})
+    cfg = config(categories={"expense": {"Food": "Expenses:Food"}})
     assert run_export(Client(SPLITS), request(tmp_path, cfg, allow_unmapped=True), labels) == 0
     err = capsys.readouterr().err
     assert err.count("is not in the mapping file") == 2  # one per missing category
-    assert "'Nuova'" in err and "'Fatture'" in err and "'Cibo'" not in err
+    assert "'Nuova'" in err and "'Invoices'" in err and "'Food'" not in err
     assert (tmp_path / "out" / "firefly-2025.beancount").exists()
 
 
@@ -97,7 +97,7 @@ def test_allow_unmapped_without_a_map_file_uses_automatic_names(labels, tmp_path
     req = request(tmp_path, config(), map_path=None, allow_unmapped=True)
     assert run_export(Client(SPLITS), req, labels) == 0
     text = (tmp_path / "out" / "firefly-2025.beancount").read_text()
-    assert "Expenses:Cibo" in text and "Income:Fatture" in text
+    assert "Expenses:Food" in text and "Income:Invoices" in text
 
 
 def test_category_in_file_with_proposed_value_counts_as_seen(labels, tmp_path):
@@ -126,7 +126,7 @@ def test_uncategorized_never_blocks(labels, tmp_path):
 
 
 def test_dry_run_is_blocked_too(labels, tmp_path):
-    cfg = config(categories={"expense": {"Cibo": "Expenses:Cibo"}})
+    cfg = config(categories={"expense": {"Food": "Expenses:Food"}})
     with pytest.raises(LedgerError):
         run_export(Client(SPLITS), request(tmp_path, cfg, dry_run=True), labels)
 

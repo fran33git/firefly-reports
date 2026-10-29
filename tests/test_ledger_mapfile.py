@@ -5,9 +5,9 @@ import yaml
 from firefly_reports.ledger.mapfile import append_entries, holds_entries
 from firefly_reports.ledger.mapping import parse_ledger_config
 
-A = '"Nuovo": "Assets:Nuovo"  # new'
+A = '"New": "Assets:New"  # new'
 E = '"Auto": "Expenses:Auto"  # split: 4'
-I = '"Fatture": "Income:Fatture"  # split: 2'  # noqa: E741
+I = '"Invoices": "Income:Invoices"  # split: 2'  # noqa: E741
 
 
 def load(text):
@@ -25,9 +25,9 @@ BASE = (
     "operating_currency: [EUR]\n"
     "\n"
     "accounts:\n"
-    '  "Conto": "Assets:Conto"  # keep me\n'
+    '  "Bank": "Assets:Bank"  # keep me\n'
     "  # --- a comment inside the block\n"
-    '  "Risparmio": "Assets:Risparmio"\n'
+    '  "Savings": "Assets:Savings"\n'
     "\n"
     "# fallback below\n"
     "fallback:\n"
@@ -44,19 +44,19 @@ def test_existing_lines_untouched():
 def test_appends_into_accounts_block_before_the_next_section():
     out = append_entries(BASE, accounts=[A], expense=[], income=[])
     lines = out.splitlines()
-    assert lines.index("  " + A) > lines.index('  "Risparmio": "Assets:Risparmio"')
+    assert lines.index("  " + A) > lines.index('  "Savings": "Assets:Savings"')
     assert lines.index("  " + A) < lines.index("fallback:")
-    assert load(out)["accounts"]["Nuovo"] == "Assets:Nuovo"
-    assert load(out)["accounts"]["Conto"] == "Assets:Conto"
+    assert load(out)["accounts"]["New"] == "Assets:New"
+    assert load(out)["accounts"]["Bank"] == "Assets:Bank"
 
 
 CATS = (
     "categories:\n"
     "  expense:\n"
-    '    "Cibo": "Expenses:Cibo"\n'
+    '    "Food": "Expenses:Food"\n'
     "  # --- income\n"
     "  income:\n"
-    '    "Altro": "Income:Altro"\n'
+    '    "Other": "Income:Other"\n'
     "fallback: {}\n"
 )
 
@@ -64,8 +64,8 @@ CATS = (
 def test_appends_into_expense_and_income_blocks():
     out = append_entries(CATS, accounts=[], expense=[E], income=[I])
     data = load(out)["categories"]
-    assert data["expense"] == {"Cibo": "Expenses:Cibo", "Auto": "Expenses:Auto"}
-    assert data["income"] == {"Altro": "Income:Altro", "Fatture": "Income:Fatture"}
+    assert data["expense"] == {"Food": "Expenses:Food", "Auto": "Expenses:Auto"}
+    assert data["income"] == {"Other": "Income:Other", "Invoices": "Income:Invoices"}
     assert in_order(CATS, out)
     lines = out.splitlines()
     assert lines.index("    " + E) < lines.index("  # --- income")
@@ -76,26 +76,26 @@ def test_creates_missing_categories_section_at_the_end():
     assert in_order(BASE, out)
     data = load(out)["categories"]
     assert data["expense"] == {"Auto": "Expenses:Auto"} and data["income"] == {
-        "Fatture": "Income:Fatture"
+        "Invoices": "Income:Invoices"
     }
     assert out.count("categories:") == 1
 
 
 def test_creates_missing_income_block_inside_existing_categories():
-    text = 'categories:\n  expense:\n    "Cibo": "Expenses:Cibo"\n'
+    text = 'categories:\n  expense:\n    "Food": "Expenses:Food"\n'
     out = append_entries(text, accounts=[], expense=[], income=[I])
     assert in_order(text, out)
-    assert load(out)["categories"]["income"] == {"Fatture": "Income:Fatture"}
+    assert load(out)["categories"]["income"] == {"Invoices": "Income:Invoices"}
 
 
 def test_creates_missing_accounts_section():
     out = append_entries("operating_currency: [EUR]\n", accounts=[A], expense=[], income=[])
-    assert load(out)["accounts"] == {"Nuovo": "Assets:Nuovo"}
+    assert load(out)["accounts"] == {"New": "Assets:New"}
 
 
 def test_empty_flow_mapping_is_replaced():
     out = append_entries("accounts: {}\n", accounts=[A], expense=[], income=[])
-    assert load(out) == {"accounts": {"Nuovo": "Assets:Nuovo"}}
+    assert load(out) == {"accounts": {"New": "Assets:New"}}
     assert out.count("accounts:") == 1
 
 
@@ -119,20 +119,20 @@ def test_duplicate_top_level_key_returns_none():
 
 
 def test_crlf_and_missing_final_newline_preserved():
-    text = 'accounts:\r\n  "Conto": "Assets:Conto"'  # CRLF, no newline at the end
+    text = 'accounts:\r\n  "Bank": "Assets:Bank"'  # CRLF, no newline at the end
     out = append_entries(text, accounts=[A], expense=[E], income=[])
     assert "\n" not in out.replace("\r\n", "")  # no bare LF anywhere
     assert out.startswith(text) and out.endswith("\r\n")
     data = load(out)
-    assert data["accounts"]["Nuovo"] == "Assets:Nuovo"
+    assert data["accounts"]["New"] == "Assets:New"
     assert data["categories"]["expense"] == {"Auto": "Expenses:Auto"}
 
 
 def test_four_space_indentation_is_followed():
-    text = 'accounts:\n    "Conto": "Assets:Conto"\n'
+    text = 'accounts:\n    "Bank": "Assets:Bank"\n'
     out = append_entries(text, accounts=[A], expense=[], income=[])
     assert "\n    " + A in out
-    assert load(out)["accounts"]["Nuovo"] == "Assets:Nuovo"
+    assert load(out)["accounts"]["New"] == "Assets:New"
 
 
 def test_comment_only_file_gets_sections_appended():
@@ -162,6 +162,6 @@ def test_holds_entries_ignores_comment_lines_and_checks_the_lane():
 def test_result_is_a_valid_mapping_with_all_previous_entries():
     out = append_entries(BASE, accounts=[A], expense=[E], income=[I])
     cfg = parse_ledger_config(load(out))
-    assert cfg.accounts["Conto"] == "Assets:Conto" and cfg.accounts["Nuovo"] == "Assets:Nuovo"
+    assert cfg.accounts["Bank"] == "Assets:Bank" and cfg.accounts["New"] == "Assets:New"
     assert cfg.categories_expense == {"Auto": "Expenses:Auto"}
-    assert cfg.categories_income == {"Fatture": "Income:Fatture"}
+    assert cfg.categories_income == {"Invoices": "Income:Invoices"}

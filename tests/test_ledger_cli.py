@@ -132,7 +132,7 @@ def test_export_dry_run_prints_to_stdout_only(env, client, monkeypatch, capsys):
 
 def test_export_uses_map_and_lang(env, client, monkeypatch):
     (env / "m.yaml").write_text(
-        "classify_by: account\naccounts:\n  'Conto Corrente': 'Assets:Banca:Corrente'\n"
+        "classify_by: account\naccounts:\n  'Checking Account': 'Assets:Bank:Checking'\n"
     )
     run(
         monkeypatch,
@@ -150,13 +150,13 @@ def test_export_uses_map_and_lang(env, client, monkeypatch):
         env / "out" / "firefly-2025.beancount"
     ).read_text()
     assert "GENERATO - NON MODIFICARE A MANO" in text
-    assert "Assets:Banca:Corrente" in text and "categoria:" in text
+    assert "Assets:Bank:Checking" in text and "categoria:" in text
 
 
 def test_export_picks_up_default_map_in_cwd(env, client, monkeypatch):
-    (env / "beancount_map.yaml").write_text("accounts:\n  'Conto Corrente': 'Assets:Banca'\n")
+    (env / "beancount_map.yaml").write_text("accounts:\n  'Checking Account': 'Assets:Bank'\n")
     run(monkeypatch, "export", "beancount", *CREDS, "--out", "out")
-    assert "Assets:Banca" in (env / "out" / "accounts.beancount").read_text()
+    assert "Assets:Bank" in (env / "out" / "accounts.beancount").read_text()
 
 
 def test_export_init_flag_creates_main(env, client, monkeypatch):
@@ -183,8 +183,8 @@ def test_export_collision_exits_1_and_writes_nothing(env, client, monkeypatch, c
     client.get_transactions.return_value = [
         {
             "type": "withdrawal", "date": "2025-01-01", "amount": "1.00", "currency_code": "EUR",
-            "source_name": "Conto A", "source_type": "Asset account",
-            "destination_name": "Conto-A", "destination_type": "Asset account",
+            "source_name": "Account A", "source_type": "Asset account",
+            "destination_name": "Account-A", "destination_type": "Asset account",
             "transaction_journal_id": "1", "group_id": "1",
         }
     ]  # fmt: skip

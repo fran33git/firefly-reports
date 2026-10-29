@@ -68,36 +68,36 @@ def test_every_transaction_balances_per_currency(ledger):
 
 def test_owed_mortgage_opening_balance_is_a_negative_liability(ledger):
     posts = accounts(ledger, "101")
-    assert set(posts) == {"Equity:Opening-Balances", "Liabilities:Mutuo-Casa"}
-    assert posts["Liabilities:Mutuo-Casa"].amount.number == Decimal("-120000.00")
+    assert set(posts) == {"Equity:Opening-Balances", "Liabilities:Home-Mortgage"}
+    assert posts["Liabilities:Home-Mortgage"].amount.number == Decimal("-120000.00")
 
 
 def test_liability_credit_account_is_an_opening_balance_not_income(ledger):
-    assert set(accounts(ledger, "102")) == {"Equity:Opening-Balances", "Liabilities:Prestito-Amico"}
+    assert set(accounts(ledger, "102")) == {"Equity:Opening-Balances", "Liabilities:Friend-Loan"}
 
 
 def test_transfer_to_a_mortgage_is_a_liability_posting(ledger):
-    assert set(accounts(ledger, "103")) == {"Assets:Conto-Corrente", "Liabilities:Mutuo-Casa"}
+    assert set(accounts(ledger, "103")) == {"Assets:Checking-Account", "Liabilities:Home-Mortgage"}
 
 
 def test_import_account_is_a_technical_equity_counterpart(ledger):
-    assert set(accounts(ledger, "104")) == {"Assets:Conto-Corrente", "Equity:Imports"}
+    assert set(accounts(ledger, "104")) == {"Assets:Checking-Account", "Equity:Imports"}
 
 
 def test_cash_account_maps_to_assets_cash(ledger):
-    assert set(accounts(ledger, "105")) == {"Assets:Cash", "Assets:Conto-Corrente"}
+    assert set(accounts(ledger, "105")) == {"Assets:Cash", "Assets:Checking-Account"}
 
 
 def test_reconciliation_account_maps_to_equity(ledger):
-    assert set(accounts(ledger, "106")) == {"Assets:Conto-Corrente", "Equity:Reconciliation"}
+    assert set(accounts(ledger, "106")) == {"Assets:Checking-Account", "Equity:Reconciliation"}
 
 
 def test_default_and_beneficiary_accounts(ledger):
-    assert set(accounts(ledger, "107")) == {"Assets:Conto-Corrente", "Expenses:Bar-Sport"}
+    assert set(accounts(ledger, "107")) == {"Assets:Checking-Account", "Expenses:Sports-Bar"}
 
 
 def test_foreign_amount_on_a_deposit_prices_the_revenue_posting(ledger):
-    revenue = accounts(ledger, "108")["Income:Cliente-USA"]
+    revenue = accounts(ledger, "108")["Income:US-Client"]
     assert (revenue.amount.number, revenue.amount.currency) == (Decimal("-100.00"), "USD")
     assert revenue.price_total is not None
     assert (revenue.price_total.number, revenue.price_total.currency) == (Decimal("92.00"), "EUR")
@@ -121,7 +121,7 @@ def test_income_only_from_a_revenue_account(ledger):
         for p in tx.postings
         if (a := p.account).startswith("Income")
     }
-    assert income == {"Income:Cliente-USA"}
+    assert income == {"Income:US-Client"}
 
 
 def test_export_requests_every_transaction_type(splits, labels, tmp_path):
