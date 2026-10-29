@@ -15,4 +15,4 @@ numpy<2.5
 
 # contourpy>=1.4.0 requires Python>=3.12 (transitive dep of matplotlib);
 # capped for the same reason as numpy above.
-contourpy<1.4
+contourpy<1.5
