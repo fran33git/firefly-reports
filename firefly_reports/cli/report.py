@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from firefly_reports import api
-from firefly_reports.cli._console import ProgressPrinter, setup_debug_log
+from firefly_reports.cli._console import ProgressPrinter, print_trust_notice, setup_debug_log
 from firefly_reports.cli._options import (
     default_prompt,
     make_client,
@@ -157,7 +157,14 @@ def run_report(args: argparse.Namespace, config: Mapping[str, Any], env: Mapping
         print(msg, file=sys.stderr)
 
     print(f"[*] Connecting to {url}")
-    client = make_client(url, token, log, settings.link_delay)
+    client = make_client(
+        url,
+        token,
+        log,
+        settings.link_delay,
+        trust_insecure_ssl=bool(getattr(args, "trust_insecure_ssl", False)),
+        on_notice=print_trust_notice,
+    )
     return execute(client, period, options, out_dir, debug=settings.debug)
 
 

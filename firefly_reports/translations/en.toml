@@ -506,8 +506,12 @@ invalid_fiscal_start   = "invalid fiscal year start '{value}' (expected MM-DD)."
 fiscal_start_not_leap  = "fiscal year start '{value}' is not valid for year {year} (02-29 requires a leap year)."
 start_after_end        = "start ({start}) must not be after end ({end})"
 api_error              = "Firefly III request failed: {reason}"
+untrusted_chain        = "refusing to connect to {host}: its certificate chain contains '{label}' ({reason}). No request was sent on this connection. Use a certificate from another CA; --trust-insecure-ssl overrides this check but turns off ALL certificate verification."
 
 [cli]
+trust_insecure           = "WARNING: --trust-insecure-ssl is active: the certificate of {host} is NOT verified and the CA lists are not applied. Your token can be read by anyone able to intercept the connection."
+trust_warn_list          = "WARNING: the certificate chain of {host} contains '{detail}', a CA under review. The connection continues; consider a certificate from another CA."
+trust_unchecked          = "WARNING: the certificate chain of {host} could not be checked against the CA lists ({detail}). The standard certificate verification still applied."
 deprecated_no_subcommand = "Warning: running reports without a subcommand is deprecated and will stop working in firefly-reports 3.0. Use: {command}"
 deprecated_module        = "Warning: '{old}' is deprecated and will be removed in firefly-reports 3.0. Use: {new}"
 err_url_required         = "Firefly III URL is required. Use --url, set FIREFLY_URL, or add url to firefly-reports.toml."

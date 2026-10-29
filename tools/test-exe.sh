@@ -63,4 +63,20 @@ fi
 echo "== Probe 6: --version =="
 "$EXE" --version | grep -Eq '^firefly-reports [0-9]+\.[0-9]+\.[0-9]+'
 
+echo "== Probe 7: the TLS chain is read inside the frozen binary (needs network) =="
+# Any HTTPS host works: the chain is logged right after the handshake, before the request, so the
+# API answering 404/401 to a dummy token is expected and ignored.
+"$EXE" --debug --debug-file "$BUILD_DIR/tls.log" report --year 2025 \
+    --url https://api.github.com --token dummy --out "$BUILD_DIR/tls_out" >/dev/null 2>&1 || true
+if ! grep -Eq 'TLS chain for api\.github\.com: path=(public|private) certs=[2-9]' "$BUILD_DIR/tls.log"; then
+    echo "FAIL: the verified TLS chain could not be read inside the exe:" >&2
+    cat "$BUILD_DIR/tls.log" >&2 || true
+    exit 1
+fi
+if ! grep -Eq 'TLS verdict for api\.github\.com: allowed' "$BUILD_DIR/tls.log"; then
+    echo "FAIL: the exe did not reach a TLS verdict for api.github.com:" >&2
+    cat "$BUILD_DIR/tls.log" >&2 || true
+    exit 1
+fi
+
 echo "All exe smoke tests passed."

@@ -88,6 +88,23 @@ jobs:
           name: coverage-${{ matrix.python-version }}
           path: coverage.xml
 
+  # The TLS chain check reads the verified chain through the public ssl API on Python 3.13+ and
+  # through a private binding on 3.11/3.12 (the matrix above). The lock file targets 3.11, so this
+  # job installs only what the TLS tests need and runs them on a real handshake.
+  tls-trust-public-api:
+    name: TLS trust tests (Python 3.13)
+    runs-on: ubuntu-latest
+    needs: [lint, types]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - run: pip install requests pytest
+      - run: pytest tests/tlstrust tests/test_tls_binding_guard.py tests/test_tls_client.py tests/test_tls_loopback.py -v
+        env:
+          CI: "true"
+
   audit:
     name: Dependency audit (pip-audit)
     runs-on: ubuntu-latest
@@ -157,6 +174,21 @@ jobs:
             exit 1
           }
           Write-Host "demo probe passed ($pdfs PDFs)"
+          # The TLS chain check must work inside the frozen exe (private OpenSSL binding on 3.11).
+          # The chain is logged right after the handshake, so the API answering 404/401 to a dummy
+          # token is expected and ignored.
+          cmd /c ".\dist\firefly-reports.exe --debug --debug-file probe_tls.log report --year 2025 --url https://api.github.com --token dummy --out probe_tls_out > probe_tls.out 2>&1 || exit 0"
+          if (-not (Select-String -Path probe_tls.log -Pattern "TLS chain for api\.github\.com: path=(public|private) certs=[2-9]" -Quiet)) {
+            Write-Error "the verified TLS chain could not be read inside the exe"
+            Get-Content probe_tls.log -ErrorAction SilentlyContinue
+            exit 1
+          }
+          if (-not (Select-String -Path probe_tls.log -Pattern "TLS verdict for api\.github\.com: allowed" -Quiet)) {
+            Write-Error "the exe did not reach a TLS verdict for api.github.com"
+            Get-Content probe_tls.log -ErrorAction SilentlyContinue
+            exit 1
+          }
+          Write-Host "TLS chain probe passed"
 
   security:
     name: Security scan (bandit)

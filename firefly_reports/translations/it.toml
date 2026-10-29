@@ -506,8 +506,12 @@ invalid_fiscal_start   = "inizio anno fiscale non valido '{value}' (atteso MM-GG
 fiscal_start_not_leap  = "l'inizio anno fiscale '{value}' non è valido per l'anno {year} (02-29 richiede un anno bisestile)"
 start_after_end        = "l'inizio ({start}) non può essere successivo alla fine ({end})"
 api_error              = "Richiesta a Firefly III non riuscita: {reason}"
+untrusted_chain        = "connessione a {host} rifiutata: la sua catena di certificati contiene '{label}' ({reason}). Su questa connessione non è stata inviata alcuna richiesta. Usa un certificato di un'altra CA; --trust-insecure-ssl aggira questo controllo ma disattiva TUTTA la verifica dei certificati."
 
 [cli]
+trust_insecure           = "ATTENZIONE: --trust-insecure-ssl è attivo: il certificato di {host} NON viene verificato e le liste delle CA non vengono applicate. Il tuo token può essere letto da chiunque riesca a intercettare la connessione."
+trust_warn_list          = "ATTENZIONE: la catena di certificati di {host} contiene '{detail}', una CA sotto verifica. La connessione prosegue; valuta un certificato di un'altra CA."
+trust_unchecked          = "ATTENZIONE: la catena di certificati di {host} non ha potuto essere controllata con le liste delle CA ({detail}). La normale verifica dei certificati è stata comunque applicata."
 deprecated_no_subcommand = "Attenzione: generare i report senza sottocomando è deprecato e smetterà di funzionare in firefly-reports 3.0. Usa: {command}"
 deprecated_module        = "Attenzione: '{old}' è deprecato e sarà rimosso in firefly-reports 3.0. Usa: {new}"
 err_url_required         = "L'URL di Firefly III è obbligatorio. Usa --url, imposta FIREFLY_URL oppure aggiungi url a firefly-reports.toml."

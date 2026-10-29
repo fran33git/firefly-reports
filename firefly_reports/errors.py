@@ -35,3 +35,10 @@ class FireflyAPIError(FireflyReportsError):
 
 class ReportError(FireflyReportsError):
     """A report could not be built (the report key is in the params)."""
+
+
+class UntrustedChainError(FireflyReportsError):
+    """The server's verified TLS chain contains a key on the BLOCK list; nothing was sent."""
+
+    def __init__(self, *, host: str, label: str, reason: str, spki: str) -> None:
+        super().__init__("errors.untrusted_chain", host=host, label=label, reason=reason, spki=spki)

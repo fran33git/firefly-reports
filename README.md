@@ -116,6 +116,14 @@ python -m firefly_reports.demo --out ./output --year 2025 --lang en
 firefly-reports init     # interactive wizard — creates firefly-reports.toml
 ```
 
+## TLS and untrusted CAs
+
+Before sending your token, `firefly-reports` checks the certificate chain of your Firefly III server
+against a built-in list of compromised CA keys (for example the eMudhra keys of October 2026) and refuses
+to connect if it finds one. A few CAs under review only produce a warning. `--trust-insecure-ssl`
+(`report` and `export`, command line only) turns certificate verification off altogether; use it only
+for a server you control. Details: [Troubleshooting](docs/wiki/Troubleshooting.md).
+
 ## Documentation
 
 Full documentation is on the [GitHub Wiki](https://github.com/fran33git/firefly-reports/wiki):

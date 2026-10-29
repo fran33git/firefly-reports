@@ -16,7 +16,7 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 
 from firefly_reports import __version__, i18n
-from firefly_reports.cli._console import print_error, reconfigure_streams
+from firefly_reports.cli._console import print_error, print_trust_notice, reconfigure_streams
 from firefly_reports.cli._legacy import command_hint, rewrite_legacy
 from firefly_reports.cli._options import (
     default_prompt,
@@ -45,8 +45,11 @@ Credentials may also come from FIREFLY_URL / FIREFLY_TOKEN, a .env file or
 """
 
 
-def _common_options() -> argparse.ArgumentParser:
-    """Global options shared by every subcommand (SUPPRESS keeps values given before it)."""
+def _common_options(*, network: bool = False) -> argparse.ArgumentParser:
+    """Global options shared by the subcommands (SUPPRESS keeps values given before it).
+
+    *network* adds the options of the subcommands that connect to Firefly III.
+    """
     sup = argparse.SUPPRESS
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--url", default=sup, help="Firefly III base URL")
@@ -56,6 +59,14 @@ def _common_options() -> argparse.ArgumentParser:
         "--debug", action="store_const", const=True, default=sup, help="Enable debug log to file"
     )
     common.add_argument("--debug-file", default=sup, metavar="PATH", help="Log file path")
+    if network:
+        common.add_argument(
+            "--trust-insecure-ssl",
+            action="store_const",
+            const=True,
+            default=sup,
+            help="Do not verify TLS certificates at all (self-signed, expired, blocklisted CA); your token can be intercepted. Command line only",
+        )
     return common
 
 
@@ -79,13 +90,19 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="PATH",
         help="Log file path (default: <out>/debug_<timestamp>.log)",
     )
+    root.add_argument(
+        "--trust-insecure-ssl",
+        action="store_true",
+        help="Do not verify TLS certificates at all (self-signed, expired, blocklisted CA); your token can be intercepted. Command line only",
+    )
     # 1.x placed these before the subcommand (`--out X export beancount`): accepted, not advertised.
     for flag in ("--out", "--start", "--end"):
         root.add_argument(flag, default=None, help=argparse.SUPPRESS)
     common = _common_options()
+    network = _common_options(network=True)
     sub = root.add_subparsers(dest="command", metavar="<command>")
-    add_report_parser(sub, common)
-    add_export_parser(sub, common)
+    add_report_parser(sub, network)
+    add_export_parser(sub, network)
     sub.add_parser("init", parents=[common], help="Create ./firefly-reports.toml interactively")
     add_demo_parser(sub, common)
     return root
@@ -117,7 +134,13 @@ def _dispatch(args: argparse.Namespace, config: Mapping[str, Any], env: Mapping[
             url, token = resolve_credentials(
                 args.url, args.token, config, env, prompt=default_prompt
             )
-            return make_client(url, token, logging.getLogger("firefly_reports.client"))
+            return make_client(
+                url,
+                token,
+                logging.getLogger("firefly_reports.client"),
+                trust_insecure_ssl=bool(getattr(args, "trust_insecure_ssl", False)),
+                on_notice=print_trust_notice,
+            )
 
         return run_export_command(args, client, parse_cli_date, config)
     return run_report(args, config, env)

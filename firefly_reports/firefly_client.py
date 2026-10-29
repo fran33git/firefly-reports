@@ -1,13 +1,27 @@
 """Firefly III REST API client with transparent pagination."""
 
 import logging
+import platform
 import re
+import ssl
 import time
+import warnings
+from collections.abc import Callable
+from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal, InvalidOperation
-from typing import Any
+from typing import Any, Literal
+from urllib.parse import urlparse
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.connectionpool import HTTPSConnectionPool
+from urllib3.exceptions import InsecureRequestWarning
+
+from firefly_reports.errors import UntrustedChainError
+from firefly_reports.tlstrust.chain import read_verified_chain
+from firefly_reports.tlstrust.lists import ENTRIES, LIST_DATE, index
+from firefly_reports.tlstrust.policy import evaluate
 
 
 def _dec(value: Any) -> Decimal:
@@ -23,6 +37,155 @@ def _redact(value: str) -> str:
     return re.sub(r"Bearer\s+\S+", "Bearer ***REDACTED***", value)
 
 
+@dataclass(frozen=True)
+class TrustNotice:
+    """Something the user must see about the TLS connection; the CLI renders it on stderr."""
+
+    kind: Literal["warn_list", "unchecked", "insecure"]
+    host: str
+    detail: str
+
+
+class TrustWarning(UserWarning):
+    """A TLS trust notice raised as a Python warning when the caller supplied no ``on_notice``.
+
+    The library never prints, but it must never be silent either: a user of ``api.connect`` who
+    passes no callback still gets these through the ``warnings`` module.
+    """
+
+
+_NOTICE_TEXT = {
+    "insecure": "--trust-insecure-ssl is active: the certificate of {host} is not verified and "
+    "the CA lists are not applied",
+    "warn_list": "the certificate chain of {host} contains '{detail}', a CA under review",
+    "unchecked": "the certificate chain of {host} could not be checked against the CA lists "
+    "({detail})",
+}
+
+
+class _TrustChecker:
+    """The chain check shared by all connections of one client: the lists, the log, the notices."""
+
+    def __init__(
+        self, log: logging.Logger, on_notice: Callable[[TrustNotice], None] | None
+    ) -> None:
+        self._log = log
+        self._on_notice = on_notice
+        self._seen: set[TrustNotice] = set()
+        self._table = index(ENTRIES)
+
+    def notice(self, notice: TrustNotice) -> None:
+        if notice in self._seen:
+            return
+        self._seen.add(notice)
+        if self._on_notice is not None:
+            self._on_notice(notice)
+            return
+        text = _NOTICE_TEXT[notice.kind].format(host=notice.host, detail=notice.detail)
+        warnings.warn(TrustWarning(text), stacklevel=2)
+
+    def inspect(self, host: str, sock: object) -> None:
+        """Check the verified chain of a just-handshaken socket; raise on a BLOCK key."""
+        log = self._log
+        read = read_verified_chain(sock)
+        log.debug("TLS check: Python %s, %s", platform.python_version(), ssl.OPENSSL_VERSION)
+        log.debug("TLS chain for %s: path=%s certs=%d", host, read.path, len(read.certs))
+        log.debug(
+            "TLS lists %s: %d block, %d warn entries",
+            LIST_DATE,
+            sum(e.level == "block" for e in self._table.values()),
+            sum(e.level == "warn" for e in self._table.values()),
+        )
+        if not read.checked:
+            detail = read.reason or "the chain could not be read"
+            log.debug(
+                "TLS verdict for %s: NOT CHECKED (%s); connection allowed with a warning",
+                host,
+                detail,
+            )
+            self.notice(TrustNotice("unchecked", host, detail))
+            return
+        verdict = evaluate(read.certs, self._table)
+        for position, digest in enumerate(verdict.hashes):
+            log.debug("  cert[%d] spki sha256=%s", position, digest)
+        for match in (*verdict.blocked, *verdict.warned):
+            log.debug(
+                "  list match at position %d: %s [%s] %s",
+                match.position,
+                match.entry.label,
+                match.entry.level,
+                match.entry.reason,
+            )
+        if verdict.blocked:
+            hit = verdict.blocked[0].entry
+            log.debug("TLS verdict for %s: BLOCKED by %s; no request was sent", host, hit.label)
+            raise UntrustedChainError(
+                host=host, label=hit.label, reason=hit.reason, spki=hit.spki_sha256
+            )
+        if verdict.unparsable:
+            self.notice(
+                TrustNotice(
+                    "unchecked", host, f"{verdict.unparsable} certificate(s) could not be read"
+                )
+            )
+        for match in verdict.warned:
+            self.notice(TrustNotice("warn_list", host, match.entry.label))
+        log.debug("TLS verdict for %s: allowed", host)
+
+
+def _checked_pool(base: type[HTTPSConnectionPool], checker: _TrustChecker) -> type[Any]:
+    """*base* with a connection class that checks the chain right after the TLS handshake.
+
+    Raising from ``connect()`` aborts before urllib3 writes a single request byte. Subclassing
+    whatever pool the manager already uses keeps proxy-specific pools (SOCKS) working.
+    """
+    base_connection: Any = base.ConnectionCls
+
+    class CheckedConnection(base_connection):
+        _firefly_trust_checked = True
+
+        def connect(self) -> None:
+            super().connect()
+            # Behind a proxy ``self.host`` is the proxy; the origin is the tunnel host.
+            host = getattr(self, "_tunnel_host", None) or self.host
+            try:
+                checker.inspect(host, self.sock)
+            except UntrustedChainError:
+                self.close()
+                raise
+
+    class CheckedPool(base):  # type: ignore[valid-type, misc]
+        ConnectionCls = CheckedConnection
+        _firefly_trust_checked_pool = True
+
+    return CheckedPool
+
+
+class _TrustAdapter(HTTPAdapter):
+    """Mounted on ``https://``: every pool, direct or through a proxy, checks the chain."""
+
+    __attrs__ = [*HTTPAdapter.__attrs__, "_checker"]  # keeps pickle/deepcopy of the session working
+
+    def __init__(self, checker: _TrustChecker) -> None:
+        self._checker = checker  # set first: HTTPAdapter.__init__ builds the pool manager
+        super().__init__()
+
+    def _patch(self, manager: Any) -> None:
+        pools = dict(manager.pool_classes_by_scheme)  # a copy: urllib3 shares the module dict
+        if not getattr(pools["https"], "_firefly_trust_checked_pool", False):
+            pools["https"] = _checked_pool(pools["https"], self._checker)
+            manager.pool_classes_by_scheme = pools
+
+    def init_poolmanager(self, *args: Any, **kwargs: Any) -> None:
+        super().init_poolmanager(*args, **kwargs)
+        self._patch(self.poolmanager)
+
+    def proxy_manager_for(self, proxy: str, **proxy_kwargs: Any) -> Any:
+        manager = super().proxy_manager_for(proxy, **proxy_kwargs)
+        self._patch(manager)
+        return manager
+
+
 class FireflyClient:
     """HTTP client for the Firefly III v1 API."""
 
@@ -32,11 +195,27 @@ class FireflyClient:
         token: str,
         logger: logging.Logger | None = None,
         request_delay: float = 0.2,
+        *,
+        trust_insecure_ssl: bool = False,
+        on_notice: Callable[[TrustNotice], None] | None = None,
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self._log = logger or logging.getLogger("firefly_reports.client")
         self._request_delay = request_delay
+        self._insecure = trust_insecure_ssl
+        self._trust = _TrustChecker(self._log, on_notice)
         self.session = requests.Session()
+        parsed = urlparse(self.base_url)
+        if trust_insecure_ssl:
+            self.session.verify = False
+            self._log.debug(
+                "TLS trust: --trust-insecure-ssl is ACTIVE, certificate verification and the "
+                "CA lists are OFF"
+            )
+            if parsed.scheme == "https":
+                self._trust.notice(TrustNotice("insecure", parsed.hostname or self.base_url, ""))
+        else:
+            self.session.mount("https://", _TrustAdapter(self._trust))
         self.session.headers.update(
             {
                 "Authorization": f"Bearer {token}",
@@ -50,10 +229,17 @@ class FireflyClient:
             self._request_delay,
         )
 
+    def _http_get(self, url: str, **kwargs: Any) -> requests.Response:
+        if not self._insecure:
+            return self.session.get(url, **kwargs)
+        with warnings.catch_warnings():  # the project already warns once, in its own words
+            warnings.simplefilter("ignore", InsecureRequestWarning)
+            return self.session.get(url, **kwargs)
+
     def _get(self, endpoint: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
         url = f"{self.base_url}/api/v1/{endpoint}"
         self._log.debug("GET %s params=%s", url, params)
-        resp = self.session.get(url, params=params, timeout=30)
+        resp = self._http_get(url, params=params, timeout=30)
         self._log.debug("  -> HTTP %d  %d bytes", resp.status_code, len(resp.content))
         resp.raise_for_status()
         result: dict[str, Any] = resp.json()
@@ -132,12 +318,12 @@ class FireflyClient:
         """
         time.sleep(self._request_delay)
         url = f"{self.base_url}/api/v1/{endpoint}"
-        resp = self.session.get(url, timeout=30)
+        resp = self._http_get(url, timeout=30)
         if resp.status_code == 429:
             retry_after = float(resp.headers.get("Retry-After", self._request_delay * 2))
             self._log.warning("Rate limited (429) — retrying in %.1fs", retry_after)
             time.sleep(retry_after)
-            resp = self.session.get(url, timeout=30)
+            resp = self._http_get(url, timeout=30)
         resp.raise_for_status()
         result: dict[str, Any] = resp.json()
         return result
@@ -191,6 +377,8 @@ class FireflyClient:
                 tx = self.get_transaction_journal_by_id(journal_id)
                 if tx:
                     results.append(tx)
+            except UntrustedChainError:
+                raise  # a trust failure must never degrade into "skip this item"
             except Exception as e:
                 failed += 1
                 self._log.error("Failed to fetch transaction journal %s: %s", journal_id, e)

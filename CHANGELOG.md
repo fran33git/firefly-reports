@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+- TLS trust lists: before any request is sent, the verified certificate chain of the Firefly III server
+  is compared (by SPKI SHA-256) with an internal blocklist, which refuses the connection, and a
+  greylist, which only warns. Initial content from the eMudhra incident of October 2026: the eight
+  intermediates with recoverable private keys (also their Sectigo cross-signed certificates) and
+  `emSign ECC Root CA - G3` are blocked; the remaining emSign roots warn. Works on Python 3.11 to 3.13+
+  and in the Windows executable; `--debug` logs every step
+- `--trust-insecure-ssl` for `report` and `export`: turns TLS certificate verification (and the lists)
+  off. Command line only (not in `firefly-reports.toml`, not an environment variable); a warning is
+  printed on every run
+- `TrustNotice`, `TrustWarning` and `UntrustedChainError` in the provisional library facade
+  (`firefly_reports.__all__`), for library users of `connect(..., on_notice=...)`
+
+### Security
+- A connection whose chain contains a blocked key is refused before the Personal Access Token is sent
+  (exit code 1). An unreadable chain connects with an explicit warning. Installed versions and
+  executables keep the lists they shipped with: update to receive new entries
+
 ## [2.0.0] - 2026-10-23
 
 Major release: uniform subcommands, a registry of report packages, a Beancount export and a
