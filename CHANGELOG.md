@@ -6,25 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-### Added
-- TLS trust lists: before any request is sent, the verified certificate chain of the Firefly III server
-  is compared (by SPKI SHA-256) with an internal blocklist, which refuses the connection, and a
-  greylist, which only warns. Initial content from the eMudhra incident of October 2026: the eight
-  intermediates with recoverable private keys (also their Sectigo cross-signed certificates) and
-  `emSign ECC Root CA - G3` are blocked; the remaining emSign roots warn. Works on Python 3.11 to 3.13+
-  and in the Windows executable; `--debug` logs every step
-- `--trust-insecure-ssl` for `report` and `export`: turns TLS certificate verification (and the lists)
-  off. Command line only (not in `firefly-reports.toml`, not an environment variable); a warning is
-  printed on every run
-- `TrustNotice`, `TrustWarning` and `UntrustedChainError` in the provisional library facade
-  (`firefly_reports.__all__`), for library users of `connect(..., on_notice=...)`
-
-### Security
-- A connection whose chain contains a blocked key is refused before the Personal Access Token is sent
-  (exit code 1). An unreadable chain connects with an explicit warning. Installed versions and
-  executables keep the lists they shipped with: update to receive new entries
-
-## [2.0.0] - 2026-10-23
+## [2.0.0] - 2026-10-29
 
 Major release: uniform subcommands, a registry of report packages, a Beancount export and a
 provisional library facade. Report content (PDF layout, Excel sheets) is unchanged by the
@@ -68,6 +50,17 @@ pre-refactor code.
 - Keys in `firefly-reports.toml` that nothing reads (typos) produce a translated warning on
   stderr, with a suggestion, instead of being ignored silently; `.env.example` lists
   `FIREFLY_LANG` and `FIREFLY_LEGACY_REPORT`
+- TLS trust lists: before any request is sent, the verified certificate chain of the Firefly III server
+  is compared (by SPKI SHA-256) with an internal blocklist, which refuses the connection, and a
+  greylist, which only warns. Initial content from the eMudhra incident of October 2026: the eight
+  intermediates with recoverable private keys (also their Sectigo cross-signed certificates) and
+  `emSign ECC Root CA - G3` are blocked; the remaining emSign roots warn. Works on Python 3.11 to 3.13+
+  and in the Windows executable; `--debug` logs every step
+- `--trust-insecure-ssl` for `report` and `export`: turns TLS certificate verification (and the lists)
+  off. Command line only (not in `firefly-reports.toml`, not an environment variable); a warning is
+  printed on every run
+- `TrustNotice`, `TrustWarning` and `UntrustedChainError` in the provisional library facade
+  (`firefly_reports.__all__`), for library users of `connect(..., on_notice=...)`
 
 ### Changed
 - Every on/off option can be switched off from the command line: `--no-legacy-report`, `--no-fetch-links`,
@@ -103,6 +96,13 @@ pre-refactor code.
   (replaced by `firefly_reports.reports`, `firefly_reports.render` and `firefly_reports.cli`). The command
   line is the stable interface; these modules were never public
 - The legacy workbook entry points `render_all_xlsx` and `render_all_xlsx_extended` (unused)
+
+### Security
+- A connection whose chain contains a blocked key is refused before the Personal Access Token is sent
+  (exit code 1). An unreadable chain connects with an explicit warning. Installed versions and
+  executables keep the lists they shipped with: update to receive new entries
+- Dependencies refreshed in the lock file (among them Pillow 13.0.0 and urllib3 2.8.0, which close the
+  published advisories of the previous versions)
 
 ## [1.0.2] - 2026-08-10
 
