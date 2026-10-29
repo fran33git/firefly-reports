@@ -183,6 +183,11 @@ jobs:
             Get-Content probe_tls.log -ErrorAction SilentlyContinue
             exit 1
           }
+          if (-not (Select-String -Path probe_tls.log -Pattern "TLS verdict for api\.github\.com: allowed" -Quiet)) {
+            Write-Error "the exe did not reach a TLS verdict for api.github.com"
+            Get-Content probe_tls.log -ErrorAction SilentlyContinue
+            exit 1
+          }
           Write-Host "TLS chain probe passed"
 
   security:

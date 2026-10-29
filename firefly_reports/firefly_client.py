@@ -164,6 +164,8 @@ def _checked_pool(base: type[HTTPSConnectionPool], checker: _TrustChecker) -> ty
 class _TrustAdapter(HTTPAdapter):
     """Mounted on ``https://``: every pool, direct or through a proxy, checks the chain."""
 
+    __attrs__ = [*HTTPAdapter.__attrs__, "_checker"]  # keeps pickle/deepcopy of the session working
+
     def __init__(self, checker: _TrustChecker) -> None:
         self._checker = checker  # set first: HTTPAdapter.__init__ builds the pool manager
         super().__init__()
@@ -228,9 +230,10 @@ class FireflyClient:
         )
 
     def _http_get(self, url: str, **kwargs: Any) -> requests.Response:
-        with warnings.catch_warnings():
-            if self._insecure:  # the project already warns once, in its own words
-                warnings.simplefilter("ignore", InsecureRequestWarning)
+        if not self._insecure:
+            return self.session.get(url, **kwargs)
+        with warnings.catch_warnings():  # the project already warns once, in its own words
+            warnings.simplefilter("ignore", InsecureRequestWarning)
             return self.session.get(url, **kwargs)
 
     def _get(self, endpoint: str, params: dict[str, Any] | None = None) -> dict[str, Any]:

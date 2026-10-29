@@ -73,5 +73,10 @@ if ! grep -Eq 'TLS chain for api\.github\.com: path=(public|private) certs=[2-9]
     cat "$BUILD_DIR/tls.log" >&2 || true
     exit 1
 fi
+if ! grep -Eq 'TLS verdict for api\.github\.com: allowed' "$BUILD_DIR/tls.log"; then
+    echo "FAIL: the exe did not reach a TLS verdict for api.github.com:" >&2
+    cat "$BUILD_DIR/tls.log" >&2 || true
+    exit 1
+fi
 
 echo "All exe smoke tests passed."

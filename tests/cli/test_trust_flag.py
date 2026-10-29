@@ -121,7 +121,7 @@ class Blocked:
 def test_blocked_chain_is_exit_1_with_the_error_on_stderr(tmp_path):
     code, out, err = run_main([*REPORT], tmp_path, Blocked())
     assert code == 1 and "Traceback" not in err
-    assert err.startswith("Error: ") and "Weak CA" in err and "Nothing was sent" in err
+    assert err.startswith("Error: ") and "Weak CA" in err and "No request was sent" in err
     assert "All reports written" not in out
 
 

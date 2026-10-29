@@ -506,7 +506,7 @@ invalid_fiscal_start   = "invalid fiscal year start '{value}' (expected MM-DD)."
 fiscal_start_not_leap  = "fiscal year start '{value}' is not valid for year {year} (02-29 requires a leap year)."
 start_after_end        = "start ({start}) must not be after end ({end})"
 api_error              = "Firefly III request failed: {reason}"
-untrusted_chain        = "refusing to connect to {host}: its certificate chain contains '{label}' ({reason}). Nothing was sent. Use a certificate from another CA; --trust-insecure-ssl overrides this check but turns off ALL certificate verification."
+untrusted_chain        = "refusing to connect to {host}: its certificate chain contains '{label}' ({reason}). No request was sent on this connection. Use a certificate from another CA; --trust-insecure-ssl overrides this check but turns off ALL certificate verification."
 
 [cli]
 trust_insecure           = "WARNING: --trust-insecure-ssl is active: the certificate of {host} is NOT verified and the CA lists are not applied. Your token can be read by anyone able to intercept the connection."

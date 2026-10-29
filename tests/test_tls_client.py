@@ -253,3 +253,26 @@ def test_with_a_callback_no_python_warning_is_added(serve, ders, monkeypatch):
         _connect(FireflyClient(URL, TOKEN, on_notice=notices.append))
         FireflyClient(URL, TOKEN, trust_insecure_ssl=True, on_notice=notices.append)
     assert [n.kind for n in notices] == ["warn_list", "insecure"]
+
+
+def test_session_survives_deepcopy_and_stays_checked(serve, ders, monkeypatch):
+    import copy
+
+    chains, _ = serve
+    chains["firefly.example.org"] = ders
+    _lists(monkeypatch, (ders[1], "Bad Intermediate", "block"))
+    client = FireflyClient(URL, TOKEN)
+    client.session = copy.deepcopy(client.session)
+    with pytest.raises(UntrustedChainError):
+        _connect(client)
+
+
+def test_secure_client_does_not_touch_the_warnings_filters(monkeypatch):
+    client = FireflyClient(URL, TOKEN)
+    seen = []
+    monkeypatch.setattr(
+        client.session, "get", lambda url, **kw: seen.append(list(warnings.filters))
+    )
+    before = list(warnings.filters)
+    client._http_get(f"{URL}/x")
+    assert seen == [before]

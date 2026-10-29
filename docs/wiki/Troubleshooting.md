@@ -26,7 +26,7 @@
 
 ## Refusing to connect: untrusted CA
 
-**Symptom:** `Error: refusing to connect to <host>: its certificate chain contains '<CA>' (...). Nothing was sent.` (exit code 1)
+**Symptom:** `Error: refusing to connect to <host>: its certificate chain contains '<CA>' (...). No request was sent on this connection.` (exit code 1)
 
 **Cause:** the certificate chain of your Firefly III server contains a CA key on the internal blocklist: a key known to be compromised (for example the eMudhra intermediates of October 2026, including their Sectigo cross-signed certificates). The check runs right after the TLS handshake, so your token was **not** sent.
 
