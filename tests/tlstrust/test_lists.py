@@ -1,3 +1,4 @@
+import hashlib
 import re
 import ssl
 from pathlib import Path
@@ -8,6 +9,7 @@ import pytest
 from firefly_reports.tlstrust.lists import ENTRIES, LIST_DATE, TrustEntry, index
 from firefly_reports.tlstrust.spki import spki_sha256
 
+ROOTS = Path(__file__).parent.parent / "fixtures" / "emudhra_roots"
 _PEM = re.compile(r"-----BEGIN CERTIFICATE-----.+?-----END CERTIFICATE-----", re.S)
 
 
@@ -44,11 +46,18 @@ def test_no_block_hash_in_current_certifi(certifi_spki):
     assert blocked_but_trusted == []
 
 
-def test_warn_roots_present_in_certifi(certifi_spki):
-    # Proves the WARN hashes are real: every WARN root must be a root certifi ships today.
+def test_warn_roots_are_real_roots():
+    # Proves the WARN hashes are real. The roots are committed (named by their SHA-256 fingerprint,
+    # taken from the certifi bundle of 2026-10-19) because certifi drops roots over time: a root the
+    # bundle no longer ships is still a root worth a warning on older systems.
     roots = [e for e in ENTRIES if e.level == "warn" and "Root" in e.label]
     assert roots, "the initial WARN list is the remaining eMudhra roots"
-    assert [e.label for e in roots if e.spki_sha256 not in certifi_spki] == []
+    fixtures = {}
+    for path in ROOTS.glob("*.der"):
+        der = path.read_bytes()
+        assert hashlib.sha256(der).hexdigest() == path.stem, path.name
+        fixtures[spki_sha256(der)] = path.name
+    assert [e.label for e in roots if e.spki_sha256 not in fixtures] == []
 
 
 def test_levels_are_block_or_warn():
