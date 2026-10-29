@@ -12,6 +12,7 @@ from firefly_reports.firefly_client import TrustNotice, TrustWarning
 from tests.golden.harness import run_main
 
 CREDS = ["--url", "https://demo.invalid", "--token", "x"]
+HOST = "firefly.example.org"
 REPORT = ["report", *CREDS, "--year", "2025", "--no-pdf", "--no-excel"]
 
 
@@ -85,11 +86,11 @@ def test_the_client_receives_a_notice_callback(made):
 )
 def test_each_notice_prints_on_stderr_and_encodes_in_cp1252(lang, kind, detail, capsys):
     i18n.load(lang)
-    print_trust_notice(TrustNotice(kind, "firefly.example.org", detail))
+    print_trust_notice(TrustNotice(kind, HOST, detail))
     captured = capsys.readouterr()
     assert captured.out == ""
     assert captured.err.startswith(("WARNING", "ATTENZIONE"))
-    assert "firefly.example.org" in captured.err
+    assert HOST in captured.err
     if detail:
         assert detail in captured.err
     captured.err.encode("cp1252")

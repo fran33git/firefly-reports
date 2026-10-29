@@ -16,7 +16,8 @@ from firefly_reports.tlstrust.lists import TrustEntry
 from firefly_reports.tlstrust.spki import spki_sha256
 from tests.tls_helpers import FakeTlsSocket, cert_der, make_cert
 
-URL = "https://firefly.example.org"
+HOST = "firefly.example.org"
+URL = f"https://{HOST}"
 TOKEN = "SECRET-TOKEN-1234"
 
 
@@ -63,7 +64,7 @@ def test_blocked_intermediate_is_refused_before_any_request_byte(serve, ders, mo
     client = FireflyClient(URL, TOKEN)
     with pytest.raises(UntrustedChainError) as err:
         _connect(client)
-    assert "Weak Intermediate" in str(err.value) and "firefly.example.org" in str(err.value)
+    assert "Weak Intermediate" in str(err.value) and HOST in str(err.value)
     assert socks[0].sent == [] and socks[0].closed
 
 
