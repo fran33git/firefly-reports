@@ -56,7 +56,7 @@ flowchart LR
     CONV --> WRITE["Beancount writer<br/>sorting, escaping,<br/>open + commodity,<br/>split by year"]
     WRITE -->|"temp file + rename"| OUT["accounts.beancount<br/>firefly-YYYY.beancount<br/>GENERATED"]
     OUT -.->|"--validate"| BC{"bean-check"}
-    OUT -.->|"--init, only if missing"| MAIN["main.beancount<br/>investimenti.beancount<br/>prices.beancount"]
+    OUT -.->|"--init, only if missing"| MAIN["main.beancount<br/>investments.beancount<br/>prices.beancount"]
     OUT --> FAVA(["Fava"])
 ```
 
@@ -87,7 +87,7 @@ want the integration tests that call `bean-check` to run instead of being skippe
    so the names are frozen: renaming an account in Firefly later will not silently change your ledger.
    Collisions (two accounts that would get the same name) are written as commented `TODO` lines.
 3. **Review `beancount_map.yaml`** (the only file you edit by hand): change names or build hierarchies
-   (`"Conto Corrente": "Assets:Banca:Intesa:Corrente"`), resolve the `TODO` collisions by uncommenting and
+   (`"Checking Account": "Assets:Bank:Main:Checking"`), resolve the `TODO` collisions by uncommenting and
    renaming, move your brokerage account(s) under `investment_accounts:`. See the
    [Mapping file reference](#mapping-file-reference). `beancount_map.yaml` and `ledger/` are already in `.gitignore`.
 4. **Pass 2 - export** (writes the ledger, creates the starter files and checks the result):
@@ -95,7 +95,7 @@ want the integration tests that call `bean-check` to run instead of being skippe
    firefly-reports export beancount --init --validate
    ```
    This writes `ledger/accounts.beancount` and one `ledger/firefly-YYYY.beancount` per year, creates
-   `main.beancount`, `investimenti.beancount` and `prices.beancount` **only if they do not exist**, and runs
+   `main.beancount`, `investments.beancount` and `prices.beancount` **only if they do not exist**, and runs
    `bean-check`. Use `--dry-run` first if you only want to look at the output.
 5. **Open it in Fava**:
    ```bash
@@ -188,7 +188,7 @@ firefly-reports export beancount [options]
 | `--out DIR` | `ledger` | Output **directory** (created if needed) |
 | `--dry-run` | off | Print to stdout, write nothing. In the yearly layout each file is preceded by a `; ===== name =====` line. `--init` is ignored. Informational and validation messages go to stderr, so stdout only contains the ledger |
 | `--validate` | off | Run `bean-check` and print the problems readably. Single layout: the generated file. Yearly: a temporary file that includes `accounts.beancount` and every year (not your `main.beancount`). With `--dry-run` temporary copies are checked |
-| `--init` | off | Create `main.beancount` + empty `investimenti.beancount` / `prices.beancount` in the output directory **if missing** (`main.beancount` includes `accounts.beancount` and `firefly-*.beancount` in the yearly layout) |
+| `--init` | off | Create `main.beancount` + empty `investments.beancount` / `prices.beancount` in the output directory **if missing** (`main.beancount` includes `accounts.beancount` and `firefly-*.beancount` in the yearly layout) |
 | `--no-timestamp` | off | Omit the `; Generated:` line (only written to `accounts.beancount` / the `single` file): byte-identical reruns |
 | `--lang en\|it` | from config / `FIREFLY_LANG` / `en` | Language of metadata keys, header, default fallback accounts and messages |
 | `--url`, `--token` | from the credential chain | As in the report command. Options can be given before or after `export` |
@@ -202,35 +202,35 @@ silently ignored. A complete annotated example ships as `beancount_map.example.y
 
 ```yaml
 accounts:
-  "Conto Corrente": "Assets:Banca:Intesa:Corrente"
-  "12": "Assets:Banca:Intesa:Risparmio"        # numeric Firefly id also works
-  "Mutuo Casa": "Liabilities:Mutuo"
+  "Checking Account": "Assets:Bank:Main:Checking"
+  "12": "Assets:Bank:Main:Savings"              # numeric Firefly id also works
+  "Home Mortgage": "Liabilities:Mortgage"
 
 investment_accounts:
-  "Fineco Investimenti": "Fineco"
+  "Acme Investments": "Acme"
 
-investment_root: "Assets:Investimenti"
+investment_root: "Assets:Investments"
 
 fallback:
-  expense: "Expenses:Non-Classificato"
-  income: "Income:Non-Classificato"
+  expense: "Expenses:Uncategorized"
+  income: "Income:Uncategorized"
   strict: false
 
 operating_currency: [EUR]
 commodities: [EUR, USD]
 
 labels:
-  category: categoria
+  category: category
   budget: budget
-  note: nota
+  note: note
 ```
 
 | Key | Type | Details |
 |---|---|---|
 | `accounts` | map | Firefly account **numeric id or name** -> Beancount account. Highest precedence: an entry matching the account **id** wins over one matching the **name** (ids are unique, names can be shared by account types). Many-to-one is allowed (it is explicit). Values must look like `Assets:Foo-Bar`: root is one of `Assets Liabilities Equity Income Expenses`, components start with an uppercase letter or digit and contain only letters, digits and `-`. A name mapping that lands in a root different from the one expected for the account type is kept, with a warning |
-| `investment_accounts` | map | Firefly **asset** account (name or id) -> broker name. Becomes `<investment_root>:<Broker>:Cash`; the broker is normalised (`"Banca Ünica"` -> `Banca-Unica`). Several Firefly accounts may share a broker |
-| `investment_root` | account | Default depends on `--lang`: `Assets:Investimenti` (it), `Assets:Investments` (en) |
-| `fallback.expense` / `fallback.income` | account | Target for counterparts with an empty or `(no name)` name. Defaults follow `--lang` (`Expenses:Non-Classificato` / `Expenses:Uncategorized`, ...) |
+| `investment_accounts` | map | Firefly **asset** account (name or id) -> broker name. Becomes `<investment_root>:<Broker>:Cash`; the broker is normalised (`"Grüne Bank"` -> `Grune-Bank`). Several Firefly accounts may share a broker |
+| `investment_root` | account | Default depends on `--lang`: `Assets:Investments` in English (localized catalogs default to a translated root) |
+| `fallback.expense` / `fallback.income` | account | Target for counterparts with an empty or `(no name)` name. Defaults follow `--lang` (e.g. `Expenses:Uncategorized` / `Income:Uncategorized` in English) |
 | `fallback.strict` | bool | `true`: every expense/revenue account **not** listed under `accounts` goes to the fallback instead of being auto-named. Useful to force a curated chart of accounts. Asset and liability accounts are never affected |
 | `operating_currency` | list | Written as `option "operating_currency"` in the `main.beancount` created by `--init`. Default: the most used currency |
 | `commodities` | list | Extra `commodity` directives for currencies that no transaction uses yet. Used currencies are always declared |
@@ -244,17 +244,17 @@ flowchart TD
     A["Firefly account<br/>name + type + id"] --> B{"Listed under<br/>accounts: ?<br/>(id first, then name)"}
     B -- yes --> R1["Your Beancount account"]
     B -- no --> C{"Asset listed under<br/>investment_accounts: ?"}
-    C -- yes --> R2["Assets:Investimenti:Broker:Cash"]
+    C -- yes --> R2["Assets:Investments:Broker:Cash"]
     C -- no --> D{"Special account type?"}
     D -- "initial balance" --> R3["Equity:Opening-Balances"]
     D -- reconciliation --> R4["Equity:Reconciliation"]
     D -- "cash account" --> R5["Assets:Cash"]
     D -- no --> E{"Empty name or (no name),<br/>or fallback.strict on an<br/>expense / revenue account?"}
-    E -- yes --> R6["Expenses:Non-Classificato<br/>or Income:Non-Classificato"]
+    E -- yes --> R6["Expenses:Uncategorized<br/>or Income:Uncategorized"]
     E -- no --> F["Normalise the name<br/>root chosen by account type"]
     F --> G{"Another Firefly account<br/>gives the same name?"}
     G -- yes --> ERR["Collision error<br/>nothing is written"]
-    G -- no --> R7["For example<br/>Assets:Conto-Corrente"]
+    G -- no --> R7["For example<br/>Assets:Checking-Account"]
 ```
 
 The first rule that matches wins. Collisions are only checked for names generated automatically.
@@ -372,7 +372,7 @@ transliterated (`è` -> `e`, `ß` -> `ss`, `ø` -> `o`), every run of other char
 the first letter is capitalised. To build hierarchies use explicit `accounts:` entries.
 
 **Collisions.** If two **different** Firefly accounts end up with the same automatic name (for example
-`Conto A` and `Conto-A`, or `Cassa` auto-named onto a name you mapped explicitly for another account), the
+`Account A` and `Account-A`, or `Savings` auto-named onto a name you mapped explicitly for another account), the
 export stops with an error listing both and writes nothing. Mapping several accounts to one name
 *explicitly* is allowed.
 
@@ -388,7 +388,7 @@ ledger/
   accounts.beancount      # GENERATED - commodity + open directives
   firefly-2024.beancount  # GENERATED - one file per year
   firefly-2025.beancount  # GENERATED
-  investimenti.beancount  # yours: securities buys/sells, balance assertions
+  investments.beancount   # yours: securities buys/sells, balance assertions
   prices.beancount        # yours (or fed by a price fetcher)
 ```
 
@@ -401,7 +401,7 @@ flowchart TD
     end
     subgraph yours["Yours - never overwritten"]
         M["main.beancount<br/>options + includes"]
-        I["investimenti.beancount<br/>securities, by hand"]
+        I["investments.beancount<br/>securities, by hand"]
         P["prices.beancount"]
     end
     M -->|include| A
@@ -424,21 +424,21 @@ option "operating_currency" "EUR"
 
 include "accounts.beancount"
 include "firefly-*.beancount"
-include "investimenti.beancount"
+include "investments.beancount"
 include "prices.beancount"
 ```
 
 Safety rules enforced by the tool: it never overwrites an existing `main.beancount`,
-`investimenti.beancount` or `prices.beancount`; the only files it replaces are its own generated files
+`investments.beancount` or `prices.beancount`; the only files it replaces are its own generated files
 (`accounts.beancount`, `firefly-YYYY.beancount`, `firefly.beancount`) inside `--out`, and it never deletes anything.
 
 Investment workflow: move money to the broker in Firefly (a transfer to the investment account). The export
-credits `Assets:Investimenti:<Broker>:Cash`. In `investimenti.beancount` you then record the purchase by hand:
+credits `Assets:Investments:<Broker>:Cash`. In `investments.beancount` you then record the purchase by hand:
 
 ```beancount
 2025-03-16 * "Buy VWCE"
-  Assets:Investimenti:Fineco:VWCE   8 VWCE {118.50 EUR}
-  Assets:Investimenti:Fineco:Cash  -948.00 EUR
+  Assets:Investments:Acme:VWCE   8 VWCE {118.50 EUR}
+  Assets:Investments:Acme:Cash  -948.00 EUR
 ```
 
 ## Everyday workflows
@@ -481,7 +481,7 @@ in English ledgers and `categoria` / `budget` in Italian ones.
 
 ```sql
 -- spending by category (transaction- or posting-level metadata)
-SELECT COALESCE(meta('categoria'), entry_meta('categoria')) AS cat, sum(position)
+SELECT COALESCE(meta('category'), entry_meta('category')) AS cat, sum(position)
 WHERE account ~ '^Expenses' GROUP BY cat ORDER BY cat
 
 -- find a transaction by its Firefly id

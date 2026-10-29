@@ -333,7 +333,7 @@ def test_load_config_from_yaml_file(tmp_path):
 
 def test_shipped_example_mapping_is_valid():
     cfg = load_ledger_config(Path(__file__).parent.parent / "beancount_map.example.yaml")
-    assert cfg.investment_accounts == {"Fineco Investimenti": "Fineco"}
+    assert cfg.investment_accounts == {"Acme Investments": "Acme"}
 
 
 # ---------- conversion ----------
