@@ -40,6 +40,8 @@ pre-commit run --all-files   # run manually on all files
 
 The hooks run `ruff check`, `ruff format --check`, and `mypy`. Fix any issues before committing.
 
+`pre-commit install` also installs a `pre-push` hook (`tools/check-publish.sh`, pre-commit 3.2 or newer) that refuses to push commits containing paths that must not be public (local tool folders, credentials, bundles ...). Maintainers can add a private list of personal strings to check for in `~/.config/firefly-reports/deny-patterns`; contributors do not need it, the script then only runs the path check.
+
 ## Pull request checklist
 
 - [ ] `pytest tests/` passes

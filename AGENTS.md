@@ -145,13 +145,22 @@ pip-audit -r firefly_reports/requirements.txt
 ## CI and deployment
 
 - GitHub Actions (`.github/workflows/ci.yml`) runs on pushes to `main`/`develop` and on all PRs: ruff lint + format check (package, tests, tools), mypy, pytest matrix on Python 3.11/3.12 with the coverage threshold, `pip-audit`, `bandit`, and the Windows exe smoke test (PyInstaller build from `firefly_reports/__main__.py`, translation, legacy-form, `--version` and offline `demo` probes).
-- Pre-commit hooks (`.pre-commit-config.yaml`) run ruff (with `--fix`), ruff-format, and mypy on commit.
+- Pre-commit hooks (`.pre-commit-config.yaml`) run ruff (with `--fix`), ruff-format, and mypy on commit, and `tools/check-publish.sh` on push (see "Publishing hygiene"). `pre-commit install` installs both stages (pre-commit >= 3.2).
 - Release workflow (`.github/workflows/release.yml`): pushing a tag `v*` checks the tag matches the package version, runs tests, builds the sdist/wheel, publishes to PyPI via OIDC Trusted Publishing (configure the Trusted Publisher on pypi.org), builds a standalone Windows executable with PyInstaller, and creates a GitHub Release. The PyPI distribution is named `firefly-iii-reports` (`firefly-reports` was already taken by an unrelated project); the import package stays `firefly_reports` and the CLI command `firefly-reports`.
 - Wiki sync workflow (`.github/workflows/wiki-sync.yml`): a push to `main` touching `docs/wiki/**` pushes the pages to the GitHub Wiki repository automatically.
 
 ## Git identity
 
-Commits in this repository are authored as the GitHub account: name `fran33git`, an address under `users.noreply.github.com` (the `<id>+fran33git@users.noreply.github.com` form listed under GitHub > Settings > Emails). Never use a personal address or another name, and do not override `user.name`/`user.email` to get around this. Check with `git config user.name` before the first commit of a session. `bash tools/check-identity.sh` (no argument: the next commit; `BASE..HEAD`: a range) is run by CI on the maintainer's pull requests. The name on commits made on github.com (merges) comes from the GitHub profile name, so it must be `fran33git` too. Co-author trailers are not covered by the rule.
+Commits carry a GitHub noreply address (`<id>+<username>@users.noreply.github.com`, listed under GitHub > Settings > Emails), never a personal one: the history is public. Check with `git config user.email` before the first commit of a session, and do not override `user.email` to get around this. `bash tools/check-identity.sh` (no argument: the next commit; `BASE..HEAD`: a range) is run by CI on the pull requests of the repository owner; contributors keep their own identity. Names and co-author trailers are not covered by the rule.
+
+## Publishing hygiene
+
+This repository is public: every commit pushed to any branch stays reachable. Before pushing, `tools/check-publish.sh` (pre-push hook; in CI on every push and pull request) inspects each commit of the range, not only the final tree:
+
+- Paths that never belong here (`.mailmap`, `.mcp.json`, `.env`, `firefly-reports.toml`, `beancount_map.yaml`, `.claude/`, `.remember/`, `.superpowers/`, `KIMI*`, `*.bundle`, `*.bak` ...): the list is `FORBIDDEN_PATHS` in the script.
+- Personal strings (names, addresses, local paths ...): the patterns are **not in the repository**. They live in `~/.config/firefly-reports/deny-patterns` (one lowercase extended regex per line, `#` for comments) and, for CI, in the repository secret `PUBLISH_DENY_PATTERNS`. The script reports commit and file, never the matched text. Never write a personal string into a file, a commit message or a PR to "explain" the rule.
+
+When it fails: fix the commits that are not published yet (`git commit --amend`, `git rebase -i`) and push again; do not bypass the hook with `--no-verify`. Work that is not meant to be public stays out of the repository (a gitignored path, or `.git/info/exclude`), never in a pushed branch.
 
 ## Security considerations
 

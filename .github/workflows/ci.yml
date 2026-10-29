@@ -26,13 +26,26 @@ jobs:
       - run: pip install ruff
       - run: ruff check firefly_reports/ tests/ tools/
       - run: ruff format --check firefly_reports/ tests/ tools/
-      # The maintainer's own pull requests only: outside contributors keep their identity.
+      # The repository owner's own pull requests only: contributors keep their identity.
       - name: Commit identities
-        if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'fran33git'
+        if: github.event_name == 'pull_request' && github.event.pull_request.author_association == 'OWNER'
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
           HEAD: ${{ github.event.pull_request.head.sha }}
         run: bash tools/check-identity.sh "$BASE..$HEAD"
+      # Paths that must not be public, for everybody. The personal-string list is a secret, which
+      # contributors' and Dependabot's runs never receive: there it is skipped, not failed. It is
+      # required for pushes and for the repository owner's pull requests.
+      - name: Publishing hygiene
+        env:
+          PUBLISH_DENY_PATTERNS: ${{ secrets.PUBLISH_DENY_PATTERNS }}
+          PUBLISH_REQUIRE_PATTERNS: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'OWNER' }}
+          BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          # A new branch or a force-pushed one: the previous tip is not in this clone.
+          git cat-file -e "$BASE^{commit}" 2>/dev/null || BASE=$(git merge-base origin/main "$HEAD")
+          bash tools/check-publish.sh "$BASE..$HEAD"
 
   types:
     name: Type check (mypy)

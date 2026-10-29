@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
 #
-# check-identity.sh — commits are authored as the GitHub account, with its noreply address.
+# check-identity.sh — commits carry a GitHub noreply address, never a personal one.
 #
 #   tools/check-identity.sh              the identity the next commit would use
 #   tools/check-identity.sh BASE..HEAD   every commit of a range (CI)
 #
-# Accepted: author fran33git or a bot ("name[bot]"); committer also GitHub's web-flow
-# (merges done on github.com). The email must be a users.noreply.github.com address, so
-# a personal address never ends up in the public history. Trailers are not checked.
+# Author and committer emails must be users.noreply.github.com addresses (GitHub's own
+# committer for merges made on github.com is accepted too), so that a personal address
+# never ends up in the public history. Names are not checked. Trailers are not checked.
 
 set -euo pipefail
 
-NAME_RE='^(fran33git|[A-Za-z0-9._-]+\[bot\])$'
 EMAIL_RE='@users\.noreply\.github\.com$'
 status=0
 
@@ -19,10 +18,6 @@ check() { # role name email where
   local role=$1 name=$2 email=$3 where=$4
   if [[ $role == committer && $name == GitHub && $email == noreply@github.com ]]; then
     return
-  fi
-  if ! [[ $name =~ $NAME_RE ]]; then
-    echo "identity: $where: $role name '$name' is not fran33git" >&2
-    status=1
   fi
   if ! [[ $email =~ $EMAIL_RE ]]; then
     echo "identity: $where: $role email '$email' is not a GitHub noreply address" >&2
@@ -49,8 +44,7 @@ if [[ $status -ne 0 ]]; then
   cat >&2 <<'MSG'
 
 Fix for new commits (this repository only):
-  git config user.name fran33git
-  git config user.email <id>+fran33git@users.noreply.github.com   # GitHub > Settings > Emails
+  git config user.email <id>+<username>@users.noreply.github.com   # GitHub > Settings > Emails
 Already-made commits: git rebase -r <base> --exec 'git commit --amend --no-edit --reset-author'
 MSG
 fi
