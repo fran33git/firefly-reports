@@ -1,0 +1,539 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Transaction Register"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "CHRONOLOGICAL REGISTER — 30 TRANSACTIONS"
+  },
+  {
+   "table": [
+    [
+     "Date",
+     "Type",
+     "Description",
+     "Source",
+     "Destination",
+     "Category",
+     "Budget",
+     "Amount",
+     "ID"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Office rent - January",
+     "BankX Checking",
+     "Office Landlord",
+     "Office Rent",
+     "Fixed Costs",
+     {
+      "flowable": "list"
+     },
+     "#25-j15"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Adobe Creative Cloud",
+     "BankX Checking",
+     "Adobe Systems",
+     "Software & Subscriptions",
+     "Operating Expenses",
+     {
+      "flowable": "list"
+     },
+     "#25-j16"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "D",
+     "Invoice #001 - Acme Consulting LLC",
+     "Acme Consulting LLC",
+     "BankX Checking",
+     "Professional Fees",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#25-j1"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "T",
+     "Emergency fund transfer",
+     "BankX Checking",
+     "BankX Savings",
+     "—",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#25-j2"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Social security contributions Q1",
+     "BankX Checking",
+     "Social Security",
+     "Social Security Contributions",
+     "Tax & Social Security",
+     {
+      "flowable": "list"
+     },
+     "#25-j17"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "T",
+     "Mortgage payment - January",
+     "BankX Checking",
+     "Home Mortgage",
+     "Home",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#25-j3"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "T",
+     "Transfer to savings account",
+     "BankX Checking",
+     "BankX Savings",
+     "—",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#25-j29"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Office rent - February",
+     "BankX Checking",
+     "Office Landlord",
+     "Office Rent",
+     "Fixed Costs",
+     {
+      "flowable": "list"
+     },
+     "#25-j18"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "D",
+     "Invoice #002 - Verde Inc.",
+     "Verde Inc.",
+     "BankX Checking",
+     "Professional Fees",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#25-j7"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Technical books and online courses",
+     "BankX Checking",
+     "Amazon/Udemy",
+     "Professional Training",
+     "Operating Expenses",
+     {
+      "flowable": "list"
+     },
+     "#25-j19"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Travel expense advance",
+     "BankX Checking",
+     "Rome Hotel",
+     "Travel & Transport",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#500"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Fuel and tolls",
+     "BankX Checking",
+     "Various",
+     "Travel & Transport",
+     "Operating Expenses",
+     {
+      "flowable": "list"
+     },
+     "#25-j20"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "D",
+     "Consulting - Blue Startup",
+     "Blue Startup",
+     "BankX Checking",
+     "Consulting",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#25-j8"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Office rent - March",
+     "BankX Checking",
+     "Office Landlord",
+     "Office Rent",
+     "Fixed Costs",
+     {
+      "flowable": "list"
+     },
+     "#25-j21"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "D",
+     "Travel expense reimbursement",
+     "Acme Consulting LLC",
+     "BankX Checking",
+     "Reimbursements",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#501"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Payroll withholdings - March 2025",
+     "BankX Checking",
+     "Tax Authority",
+     "",
+     "",
+     {
+      "flowable": "list"
+     },
+     "#25-j4"
+    ],
+    [
+     "",
+     "",
+     "» Tax withholdings",
+     "",
+     "",
+     "Taxes & Contributions",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#25-j4"
+    ],
+    [
+     "",
+     "",
+     "» Supplementary benefit installment recovery",
+     "",
+     "",
+     "Taxes & Contributions",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#25-j5"
+    ],
+    [
+     "",
+     "",
+     "» Other withholdings",
+     "",
+     "",
+     "Taxes & Contributions",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#25-j6"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Accountant fees Q1",
+     "BankX Checking",
+     "Baker & Partners",
+     "Accountant Fees",
+     "Operating Expenses",
+     {
+      "flowable": "list"
+     },
+     "#25-j22"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "D",
+     "Invoice #003 - Acme Consulting LLC",
+     "Acme Consulting LLC",
+     "BankX Checking",
+     "Professional Fees",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#25-j9"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Milan business trip",
+     "BankX Checking",
+     "Various",
+     "Travel & Transport",
+     "Operating Expenses",
+     {
+      "flowable": "list"
+     },
+     "#25-j23"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "T",
+     "Transfer to savings account",
+     "BankX Checking",
+     "BankX Savings",
+     "—",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#25-j30"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Office rent - April",
+     "BankX Checking",
+     "Office Landlord",
+     "Office Rent",
+     "Fixed Costs",
+     {
+      "flowable": "list"
+     },
+     "#25-j24"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "D",
+     "Invoice #004 - Verde Inc.",
+     "Verde Inc.",
+     "BankX Checking",
+     "Professional Fees",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#25-j10"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Income tax advance",
+     "BankX Checking",
+     "Tax Authority",
+     "Taxes",
+     "Tax & Social Security",
+     {
+      "flowable": "list"
+     },
+     "#25-j25"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Annual hosting and domain",
+     "BankX Checking",
+     "Hetzner Online",
+     "Software & Subscriptions",
+     "Operating Expenses",
+     {
+      "flowable": "list"
+     },
+     "#25-j26"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Office rent - May",
+     "BankX Checking",
+     "Office Landlord",
+     "Office Rent",
+     "Fixed Costs",
+     {
+      "flowable": "list"
+     },
+     "#25-j27"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "D",
+     "Travel expense reimbursement",
+     "Acme Consulting LLC",
+     "BankX Checking",
+     "Reimbursements",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#25-j11"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "W",
+     "Office supplies",
+     "BankX Checking",
+     "Amazon",
+     "Office Supplies",
+     "Operating Expenses",
+     {
+      "flowable": "list"
+     },
+     "#25-j28"
+    ],
+    [
+     {
+      "flowable": "list"
+     },
+     "D",
+     "Invoice #005 - Giallo Ltd",
+     "Giallo Ltd",
+     "BankX Checking",
+     "Professional Fees",
+     "—",
+     {
+      "flowable": "list"
+     },
+     "#25-j12"
+    ]
+   ],
+   "colWidths": [
+    56.69,
+    36.85,
+    175.75,
+    96.38,
+    96.38,
+    82.2,
+    62.36,
+    85.04,
+    48.19
+   ]
+  },
+  {
+   "spacer": 11.34
+  },
+  {
+   "p": "cell_l",
+   "text": "Total Income: € 17,150.00  ·  Total Expenses: € 5,598.08  ·  Total Transfers: € 2,020.00"
+  },
+  {
+   "spacer": 5.67
+  },
+  {
+   "p": "small",
+   "text": "W = withdrawal, D = deposit, T = transfer · R = reconciled · A = has attachments"
+  }
+ ],
+ "strings": [
+  "TRANSACTION REGISTER",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1",
+  "TRANSACTION REGISTER",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 2"
+ ],
+ "pages": 2
+}

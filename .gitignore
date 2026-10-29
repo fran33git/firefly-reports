@@ -850,3 +850,7 @@ firefly_reports/output_demo/
 .gitmodules
 .ripgreprc
 .idea
+
+# Personal ledger export (generated) and account mapping
+/ledger/
+beancount_map.yaml

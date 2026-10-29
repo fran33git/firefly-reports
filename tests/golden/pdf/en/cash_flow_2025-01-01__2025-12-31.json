@@ -1,0 +1,358 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Cash Flow Statement"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "CASH FLOW BY ACTIVITY"
+  },
+  {
+   "table": [
+    [
+     "",
+     "Income",
+     "Expenses",
+     "Net Flow"
+    ],
+    [
+     "Operating activities",
+     "€ 17,150.00",
+     "€ 5,598.08",
+     "€ 11,551.92"
+    ],
+    [
+     "Investing activities",
+     "0.00",
+     "1,500.00",
+     "(1,500.00)"
+    ],
+    [
+     "Financing activities",
+     "0.00",
+     "520.00",
+     "(520.00)"
+    ],
+    [
+     "Net change in cash",
+     "",
+     "",
+     "€ 9,531.92"
+    ],
+    [
+     "Opening cash",
+     "",
+     "",
+     "10,860.58"
+    ],
+    [
+     "Closing cash",
+     "",
+     "",
+     "€ 20,392.50"
+    ]
+   ],
+   "colWidths": [
+    209.76,
+    96.38,
+    96.38,
+    90.71
+   ]
+  },
+  {
+   "spacer": 11.34
+  },
+  {
+   "p": "small",
+   "text": "Opening and closing cash are estimated from current account balances; for past periods they may differ from historical balances."
+  },
+  {
+   "flowable": "PageBreak"
+  },
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Cash Flow Statement"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "SECTION I — INCOME (CASH INFLOWS)"
+  },
+  {
+   "table": [
+    [
+     "Category / Item",
+     "€"
+    ],
+    [
+     "Professional Fees",
+     "€ 15,050.00"
+    ],
+    [
+     "Consulting",
+     "1,500.00"
+    ],
+    [
+     "Reimbursements",
+     "600.00"
+    ],
+    [
+     "Total Income",
+     "€ 17,150.00"
+    ]
+   ],
+   "colWidths": [
+    382.68,
+    124.72
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "small",
+   "text": "All amounts are in euro (€). Includes all «deposit» transactions recorded in the period."
+  },
+  {
+   "flowable": "PageBreak"
+  },
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Cash Flow Statement"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "SECTION II — EXPENSES (CASH OUTFLOWS)"
+  },
+  {
+   "table": [
+    [
+     "Category / Item",
+     "€"
+    ],
+    [
+     "Office Rent",
+     "€ 1,400.00"
+    ],
+    [
+     "Taxes",
+     "1,200.00"
+    ],
+    [
+     "Taxes & Contributions",
+     "780.08"
+    ],
+    [
+     "Travel & Transport",
+     "685.00"
+    ],
+    [
+     "Social Security Contributions",
+     "650.00"
+    ],
+    [
+     "Accountant Fees",
+     "320.00"
+    ],
+    [
+     "Software & Subscriptions",
+     "288.00"
+    ],
+    [
+     "Office Supplies",
+     "155.00"
+    ],
+    [
+     "Professional Training",
+     "120.00"
+    ],
+    [
+     "Total Expenses",
+     "€ 5,598.08"
+    ]
+   ],
+   "colWidths": [
+    382.68,
+    124.72
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "small",
+   "text": "All amounts are in euro (€). Includes all «withdrawal» transactions recorded in the period."
+  },
+  {
+   "flowable": "PageBreak"
+  },
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Cash Flow Statement"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "SECTION III — MONTHLY FLOW"
+  },
+  {
+   "table": [
+    [
+     "Month",
+     "Income",
+     "Expenses",
+     "Net Flow"
+    ],
+    [
+     "January 2025",
+     "€ 3,200.00",
+     "€ 1,019.00",
+     "€ 2,181.00"
+    ],
+    [
+     "February 2025",
+     "2,800.00",
+     "635.00",
+     "2,165.00"
+    ],
+    [
+     "March 2025",
+     "4,550.00",
+     "1,830.08",
+     "2,719.92"
+    ],
+    [
+     "April 2025",
+     "3,100.00",
+     "1,679.00",
+     "1,421.00"
+    ],
+    [
+     "May 2025",
+     "3,500.00",
+     "435.00",
+     "3,065.00"
+    ]
+   ],
+   "colWidths": [
+    184.25,
+    99.21,
+    99.21,
+    124.72
+   ]
+  },
+  {
+   "spacer": 22.68
+  },
+  {
+   "p": "section",
+   "text": "PERIOD SUMMARY"
+  },
+  {
+   "table": [
+    [
+     "Total Income for period",
+     "€ 17,150.00"
+    ],
+    [
+     "Total Expenses for period",
+     "(€ 5,598.08)"
+    ],
+    [
+     "Net Cash Flow for period",
+     "€ 11,551.92"
+    ]
+   ],
+   "colWidths": [
+    382.68,
+    124.72
+   ]
+  }
+ ],
+ "strings": [
+  "CASH FLOW STATEMENT",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1",
+  "CASH FLOW STATEMENT",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 2",
+  "CASH FLOW STATEMENT",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 3",
+  "CASH FLOW STATEMENT",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 4"
+ ],
+ "pages": 4
+}

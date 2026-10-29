@@ -1,0 +1,94 @@
+; GENERATED - DO NOT EDIT BY HAND
+
+2024-12-31 commodity EUR
+2025-03-03 commodity USD
+
+2025-04-05 open Assets:Cash
+2024-12-31 open Assets:Checking-Account
+2025-03-15 open Assets:Investments:Acme:Cash
+2025-02-01 open Assets:Savings-Emergency-Fund
+2024-12-31 open Equity:Opening-Balances
+2025-03-31 open Equity:Reconciliation
+2025-01-20 open Expenses:Cafe-Munch-Sohne
+2025-02-08 open Expenses:City-Pharmacy
+2025-02-08 open Expenses:Green-Supermarket
+2025-04-10 open Expenses:Home-Loan-Bank
+2025-03-03 open Expenses:Hotel-Lisboa
+2025-04-02 open Expenses:Uncategorized
+2025-01-15 open Income:Acme-Consulting-LLC
+2025-03-10 open Income:Freelance-USA-Inc
+2025-04-10 open Liabilities:Mortgage
+
+2024-12-31 * "Opening balance for Checking Account"
+  firefly_id: "1"
+  Equity:Opening-Balances        -1500.00 EUR
+  Assets:Checking-Account         1500.00 EUR
+
+2025-01-15 * "Acme Consulting LLC" "Invoice #001" #invoice #taxes-2025
+  firefly_id: "2"
+  category: "Fees"
+  Income:Acme-Consulting-LLC     -3200.00 EUR
+  Assets:Checking-Account         3200.00 EUR
+
+2025-01-20 * "Café Münch & Söhne" "Dinner \"with friends\""
+  firefly_id: "3"
+  category: "Restaurants"
+  budget: "Leisure"
+  note: "Line one Line two with \\ backslash"
+  Assets:Checking-Account          -42.50 EUR
+  Expenses:Cafe-Munch-Sohne         42.50 EUR
+
+2025-02-01 * "Savings transfer"
+  firefly_id: "4"
+  Assets:Checking-Account         -500.00 EUR
+  Assets:Savings-Emergency-Fund    500.00 EUR
+
+2025-02-08 * "Saturday shopping"
+  firefly_id: "5"
+  firefly_group_id: "5"
+  Assets:Checking-Account          -49.50 EUR
+  Expenses:Green-Supermarket        30.00 EUR
+    category: "Groceries"
+    budget: "Home"
+  Expenses:Green-Supermarket        12.40 EUR
+    category: "Home"
+    budget: "Home"
+  Expenses:City-Pharmacy             7.10 EUR
+    category: "Health"
+
+2025-03-03 * "Hotel Lisboa" "Hotel in Lisbon"
+  firefly_id: "8"
+  category: "Travel"
+  Assets:Checking-Account          -91.75 EUR
+  Expenses:Hotel-Lisboa            100.00 USD @@ 91.75 EUR
+
+2025-03-10 * "Freelance USA Inc" "Consulting"
+  firefly_id: "9"
+  category: "Fees"
+  Income:Freelance-USA-Inc        -200.00 USD @@ 184.20 EUR
+  Assets:Checking-Account          184.20 EUR
+
+2025-03-15 * "Broker deposit"
+  firefly_id: "10"
+  Assets:Checking-Account        -1000.00 EUR
+  Assets:Investments:Acme:Cash    1000.00 EUR
+
+2025-03-31 * "Reconciliation"
+  firefly_id: "11"
+  Equity:Reconciliation             -2.35 EUR
+  Assets:Checking-Account            2.35 EUR
+
+2025-04-02 * "Expense without payee"
+  firefly_id: "12"
+  Assets:Checking-Account           -9.99 EUR
+  Expenses:Uncategorized             9.99 EUR
+
+2025-04-05 * "Cash withdrawal"
+  firefly_id: "13"
+  Assets:Checking-Account          -60.00 EUR
+  Assets:Cash                       60.00 EUR
+
+2025-04-10 * "Home Loan Bank" "Installment"
+  firefly_id: "14"
+  Liabilities:Mortgage            -250.00 EUR
+  Expenses:Home-Loan-Bank          250.00 EUR

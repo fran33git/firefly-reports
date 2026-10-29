@@ -72,6 +72,8 @@ cp .env.example .env
 
 ## All CLI flags
 
+> The `export beancount` subcommand has its own options and a YAML mapping file: see [[Beancount-Export|Beancount Export]].
+
 | Flag | Type | Default | Description |
 |------|------|---------|-------------|
 | `--url URL` | string | — | Firefly III base URL |
@@ -96,6 +98,7 @@ cp .env.example .env
 | `--categories-include C1,C2` | string | — | Only these categories (case-insensitive) |
 | `--categories-exclude C1,C2` | string | — | Exclude these categories (case-insensitive) |
 | `--hide-transfers` | flag | off | Drop transfer transactions from all reports |
+| `--trust-insecure-ssl` | flag | off | `report` and `export` only. Turns TLS certificate verification **and** the CA lists off (self-signed, expired and blocklisted certificates are all accepted); your token can be intercepted. Command line only: it is not read from `firefly-reports.toml` or the environment, and a warning is printed on every run |
 | `--reconciled-only` | flag | off | Only reconciled transactions |
 | `--fiscal-year-start MM-DD` | string | `01-01` | Fiscal year start (year mode only) |
 | `--debug` | flag | off | Write debug log to `<out>/debug_<timestamp>.log` |

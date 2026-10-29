@@ -1,0 +1,284 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Annual Tax Summary"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: Fiscal year 2025"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "SECTION I — INCOME (CASH BASIS)"
+  },
+  {
+   "p": "section",
+   "text": "BY CATEGORY"
+  },
+  {
+   "table": [
+    [
+     "Category",
+     "Amount",
+     "Share"
+    ],
+    [
+     "Professional Fees",
+     "€ 15,050.00",
+     "87.8 %"
+    ],
+    [
+     "Consulting",
+     "1,500.00",
+     "8.7 %"
+    ],
+    [
+     "Reimbursements",
+     "600.00",
+     "3.5 %"
+    ],
+    [
+     "Total Income",
+     "€ 17,150.00",
+     "100.0 %"
+    ]
+   ],
+   "colWidths": [
+    297.64,
+    99.21,
+    110.55
+   ]
+  },
+  {
+   "spacer": 17.01
+  },
+  {
+   "p": "section",
+   "text": "BY CLIENT / COUNTERPART"
+  },
+  {
+   "table": [
+    [
+     "Client / Source",
+     "Amount",
+     "Share"
+    ],
+    [
+     "Acme Consulting LLC",
+     "€ 6,700.00",
+     "39.1 %"
+    ],
+    [
+     "Verde Inc.",
+     "5,900.00",
+     "34.4 %"
+    ],
+    [
+     "Giallo Ltd",
+     "3,050.00",
+     "17.8 %"
+    ],
+    [
+     "Blue Startup",
+     "1,500.00",
+     "8.7 %"
+    ]
+   ],
+   "colWidths": [
+    297.64,
+    99.21,
+    110.55
+   ]
+  },
+  {
+   "flowable": "PageBreak"
+  },
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Annual Tax Summary"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: Fiscal year 2025"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "SECTION II — DEDUCTIBLE EXPENSES"
+  },
+  {
+   "table": [
+    [
+     "Category / Item",
+     "Amount"
+    ],
+    [
+     "Accountant Fees",
+     "€ 320.00"
+    ],
+    [
+     "Software & Subscriptions",
+     "288.00"
+    ],
+    [
+     "Total Deductible Expenses",
+     "€ 608.00"
+    ]
+   ],
+   "colWidths": [
+    382.68,
+    124.72
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "section",
+   "text": "NON-DEDUCTIBLE EXPENSES"
+  },
+  {
+   "table": [
+    [
+     "Category / Item",
+     "Amount"
+    ],
+    [
+     "Office Rent",
+     "€ 1,400.00"
+    ],
+    [
+     "Taxes",
+     "1,200.00"
+    ],
+    [
+     "Taxes & Contributions",
+     "780.08"
+    ],
+    [
+     "Travel & Transport",
+     "685.00"
+    ],
+    [
+     "Social Security Contributions",
+     "650.00"
+    ],
+    [
+     "Office Supplies",
+     "155.00"
+    ],
+    [
+     "Professional Training",
+     "120.00"
+    ]
+   ],
+   "colWidths": [
+    382.68,
+    124.72
+   ]
+  },
+  {
+   "spacer": 11.34
+  },
+  {
+   "p": "small",
+   "text": "Note: the 'deductible' classification is based on category keywords. Consult your tax advisor before using this for tax purposes."
+  },
+  {
+   "flowable": "PageBreak"
+  },
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Annual Tax Summary"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: Fiscal year 2025"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "SECTION III — ESTIMATED TAX SUMMARY"
+  },
+  {
+   "table": [
+    [
+     "Total Income (receipts)",
+     "€ 17,150.00"
+    ],
+    [
+     "Total Deductible Expenses",
+     "(€ 608.00)"
+    ],
+    [
+     "Estimated Taxable Income",
+     "€ 16,542.00"
+    ]
+   ],
+   "colWidths": [
+    382.68,
+    124.72
+   ]
+  },
+  {
+   "spacer": 17.01
+  },
+  {
+   "p": "small",
+   "text": "Estimated taxable income is calculated on a cash basis: total receipts minus tax-deductible expenses."
+  }
+ ],
+ "strings": [
+  "ANNUAL TAX SUMMARY",
+  "Sample User — Freelancer",
+  "Period: Fiscal year 2025   ·   Generated on 2026-01-15",
+  "Page 1",
+  "ANNUAL TAX SUMMARY",
+  "Sample User — Freelancer",
+  "Period: Fiscal year 2025   ·   Generated on 2026-01-15",
+  "Page 2",
+  "ANNUAL TAX SUMMARY",
+  "Sample User — Freelancer",
+  "Period: Fiscal year 2025   ·   Generated on 2026-01-15",
+  "Page 3"
+ ],
+ "pages": 3
+}

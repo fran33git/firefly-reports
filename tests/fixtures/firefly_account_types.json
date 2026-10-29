@@ -1,0 +1,323 @@
+{
+  "data": [
+    {
+      "type": "transactions",
+      "id": "101",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2026-02-01T10:00:00+01:00",
+        "transactions": [
+          {
+            "type": "opening balance",
+            "date": "2024-12-31T00:00:00+01:00",
+            "amount": "120000.00",
+            "description": "Opening balance for Home Mortgage",
+            "currency_code": "EUR",
+            "source_id": 21,
+            "source_name": "Home Mortgage",
+            "source_type": "Mortgage",
+            "destination_id": null,
+            "destination_name": "Home Mortgage initial balance",
+            "destination_type": "Initial balance account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "101"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "102",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2026-02-01T10:00:00+01:00",
+        "transactions": [
+          {
+            "type": "opening balance",
+            "date": "2024-12-31T00:00:00+01:00",
+            "amount": "500.00",
+            "description": "Opening balance for Friend Loan",
+            "currency_code": "EUR",
+            "source_id": null,
+            "source_name": "Friend Loan liability credit",
+            "source_type": "Liability credit account",
+            "destination_id": 22,
+            "destination_name": "Friend Loan",
+            "destination_type": "Loan",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "102"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "103",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2026-02-01T10:00:00+01:00",
+        "transactions": [
+          {
+            "type": "transfer",
+            "date": "2025-01-05T00:00:00+01:00",
+            "amount": "650.00",
+            "description": "Mortgage installment",
+            "currency_code": "EUR",
+            "source_id": 1,
+            "source_name": "Checking Account",
+            "source_type": "Asset account",
+            "destination_id": 21,
+            "destination_name": "Home Mortgage",
+            "destination_type": "Mortgage",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "103"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "104",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2026-02-01T10:00:00+01:00",
+        "transactions": [
+          {
+            "type": "deposit",
+            "date": "2025-02-01T00:00:00+01:00",
+            "amount": "20.00",
+            "description": "Imported deposit",
+            "currency_code": "EUR",
+            "source_id": null,
+            "source_name": "Import",
+            "source_type": "Import account",
+            "destination_id": 1,
+            "destination_name": "Checking Account",
+            "destination_type": "Asset account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "104"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "105",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2026-02-01T10:00:00+01:00",
+        "transactions": [
+          {
+            "type": "transfer",
+            "date": "2025-02-03T00:00:00+01:00",
+            "amount": "50.00",
+            "description": "Cash withdrawal",
+            "currency_code": "EUR",
+            "source_id": null,
+            "source_name": "Petty Cash",
+            "source_type": "Cash account",
+            "destination_id": 1,
+            "destination_name": "Checking Account",
+            "destination_type": "Asset account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "105"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "106",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2026-02-01T10:00:00+01:00",
+        "transactions": [
+          {
+            "type": "reconciliation",
+            "date": "2025-03-01T00:00:00+01:00",
+            "amount": "3.00",
+            "description": "Reconciliation",
+            "currency_code": "EUR",
+            "source_id": 1,
+            "source_name": "Checking Account",
+            "source_type": "Asset account",
+            "destination_id": null,
+            "destination_name": "Checking Account reconciliation",
+            "destination_type": "Reconciliation account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "106"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "107",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2026-02-01T10:00:00+01:00",
+        "transactions": [
+          {
+            "type": "withdrawal",
+            "date": "2025-03-10T00:00:00+01:00",
+            "amount": "4.50",
+            "description": "Cafe",
+            "currency_code": "EUR",
+            "source_id": 1,
+            "source_name": "Checking Account",
+            "source_type": "Default account",
+            "destination_id": null,
+            "destination_name": "Sports Bar",
+            "destination_type": "Beneficiary account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "107"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "108",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2026-02-01T10:00:00+01:00",
+        "transactions": [
+          {
+            "type": "deposit",
+            "date": "2026-01-10T00:00:00+01:00",
+            "amount": "92.00",
+            "description": "Invoice US client",
+            "currency_code": "EUR",
+            "source_id": null,
+            "source_name": "US Client",
+            "source_type": "Revenue account",
+            "destination_id": 1,
+            "destination_name": "Checking Account",
+            "destination_type": "Asset account",
+            "foreign_amount": "100.00",
+            "foreign_currency_code": "USD",
+            "reconciled": false,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "108"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "109",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2026-02-01T10:00:00+01:00",
+        "transactions": [
+          {
+            "type": "withdrawal",
+            "date": "2026-01-20T00:00:00+01:00",
+            "amount": "46.00",
+            "description": "Hotel",
+            "currency_code": "EUR",
+            "source_id": 1,
+            "source_name": "Checking Account",
+            "source_type": "Asset account",
+            "destination_id": null,
+            "destination_name": "Hotel Miami",
+            "destination_type": "Expense account",
+            "foreign_amount": "50.00",
+            "foreign_currency_code": "USD",
+            "reconciled": false,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "109"
+          }
+        ]
+      }
+    },
+    {
+      "type": "transactions",
+      "id": "110",
+      "attributes": {
+        "group_title": null,
+        "updated_at": "2026-02-01T10:00:00+01:00",
+        "transactions": [
+          {
+            "type": "withdrawal",
+            "date": "2026-02-02T00:00:00+01:00",
+            "amount": "8.00",
+            "description": "Without counterpart",
+            "currency_code": "EUR",
+            "source_id": 1,
+            "source_name": "Checking Account",
+            "source_type": "Asset account",
+            "destination_id": null,
+            "destination_name": "(no name)",
+            "destination_type": "Expense account",
+            "foreign_amount": null,
+            "foreign_currency_code": null,
+            "reconciled": false,
+            "tags": [],
+            "category_name": null,
+            "budget_name": null,
+            "notes": null,
+            "transaction_journal_id": "110"
+          }
+        ]
+      }
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "total": 10,
+      "count": 10,
+      "per_page": 100,
+      "current_page": 1,
+      "total_pages": 1
+    }
+  }
+}

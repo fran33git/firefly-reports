@@ -1,0 +1,54 @@
+# Example mapping for `firefly-reports export beancount`.
+# Tip: `firefly-reports export beancount --scaffold` drafts this file for you from your Firefly accounts
+# (it never overwrites an existing file). Every section is optional.
+
+# Explicit Firefly account (name or numeric id) -> Beancount account.
+# Overrides the automatic normalisation.
+accounts:
+  "Checking Account": "Assets:Bank:Main:Checking"
+  "Savings / Emergency Fund": "Assets:Bank:Main:Savings"
+  "Home Mortgage": "Liabilities:Mortgage"
+
+# Where expense/income accounts come from: "category" (default: the Firefly category) or
+# "account" (the counterpart account). The `--classify-by` flag overrides it.
+# classify_by: category
+
+# Firefly category -> Beancount account, by block (expense: Expenses:..., income: Income:...).
+# `--scaffold` lists your categories with the number of splits each has; the export stops
+# while a category is missing here (or pass --allow-unmapped).
+categories:
+  expense:
+    "Groceries": "Expenses:Food:Groceries"
+    "Car": "Expenses:Transport:Car"
+  income:
+    "Salary": "Income:Work:Salary"
+
+# Firefly investment accounts -> broker name. They become
+# <investment_root>:<Broker>:Cash. Securities positions are NOT generated from
+# Firefly (it has no quantities or prices): keep them in a hand-written file.
+investment_accounts:
+  "Acme Investments": "Acme"
+
+# Optional. Default depends on --lang: Assets:Investments in English.
+# investment_root: "Assets:Investments"
+
+# Used for empty/"(no name)" counterparts and, with strict: true, for every
+# expense/revenue account that is not listed under `accounts`.
+# Defaults depend on --lang (Expenses:Uncategorized / Income:Uncategorized in English).
+fallback:
+  expense: "Expenses:Uncategorized"
+  income: "Income:Uncategorized"
+  strict: false
+
+# Written to main.beancount by --init.
+operating_currency: [EUR]
+
+# Extra commodities to declare even if no transaction uses them yet.
+commodities: [EUR, USD]
+
+# Optional: force metadata key names regardless of --lang
+# (e.g. keep existing Fava queries working). Keys: category, budget, note.
+# labels:
+#   category: category
+#   budget: budget
+#   note: note

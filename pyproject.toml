@@ -4,13 +4,24 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "firefly-iii-reports"
-version = "1.0.2"
+version = "2.0.0"
 description = "Generate financial reports (PDF + Excel) from a Firefly III instance"
 readme = "README.md"
 license = { text = "GPL-3.0-or-later" }
 requires-python = ">=3.11"
 authors = [{ name = "fran33git", email = "80598630+fran33git@users.noreply.github.com" }]
-keywords = ["firefly-iii", "finance", "reports", "pdf", "excel", "accounting"]
+keywords = ["firefly-iii", "finance", "reports", "pdf", "excel", "accounting", "beancount"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial :: Accounting",
+    "Typing :: Typed",
+]
 dependencies = [
     "requests>=2.31.0",
     "reportlab>=4.0.0",
@@ -18,24 +29,31 @@ dependencies = [
     "python-dateutil>=2.8.2",
     "python-dotenv>=1.0.0",
     "matplotlib>=3.7.0",
+    "pyyaml>=6.0",
 ]
 
 [project.scripts]
-firefly-reports = "firefly_reports.main:main"
+firefly-reports = "firefly_reports.cli:main"
 
 [project.urls]
 Homepage = "https://bytesdust.com"
 Repository = "https://github.com/fran33git/firefly-reports"
 "Bug Tracker" = "https://github.com/fran33git/firefly-reports/issues"
 
+[tool.setuptools.packages.find]
+include = ["firefly_reports*"]
+exclude = ["tests*"]
+
 [tool.setuptools.package-data]
-firefly_reports = ["translations/*.toml"]
+firefly_reports = ["translations/*.toml", "py.typed"]
 
 [project.optional-dependencies]
+beancount = ["beancount>=3.0"]
 dev = [
     "ruff>=0.4.0",
     "mypy>=1.10.0",
     "types-requests>=2.31.0",
+    "types-PyYAML>=6.0",
     "pytest>=8.0.0",
     "pytest-cov>=5.0.0",
     "responses>=0.25.0",
@@ -53,8 +71,7 @@ select = ["E", "W", "F", "I", "N", "UP", "B", "SIM"]
 ignore = ["E501"]
 
 [tool.ruff.lint.per-file-ignores]
-"firefly_reports/pdf_exporter.py" = ["N806", "E701"]
-"firefly_reports/excel_exporter.py" = ["E701"]
+"firefly_reports/reports/*/pdf.py" = ["N806"]
 
 [tool.mypy]
 python_version = "3.11"
@@ -66,16 +83,12 @@ warn_unused_ignores = true
 module = ["reportlab.*", "openpyxl.*", "matplotlib.*", "dateutil.*"]
 ignore_missing_imports = true
 
-[[tool.mypy.overrides]]
-module = ["firefly_reports.pdf_exporter", "firefly_reports.excel_exporter", "firefly_reports.demo", "firefly_reports.main"]
-disallow_untyped_defs = false
-warn_return_any = false
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--tb=short"
+markers = ["golden: characterization snapshots (FIREFLY_UPDATE_GOLDEN=1 to rewrite)"]
 pythonpath = ["."]
 
 [tool.coverage.run]
 source = ["firefly_reports"]
-omit = ["firefly_reports/demo.py"]
+omit = ["firefly_reports/demo/data.py"]

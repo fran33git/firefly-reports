@@ -1,0 +1,396 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Transaction Audit Log"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "AUDIT SUMMARY: 30 RECORDS"
+  },
+  {
+   "table": [
+    [
+     "ID",
+     "Date",
+     "Description",
+     "Source",
+     "Destination",
+     "Amount",
+     "R",
+     "DOC",
+     "Audit ID"
+    ],
+    [
+     "#25-j15",
+     "2025-01-05",
+     "Office rent - January",
+     "BankX Checking",
+     "Office Landlord",
+     "280.00",
+     "U",
+     "[ ]",
+     "G:25-g15 | E:—"
+    ],
+    [
+     "#25-j16",
+     "2025-01-10",
+     "Adobe Creative Cloud",
+     "BankX Checking",
+     "Adobe Systems",
+     "89.00",
+     "U",
+     "[ ]",
+     "G:25-g16 | E:—"
+    ],
+    [
+     "#25-j1",
+     "2025-01-15",
+     "Invoice #001 - Acme Consulting LLC",
+     "Acme Consulting LLC",
+     "BankX Checking",
+     "3,200.00",
+     "U",
+     "[ ]",
+     "G:25-g1 | E:—"
+    ],
+    [
+     "#25-j2",
+     "2025-01-20",
+     "Emergency fund transfer",
+     "BankX Checking",
+     "BankX Savings",
+     "500.00",
+     "U",
+     "[ ]",
+     "G:25-g2 | E:—"
+    ],
+    [
+     "#25-j17",
+     "2025-01-22",
+     "Social security contributions Q1",
+     "BankX Checking",
+     "Social Security",
+     "650.00",
+     "U",
+     "[ ]",
+     "G:25-g17 | E:—"
+    ],
+    [
+     "#25-j3",
+     "2025-01-25",
+     "Mortgage payment - January",
+     "BankX Checking",
+     "Home Mortgage",
+     "520.00",
+     "U",
+     "[ ]",
+     "G:25-g3 | E:—"
+    ],
+    [
+     "#25-j29",
+     "2025-01-31",
+     "Transfer to savings account",
+     "BankX Checking",
+     "BankX Savings",
+     "500.00",
+     "U",
+     "[ ]",
+     "G:25-g29 | E:—"
+    ],
+    [
+     "#25-j18",
+     "2025-02-05",
+     "Office rent - February",
+     "BankX Checking",
+     "Office Landlord",
+     "280.00",
+     "U",
+     "[ ]",
+     "G:25-g18 | E:—"
+    ],
+    [
+     "#25-j7",
+     "2025-02-10",
+     "Invoice #002 - Verde Inc.",
+     "Verde Inc.",
+     "BankX Checking",
+     "2,800.00",
+     "U",
+     "[ ]",
+     "G:25-g7 | E:—"
+    ],
+    [
+     "#25-j19",
+     "2025-02-14",
+     "Technical books and online courses",
+     "BankX Checking",
+     "Amazon/Udemy",
+     "120.00",
+     "U",
+     "[ ]",
+     "G:25-g19 | E:—"
+    ],
+    [
+     "#500",
+     "2025-02-15",
+     "Travel expense advance",
+     "BankX Checking",
+     "Rome Hotel",
+     "150.00",
+     "U",
+     "[ ]",
+     "G:25-g13 | E:—"
+    ],
+    [
+     "#25-j20",
+     "2025-02-28",
+     "Fuel and tolls",
+     "BankX Checking",
+     "Various",
+     "85.00",
+     "U",
+     "[ ]",
+     "G:25-g20 | E:—"
+    ],
+    [
+     "#25-j21",
+     "2025-03-05",
+     "Office rent - March",
+     "BankX Checking",
+     "Office Landlord",
+     "280.00",
+     "U",
+     "[ ]",
+     "G:25-g21 | E:—"
+    ],
+    [
+     "#25-j8",
+     "2025-03-05",
+     "Consulting - Blue Startup",
+     "Blue Startup",
+     "BankX Checking",
+     "1,500.00",
+     "U",
+     "[ ]",
+     "G:25-g8 | E:—"
+    ],
+    [
+     "#501",
+     "2025-03-10",
+     "Travel expense reimbursement",
+     "Acme Consulting LLC",
+     "BankX Checking",
+     "150.00",
+     "U",
+     "[ ]",
+     "G:25-g14 | E:—"
+    ],
+    [
+     "#25-j22",
+     "2025-03-15",
+     "Accountant fees Q1",
+     "BankX Checking",
+     "Baker & Partners",
+     "320.00",
+     "U",
+     "[ ]",
+     "G:25-g22 | E:—"
+    ],
+    [
+     "#25-j4",
+     "2025-03-15",
+     "Tax withholdings",
+     "BankX Checking",
+     "Tax Authority",
+     "557.44",
+     "U",
+     "[ ]",
+     "G:g-split-1 | E:—"
+    ],
+    [
+     "#25-j5",
+     "2025-03-15",
+     "Supplementary benefit installment recovery",
+     "BankX Checking",
+     "Tax Authority",
+     "220.74",
+     "U",
+     "[ ]",
+     "G:g-split-1 | E:—"
+    ],
+    [
+     "#25-j6",
+     "2025-03-15",
+     "Other withholdings",
+     "BankX Checking",
+     "Tax Authority",
+     "1.90",
+     "U",
+     "[ ]",
+     "G:g-split-1 | E:—"
+    ],
+    [
+     "#25-j9",
+     "2025-03-28",
+     "Invoice #003 - Acme Consulting LLC",
+     "Acme Consulting LLC",
+     "BankX Checking",
+     "2,900.00",
+     "U",
+     "[ ]",
+     "G:25-g9 | E:—"
+    ],
+    [
+     "#25-j23",
+     "2025-03-30",
+     "Milan business trip",
+     "BankX Checking",
+     "Various",
+     "450.00",
+     "U",
+     "[ ]",
+     "G:25-g23 | E:—"
+    ],
+    [
+     "#25-j30",
+     "2025-03-31",
+     "Transfer to savings account",
+     "BankX Checking",
+     "BankX Savings",
+     "500.00",
+     "U",
+     "[ ]",
+     "G:25-g30 | E:—"
+    ],
+    [
+     "#25-j24",
+     "2025-04-05",
+     "Office rent - April",
+     "BankX Checking",
+     "Office Landlord",
+     "280.00",
+     "U",
+     "[ ]",
+     "G:25-g24 | E:—"
+    ],
+    [
+     "#25-j10",
+     "2025-04-12",
+     "Invoice #004 - Verde Inc.",
+     "Verde Inc.",
+     "BankX Checking",
+     "3,100.00",
+     "U",
+     "[ ]",
+     "G:25-g10 | E:—"
+    ],
+    [
+     "#25-j25",
+     "2025-04-15",
+     "Income tax advance",
+     "BankX Checking",
+     "Tax Authority",
+     "1,200.00",
+     "U",
+     "[ ]",
+     "G:25-g25 | E:—"
+    ],
+    [
+     "#25-j26",
+     "2025-04-22",
+     "Annual hosting and domain",
+     "BankX Checking",
+     "Hetzner Online",
+     "199.00",
+     "U",
+     "[ ]",
+     "G:25-g26 | E:—"
+    ],
+    [
+     "#25-j27",
+     "2025-05-05",
+     "Office rent - May",
+     "BankX Checking",
+     "Office Landlord",
+     "280.00",
+     "U",
+     "[ ]",
+     "G:25-g27 | E:—"
+    ],
+    [
+     "#25-j11",
+     "2025-05-08",
+     "Travel expense reimbursement",
+     "Acme Consulting LLC",
+     "BankX Checking",
+     "450.00",
+     "U",
+     "[ ]",
+     "G:25-g11 | E:—"
+    ],
+    [
+     "#25-j28",
+     "2025-05-18",
+     "Office supplies",
+     "BankX Checking",
+     "Amazon",
+     "155.00",
+     "U",
+     "[ ]",
+     "G:25-g28 | E:—"
+    ],
+    [
+     "#25-j12",
+     "2025-05-20",
+     "Invoice #005 - Giallo Ltd",
+     "Giallo Ltd",
+     "BankX Checking",
+     "3,050.00",
+     "U",
+     "[ ]",
+     "G:25-g12 | E:—"
+    ]
+   ],
+   "colWidths": [
+    45.35,
+    56.69,
+    141.73,
+    99.21,
+    99.21,
+    62.36,
+    17.01,
+    22.68,
+    195.59
+   ]
+  }
+ ],
+ "strings": [
+  "TRANSACTION AUDIT LOG",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1",
+  "TRANSACTION AUDIT LOG",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 2"
+ ],
+ "pages": 2
+}

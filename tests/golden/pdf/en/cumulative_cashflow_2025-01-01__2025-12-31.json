@@ -1,0 +1,103 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Cumulative Cash Flow"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "CUMULATIVE CASH FLOW TREND"
+  },
+  {
+   "table": [
+    [
+     "Month",
+     "Income",
+     "Expenses",
+     "Net (month)",
+     "Cumulative"
+    ],
+    [
+     "January 2025",
+     "€ 3,200.00",
+     "€ 1,019.00",
+     "€ 2,181.00",
+     "€ 2,181.00"
+    ],
+    [
+     "February 2025",
+     "2,800.00",
+     "635.00",
+     "2,165.00",
+     "4,346.00"
+    ],
+    [
+     "March 2025",
+     "4,550.00",
+     "1,830.08",
+     "2,719.92",
+     "7,065.92"
+    ],
+    [
+     "April 2025",
+     "3,100.00",
+     "1,679.00",
+     "1,421.00",
+     "8,486.92"
+    ],
+    [
+     "May 2025",
+     "3,500.00",
+     "435.00",
+     "3,065.00",
+     "11,551.92"
+    ],
+    [
+     "Final Cumulative",
+     "",
+     "",
+     "",
+     "€ 11,551.92"
+    ]
+   ],
+   "colWidths": [
+    107.72,
+    85.04,
+    85.04,
+    85.04,
+    144.57
+   ]
+  },
+  {
+   "spacer": 14.17
+  },
+  {
+   "p": "small",
+   "text": "Peak cumulative: € 11,551.92 — May 2025. Lowest cumulative: € 2,181.00 — January 2025. The progressive cumulative represents the sum of monthly net flows from the beginning of the period."
+  }
+ ],
+ "strings": [
+  "CUMULATIVE CASH FLOW",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1"
+ ],
+ "pages": 1
+}

@@ -1,6 +1,9 @@
 import io
+import os
+import subprocess
+import sys
 
-from firefly_reports.chart_engine import (
+from firefly_reports.render.charts import (
     create_area_chart,
     create_bar_chart,
     create_cashflow_combo,
@@ -67,3 +70,14 @@ def test_create_area_chart_returns_bytesio():
     buf = create_area_chart(data, "Test Area Chart")
     assert isinstance(buf, io.BytesIO)
     assert buf.getbuffer().nbytes > 0
+
+
+def test_charts_do_not_touch_the_global_backend(tmp_path):
+    code = (
+        "import matplotlib; matplotlib.use('svg'); "
+        "from firefly_reports.render import charts; charts.create_bar_chart({'a': 1.0}, 't'); "
+        "import sys; assert matplotlib.get_backend() == 'svg'; "
+        "assert 'matplotlib.pyplot' not in sys.modules"
+    )
+    env = {**os.environ, "MPLCONFIGDIR": str(tmp_path)}
+    subprocess.run([sys.executable, "-c", code], check=True, env=env)

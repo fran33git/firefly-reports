@@ -23,10 +23,10 @@ python -m firefly_reports.demo
 
 | User Guide | Developer Guide |
 |-----------|----------------|
-| [[Installation]] — prerequisites, install, first run | [[Architecture]] — how the pipeline works |
+| [[Installation]] — prerequisites, install, first run | [[Architecture]] — how the pipeline works<br>[[Ledger-Architecture\|Ledger Architecture]] — Beancount export internals |
 | [[Configuration]] — all options, TOML config file | [[Adding-a-New-Report\|Adding a New Report]] — extend the tool |
 | [[Reports-Reference\|Reports Reference]] — all 26 reports | [[Testing]] — run and write tests |
-| [[Troubleshooting]] — common errors and debug log | [[Contributing]] — code style and PR process |
+| [[Beancount-Export\|Beancount Export]] — ledger/Fava export<br>[[Troubleshooting]] — common errors and debug log | [[Contributing]] — code style and PR process |
 
 ## Output
 

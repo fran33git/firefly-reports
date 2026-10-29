@@ -1,0 +1,4723 @@
+{
+ "cash_flow": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "inflows": [
+   {
+    "category": "Professional Fees",
+    "amount": "D:15050.00"
+   },
+   {
+    "category": "Consulting",
+    "amount": "D:1500.00"
+   },
+   {
+    "category": "Reimbursements",
+    "amount": "D:600.00"
+   }
+  ],
+  "outflows": [
+   {
+    "category": "Office Rent",
+    "amount": "D:1400.00"
+   },
+   {
+    "category": "Taxes",
+    "amount": "D:1200.00"
+   },
+   {
+    "category": "Taxes & Contributions",
+    "amount": "D:780.08"
+   },
+   {
+    "category": "Travel & Transport",
+    "amount": "D:685.00"
+   },
+   {
+    "category": "Social Security Contributions",
+    "amount": "D:650.00"
+   },
+   {
+    "category": "Accountant Fees",
+    "amount": "D:320.00"
+   },
+   {
+    "category": "Software & Subscriptions",
+    "amount": "D:288.00"
+   },
+   {
+    "category": "Office Supplies",
+    "amount": "D:155.00"
+   },
+   {
+    "category": "Professional Training",
+    "amount": "D:120.00"
+   }
+  ],
+  "total_in": "D:17150.00",
+  "total_out": "D:5598.08",
+  "net": "D:11551.92",
+  "by_month": {
+   "2025-01": {
+    "in": "D:3200.00",
+    "out": "D:1019.00",
+    "net": "D:2181.00"
+   },
+   "2025-02": {
+    "in": "D:2800.00",
+    "out": "D:635.00",
+    "net": "D:2165.00"
+   },
+   "2025-03": {
+    "in": "D:4550.00",
+    "out": "D:1830.08",
+    "net": "D:2719.92"
+   },
+   "2025-04": {
+    "in": "D:3100.00",
+    "out": "D:1679.00",
+    "net": "D:1421.00"
+   },
+   "2025-05": {
+    "in": "D:3500.00",
+    "out": "D:435.00",
+    "net": "D:3065.00"
+   }
+  },
+  "waterfall": {
+   "operating": {
+    "in": "D:17150.00",
+    "out": "D:5598.08",
+    "net": "D:11551.92"
+   },
+   "investing": {
+    "in": "D:0",
+    "out": "D:1500.00",
+    "net": "D:-1500.00"
+   },
+   "financing": {
+    "in": "D:0",
+    "out": "D:520.00",
+    "net": "D:-520.00"
+   },
+   "net_change": "D:9531.92",
+   "opening_cash": "D:10860.58",
+   "closing_cash": "D:20392.50"
+  }
+ },
+ "income_expense": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "income_rows": [
+   {
+    "category": "Professional Fees",
+    "amount": "D:15050.00",
+    "pct": "D:87.8"
+   },
+   {
+    "category": "Consulting",
+    "amount": "D:1500.00",
+    "pct": "D:8.7"
+   },
+   {
+    "category": "Reimbursements",
+    "amount": "D:600.00",
+    "pct": "D:3.5"
+   }
+  ],
+  "expense_rows": [
+   {
+    "category": "Office Rent",
+    "amount": "D:1400.00",
+    "pct": "D:25.0"
+   },
+   {
+    "category": "Taxes",
+    "amount": "D:1200.00",
+    "pct": "D:21.4"
+   },
+   {
+    "category": "Taxes & Contributions",
+    "amount": "D:780.08",
+    "pct": "D:13.9"
+   },
+   {
+    "category": "Travel & Transport",
+    "amount": "D:685.00",
+    "pct": "D:12.2"
+   },
+   {
+    "category": "Social Security Contributions",
+    "amount": "D:650.00",
+    "pct": "D:11.6"
+   },
+   {
+    "category": "Accountant Fees",
+    "amount": "D:320.00",
+    "pct": "D:5.7"
+   },
+   {
+    "category": "Software & Subscriptions",
+    "amount": "D:288.00",
+    "pct": "D:5.1"
+   },
+   {
+    "category": "Office Supplies",
+    "amount": "D:155.00",
+    "pct": "D:2.8"
+   },
+   {
+    "category": "Professional Training",
+    "amount": "D:120.00",
+    "pct": "D:2.1"
+   }
+  ],
+  "total_income": "D:17150.00",
+  "total_expense": "D:5598.08",
+  "net_savings": "D:11551.92",
+  "savings_rate": "D:67.4",
+  "budget_breakdown": [
+   {
+    "budget": "Tax & Social Security",
+    "spent": "D:1850.00"
+   },
+   {
+    "budget": "Operating Expenses",
+    "spent": "D:1418.00"
+   },
+   {
+    "budget": "Fixed Costs",
+    "spent": "D:1400.00"
+   }
+  ]
+ },
+ "transaction_register": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "rows": [
+   {
+    "group_id": "25-g15",
+    "journal_id": "25-j15",
+    "date": "2025-01-05",
+    "description": "Office rent - January",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Office Landlord",
+    "total": "D:-280.00",
+    "total_abs": "D:280.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j15",
+      "description": "Office rent - January",
+      "category": "Office Rent",
+      "budget": "Fixed Costs",
+      "amount": "D:-280.00",
+      "amount_abs": "D:280.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-01-05",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "recurring"
+      ]
+     }
+    ],
+    "running_balance": "D:-280.00"
+   },
+   {
+    "group_id": "25-g16",
+    "journal_id": "25-j16",
+    "date": "2025-01-10",
+    "description": "Adobe Creative Cloud",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Adobe Systems",
+    "total": "D:-89.00",
+    "total_abs": "D:89.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j16",
+      "description": "Adobe Creative Cloud",
+      "category": "Software & Subscriptions",
+      "budget": "Operating Expenses",
+      "amount": "D:-89.00",
+      "amount_abs": "D:89.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-01-10",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "software"
+      ]
+     }
+    ],
+    "running_balance": "D:-369.00"
+   },
+   {
+    "group_id": "25-g1",
+    "journal_id": "25-j1",
+    "date": "2025-01-15",
+    "description": "Invoice #001 - Acme Consulting LLC",
+    "type": "deposit",
+    "source": "Acme Consulting LLC",
+    "destination": "BankX Checking",
+    "total": "D:3200.00",
+    "total_abs": "D:3200.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j1",
+      "description": "Invoice #001 - Acme Consulting LLC",
+      "category": "Professional Fees",
+      "budget": "",
+      "amount": "D:3200.00",
+      "amount_abs": "D:3200.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-01-15",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "invoice",
+       "tax"
+      ]
+     }
+    ],
+    "running_balance": "D:2831.00"
+   },
+   {
+    "group_id": "25-g2",
+    "journal_id": "25-j2",
+    "date": "2025-01-20",
+    "description": "Emergency fund transfer",
+    "type": "transfer",
+    "source": "BankX Checking",
+    "destination": "BankX Savings",
+    "total": "D:-500.00",
+    "total_abs": "D:500.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j2",
+      "description": "Emergency fund transfer",
+      "category": "",
+      "budget": "",
+      "amount": "D:-500.00",
+      "amount_abs": "D:500.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-01-20",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": []
+     }
+    ],
+    "running_balance": "D:2331.00"
+   },
+   {
+    "group_id": "25-g17",
+    "journal_id": "25-j17",
+    "date": "2025-01-22",
+    "description": "Social security contributions Q1",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Social Security",
+    "total": "D:-650.00",
+    "total_abs": "D:650.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j17",
+      "description": "Social security contributions Q1",
+      "category": "Social Security Contributions",
+      "budget": "Tax & Social Security",
+      "amount": "D:-650.00",
+      "amount_abs": "D:650.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-01-22",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "tax",
+       "social-security"
+      ]
+     }
+    ],
+    "running_balance": "D:1681.00"
+   },
+   {
+    "group_id": "25-g3",
+    "journal_id": "25-j3",
+    "date": "2025-01-25",
+    "description": "Mortgage payment - January",
+    "type": "transfer",
+    "source": "BankX Checking",
+    "destination": "Home Mortgage",
+    "total": "D:-520.00",
+    "total_abs": "D:520.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j3",
+      "description": "Mortgage payment - January",
+      "category": "Home",
+      "budget": "",
+      "amount": "D:-520.00",
+      "amount_abs": "D:520.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-01-25",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": []
+     }
+    ],
+    "running_balance": "D:1161.00"
+   },
+   {
+    "group_id": "25-g29",
+    "journal_id": "25-j29",
+    "date": "2025-01-31",
+    "description": "Transfer to savings account",
+    "type": "transfer",
+    "source": "BankX Checking",
+    "destination": "BankX Savings",
+    "total": "D:-500.00",
+    "total_abs": "D:500.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j29",
+      "description": "Transfer to savings account",
+      "category": "",
+      "budget": "",
+      "amount": "D:-500.00",
+      "amount_abs": "D:500.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-01-31",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": []
+     }
+    ],
+    "running_balance": "D:661.00"
+   },
+   {
+    "group_id": "25-g18",
+    "journal_id": "25-j18",
+    "date": "2025-02-05",
+    "description": "Office rent - February",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Office Landlord",
+    "total": "D:-280.00",
+    "total_abs": "D:280.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j18",
+      "description": "Office rent - February",
+      "category": "Office Rent",
+      "budget": "Fixed Costs",
+      "amount": "D:-280.00",
+      "amount_abs": "D:280.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-02-05",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "recurring"
+      ]
+     }
+    ],
+    "running_balance": "D:381.00"
+   },
+   {
+    "group_id": "25-g7",
+    "journal_id": "25-j7",
+    "date": "2025-02-10",
+    "description": "Invoice #002 - Verde Inc.",
+    "type": "deposit",
+    "source": "Verde Inc.",
+    "destination": "BankX Checking",
+    "total": "D:2800.00",
+    "total_abs": "D:2800.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j7",
+      "description": "Invoice #002 - Verde Inc.",
+      "category": "Professional Fees",
+      "budget": "",
+      "amount": "D:2800.00",
+      "amount_abs": "D:2800.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-02-10",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "invoice"
+      ]
+     }
+    ],
+    "running_balance": "D:3181.00"
+   },
+   {
+    "group_id": "25-g19",
+    "journal_id": "25-j19",
+    "date": "2025-02-14",
+    "description": "Technical books and online courses",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Amazon/Udemy",
+    "total": "D:-120.00",
+    "total_abs": "D:120.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j19",
+      "description": "Technical books and online courses",
+      "category": "Professional Training",
+      "budget": "Operating Expenses",
+      "amount": "D:-120.00",
+      "amount_abs": "D:120.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-02-14",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": []
+     }
+    ],
+    "running_balance": "D:3061.00"
+   },
+   {
+    "group_id": "25-g13",
+    "journal_id": "500",
+    "date": "2025-02-15",
+    "description": "Travel expense advance",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Rome Hotel",
+    "total": "D:-150.00",
+    "total_abs": "D:150.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "500",
+      "description": "Travel expense advance",
+      "category": "Travel & Transport",
+      "budget": "",
+      "amount": "D:-150.00",
+      "amount_abs": "D:150.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-02-15",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": []
+     }
+    ],
+    "running_balance": "D:2911.00"
+   },
+   {
+    "group_id": "25-g20",
+    "journal_id": "25-j20",
+    "date": "2025-02-28",
+    "description": "Fuel and tolls",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Various",
+    "total": "D:-85.00",
+    "total_abs": "D:85.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j20",
+      "description": "Fuel and tolls",
+      "category": "Travel & Transport",
+      "budget": "Operating Expenses",
+      "amount": "D:-85.00",
+      "amount_abs": "D:85.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-02-28",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": []
+     }
+    ],
+    "running_balance": "D:2826.00"
+   },
+   {
+    "group_id": "25-g8",
+    "journal_id": "25-j8",
+    "date": "2025-03-05",
+    "description": "Consulting - Blue Startup",
+    "type": "deposit",
+    "source": "Blue Startup",
+    "destination": "BankX Checking",
+    "total": "D:1500.00",
+    "total_abs": "D:1500.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j8",
+      "description": "Consulting - Blue Startup",
+      "category": "Consulting",
+      "budget": "",
+      "amount": "D:1500.00",
+      "amount_abs": "D:1500.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-03-05",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "consulting"
+      ]
+     }
+    ],
+    "running_balance": "D:4326.00"
+   },
+   {
+    "group_id": "25-g21",
+    "journal_id": "25-j21",
+    "date": "2025-03-05",
+    "description": "Office rent - March",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Office Landlord",
+    "total": "D:-280.00",
+    "total_abs": "D:280.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j21",
+      "description": "Office rent - March",
+      "category": "Office Rent",
+      "budget": "Fixed Costs",
+      "amount": "D:-280.00",
+      "amount_abs": "D:280.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-03-05",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "recurring"
+      ]
+     }
+    ],
+    "running_balance": "D:4046.00"
+   },
+   {
+    "group_id": "25-g14",
+    "journal_id": "501",
+    "date": "2025-03-10",
+    "description": "Travel expense reimbursement",
+    "type": "deposit",
+    "source": "Acme Consulting LLC",
+    "destination": "BankX Checking",
+    "total": "D:150.00",
+    "total_abs": "D:150.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "501",
+      "description": "Travel expense reimbursement",
+      "category": "Reimbursements",
+      "budget": "",
+      "amount": "D:150.00",
+      "amount_abs": "D:150.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-03-10",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": []
+     }
+    ],
+    "running_balance": "D:4196.00"
+   },
+   {
+    "group_id": "g-split-1",
+    "journal_id": "25-j4",
+    "date": "2025-03-15",
+    "description": "Payroll withholdings - March 2025",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Tax Authority",
+    "total": "D:-780.08",
+    "total_abs": "D:780.08",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j4",
+      "description": "Tax withholdings",
+      "category": "Taxes & Contributions",
+      "budget": "",
+      "amount": "D:-557.44",
+      "amount_abs": "D:557.44",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-03-15",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": []
+     },
+     {
+      "id": "25-j5",
+      "description": "Supplementary benefit installment recovery",
+      "category": "Taxes & Contributions",
+      "budget": "",
+      "amount": "D:-220.74",
+      "amount_abs": "D:220.74",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-03-15",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": []
+     },
+     {
+      "id": "25-j6",
+      "description": "Other withholdings",
+      "category": "Taxes & Contributions",
+      "budget": "",
+      "amount": "D:-1.90",
+      "amount_abs": "D:1.90",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-03-15",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": []
+     }
+    ],
+    "running_balance": "D:3415.92"
+   },
+   {
+    "group_id": "25-g22",
+    "journal_id": "25-j22",
+    "date": "2025-03-15",
+    "description": "Accountant fees Q1",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Baker & Partners",
+    "total": "D:-320.00",
+    "total_abs": "D:320.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j22",
+      "description": "Accountant fees Q1",
+      "category": "Accountant Fees",
+      "budget": "Operating Expenses",
+      "amount": "D:-320.00",
+      "amount_abs": "D:320.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-03-15",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": []
+     }
+    ],
+    "running_balance": "D:3095.92"
+   },
+   {
+    "group_id": "25-g9",
+    "journal_id": "25-j9",
+    "date": "2025-03-28",
+    "description": "Invoice #003 - Acme Consulting LLC",
+    "type": "deposit",
+    "source": "Acme Consulting LLC",
+    "destination": "BankX Checking",
+    "total": "D:2900.00",
+    "total_abs": "D:2900.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j9",
+      "description": "Invoice #003 - Acme Consulting LLC",
+      "category": "Professional Fees",
+      "budget": "",
+      "amount": "D:2900.00",
+      "amount_abs": "D:2900.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-03-28",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "invoice",
+       "tax"
+      ]
+     }
+    ],
+    "running_balance": "D:5995.92"
+   },
+   {
+    "group_id": "25-g23",
+    "journal_id": "25-j23",
+    "date": "2025-03-30",
+    "description": "Milan business trip",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Various",
+    "total": "D:-450.00",
+    "total_abs": "D:450.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j23",
+      "description": "Milan business trip",
+      "category": "Travel & Transport",
+      "budget": "Operating Expenses",
+      "amount": "D:-450.00",
+      "amount_abs": "D:450.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-03-30",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "tax"
+      ]
+     }
+    ],
+    "running_balance": "D:5545.92"
+   },
+   {
+    "group_id": "25-g30",
+    "journal_id": "25-j30",
+    "date": "2025-03-31",
+    "description": "Transfer to savings account",
+    "type": "transfer",
+    "source": "BankX Checking",
+    "destination": "BankX Savings",
+    "total": "D:-500.00",
+    "total_abs": "D:500.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j30",
+      "description": "Transfer to savings account",
+      "category": "",
+      "budget": "",
+      "amount": "D:-500.00",
+      "amount_abs": "D:500.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-03-31",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": []
+     }
+    ],
+    "running_balance": "D:5045.92"
+   },
+   {
+    "group_id": "25-g24",
+    "journal_id": "25-j24",
+    "date": "2025-04-05",
+    "description": "Office rent - April",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Office Landlord",
+    "total": "D:-280.00",
+    "total_abs": "D:280.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j24",
+      "description": "Office rent - April",
+      "category": "Office Rent",
+      "budget": "Fixed Costs",
+      "amount": "D:-280.00",
+      "amount_abs": "D:280.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-04-05",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "recurring"
+      ]
+     }
+    ],
+    "running_balance": "D:4765.92"
+   },
+   {
+    "group_id": "25-g10",
+    "journal_id": "25-j10",
+    "date": "2025-04-12",
+    "description": "Invoice #004 - Verde Inc.",
+    "type": "deposit",
+    "source": "Verde Inc.",
+    "destination": "BankX Checking",
+    "total": "D:3100.00",
+    "total_abs": "D:3100.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j10",
+      "description": "Invoice #004 - Verde Inc.",
+      "category": "Professional Fees",
+      "budget": "",
+      "amount": "D:3100.00",
+      "amount_abs": "D:3100.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-04-12",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "invoice"
+      ]
+     }
+    ],
+    "running_balance": "D:7865.92"
+   },
+   {
+    "group_id": "25-g25",
+    "journal_id": "25-j25",
+    "date": "2025-04-15",
+    "description": "Income tax advance",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Tax Authority",
+    "total": "D:-1200.00",
+    "total_abs": "D:1200.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j25",
+      "description": "Income tax advance",
+      "category": "Taxes",
+      "budget": "Tax & Social Security",
+      "amount": "D:-1200.00",
+      "amount_abs": "D:1200.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-04-15",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "tax"
+      ]
+     }
+    ],
+    "running_balance": "D:6665.92"
+   },
+   {
+    "group_id": "25-g26",
+    "journal_id": "25-j26",
+    "date": "2025-04-22",
+    "description": "Annual hosting and domain",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Hetzner Online",
+    "total": "D:-199.00",
+    "total_abs": "D:199.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j26",
+      "description": "Annual hosting and domain",
+      "category": "Software & Subscriptions",
+      "budget": "Operating Expenses",
+      "amount": "D:-199.00",
+      "amount_abs": "D:199.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-04-22",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "software"
+      ]
+     }
+    ],
+    "running_balance": "D:6466.92"
+   },
+   {
+    "group_id": "25-g27",
+    "journal_id": "25-j27",
+    "date": "2025-05-05",
+    "description": "Office rent - May",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Office Landlord",
+    "total": "D:-280.00",
+    "total_abs": "D:280.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j27",
+      "description": "Office rent - May",
+      "category": "Office Rent",
+      "budget": "Fixed Costs",
+      "amount": "D:-280.00",
+      "amount_abs": "D:280.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-05-05",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "recurring"
+      ]
+     }
+    ],
+    "running_balance": "D:6186.92"
+   },
+   {
+    "group_id": "25-g11",
+    "journal_id": "25-j11",
+    "date": "2025-05-08",
+    "description": "Travel expense reimbursement",
+    "type": "deposit",
+    "source": "Acme Consulting LLC",
+    "destination": "BankX Checking",
+    "total": "D:450.00",
+    "total_abs": "D:450.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j11",
+      "description": "Travel expense reimbursement",
+      "category": "Reimbursements",
+      "budget": "",
+      "amount": "D:450.00",
+      "amount_abs": "D:450.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-05-08",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "reimbursement"
+      ]
+     }
+    ],
+    "running_balance": "D:6636.92"
+   },
+   {
+    "group_id": "25-g28",
+    "journal_id": "25-j28",
+    "date": "2025-05-18",
+    "description": "Office supplies",
+    "type": "withdrawal",
+    "source": "BankX Checking",
+    "destination": "Amazon",
+    "total": "D:-155.00",
+    "total_abs": "D:155.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j28",
+      "description": "Office supplies",
+      "category": "Office Supplies",
+      "budget": "Operating Expenses",
+      "amount": "D:-155.00",
+      "amount_abs": "D:155.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-05-18",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": []
+     }
+    ],
+    "running_balance": "D:6481.92"
+   },
+   {
+    "group_id": "25-g12",
+    "journal_id": "25-j12",
+    "date": "2025-05-20",
+    "description": "Invoice #005 - Giallo Ltd",
+    "type": "deposit",
+    "source": "Giallo Ltd",
+    "destination": "BankX Checking",
+    "total": "D:3050.00",
+    "total_abs": "D:3050.00",
+    "currency": "EUR",
+    "reconciled": false,
+    "has_attachments": false,
+    "splits": [
+     {
+      "id": "25-j12",
+      "description": "Invoice #005 - Giallo Ltd",
+      "category": "Professional Fees",
+      "budget": "",
+      "amount": "D:3050.00",
+      "amount_abs": "D:3050.00",
+      "foreign_amount": null,
+      "foreign_currency_code": null,
+      "notes": "",
+      "book_date": "2025-05-20",
+      "external_id": "",
+      "reconciled": false,
+      "has_attachments": false,
+      "tags": [
+       "invoice"
+      ]
+     }
+    ],
+    "running_balance": "D:9531.92"
+   }
+  ],
+  "total_groups": 28,
+  "total_transactions": 30,
+  "totals_by_type": {
+   "withdrawal": "D:5598.08",
+   "deposit": "D:17150.00",
+   "transfer": "D:2020.00"
+  }
+ },
+ "net_worth": {
+  "owner": "Sample User — Freelancer",
+  "as_of_date": "date:2025-12-31",
+  "currency": "€",
+  "groups": [
+   {
+    "role_label": "Checking Account",
+    "accounts": [
+     {
+      "name": "BankX Checking",
+      "iban_masked": "***********************3456",
+      "balance": "D:8432.50",
+      "currency_code": "EUR",
+      "notes": "Main account",
+      "active": true,
+      "updated_at": null
+     }
+    ],
+    "subtotal": "D:8432.50"
+   },
+   {
+    "role_label": "Savings Account",
+    "accounts": [
+     {
+      "name": "BankX Savings",
+      "iban_masked": "***********************9012",
+      "balance": "D:12150.00",
+      "currency_code": "EUR",
+      "notes": "Emergency fund",
+      "active": true,
+      "updated_at": null
+     }
+    ],
+    "subtotal": "D:12150.00"
+   },
+   {
+    "role_label": "Credit Card",
+    "accounts": [
+     {
+      "name": "Visa Credit Card",
+      "iban_masked": "—",
+      "balance": "D:-340.00",
+      "currency_code": "EUR",
+      "notes": "€2,000 limit",
+      "active": true,
+      "updated_at": null
+     }
+    ],
+    "subtotal": "D:-340.00"
+   },
+   {
+    "role_label": "Cash Wallet",
+    "accounts": [
+     {
+      "name": "Cash Wallet",
+      "iban_masked": "—",
+      "balance": "D:150.00",
+      "currency_code": "EUR",
+      "notes": "",
+      "active": true,
+      "updated_at": null
+     }
+    ],
+    "subtotal": "D:150.00"
+   }
+  ],
+  "total_assets": "D:20732.50",
+  "total_liabilities": "D:-340.00",
+  "net_worth": "D:20392.50",
+  "account_count": 4
+ },
+ "account_statements": [
+  {
+   "owner": "Sample User — Freelancer",
+   "period_start": "date:2025-01-01",
+   "period_end": "date:2025-12-31",
+   "currency": "€",
+   "account_name": "BankX Checking",
+   "account_iban": "IT60X0542811101000000123456",
+   "account_role": "Checking Account",
+   "currency_code": "EUR",
+   "opening_balance": "D:-1399.42",
+   "closing_balance": "D:8432.50",
+   "total_in": "D:17300.00",
+   "total_out": "D:-7468.08",
+   "rows": [
+    {
+     "id": "25-j15",
+     "date": "2025-01-05",
+     "description": "Office rent - January",
+     "type": "Withdrawal",
+     "counterpart": "Office Landlord",
+     "category": "Office Rent",
+     "amount": "D:-280.00",
+     "notes": "",
+     "book_date": "2025-01-05",
+     "external_id": "",
+     "running_balance": "D:-1679.42"
+    },
+    {
+     "id": "25-j16",
+     "date": "2025-01-10",
+     "description": "Adobe Creative Cloud",
+     "type": "Withdrawal",
+     "counterpart": "Adobe Systems",
+     "category": "Software & Subscriptions",
+     "amount": "D:-89.00",
+     "notes": "",
+     "book_date": "2025-01-10",
+     "external_id": "",
+     "running_balance": "D:-1768.42"
+    },
+    {
+     "id": "25-j1",
+     "date": "2025-01-15",
+     "description": "Invoice #001 - Acme Consulting LLC",
+     "type": "Deposit",
+     "counterpart": "Acme Consulting LLC",
+     "category": "Professional Fees",
+     "amount": "D:3200.00",
+     "notes": "",
+     "book_date": "2025-01-15",
+     "external_id": "",
+     "running_balance": "D:1431.58"
+    },
+    {
+     "id": "25-j2",
+     "date": "2025-01-20",
+     "description": "Emergency fund transfer",
+     "type": "Transfer",
+     "counterpart": "BankX Savings",
+     "category": "",
+     "amount": "D:-500.00",
+     "notes": "",
+     "book_date": "2025-01-20",
+     "external_id": "",
+     "running_balance": "D:931.58"
+    },
+    {
+     "id": "25-j17",
+     "date": "2025-01-22",
+     "description": "Social security contributions Q1",
+     "type": "Withdrawal",
+     "counterpart": "Social Security",
+     "category": "Social Security Contributions",
+     "amount": "D:-650.00",
+     "notes": "",
+     "book_date": "2025-01-22",
+     "external_id": "",
+     "running_balance": "D:281.58"
+    },
+    {
+     "id": "25-j3",
+     "date": "2025-01-25",
+     "description": "Mortgage payment - January",
+     "type": "Transfer",
+     "counterpart": "Home Mortgage",
+     "category": "Home",
+     "amount": "D:-520.00",
+     "notes": "",
+     "book_date": "2025-01-25",
+     "external_id": "",
+     "running_balance": "D:-238.42"
+    },
+    {
+     "id": "25-j29",
+     "date": "2025-01-31",
+     "description": "Transfer to savings account",
+     "type": "Transfer",
+     "counterpart": "BankX Savings",
+     "category": "",
+     "amount": "D:-500.00",
+     "notes": "",
+     "book_date": "2025-01-31",
+     "external_id": "",
+     "running_balance": "D:-738.42"
+    },
+    {
+     "id": "25-j18",
+     "date": "2025-02-05",
+     "description": "Office rent - February",
+     "type": "Withdrawal",
+     "counterpart": "Office Landlord",
+     "category": "Office Rent",
+     "amount": "D:-280.00",
+     "notes": "",
+     "book_date": "2025-02-05",
+     "external_id": "",
+     "running_balance": "D:-1018.42"
+    },
+    {
+     "id": "25-j7",
+     "date": "2025-02-10",
+     "description": "Invoice #002 - Verde Inc.",
+     "type": "Deposit",
+     "counterpart": "Verde Inc.",
+     "category": "Professional Fees",
+     "amount": "D:2800.00",
+     "notes": "",
+     "book_date": "2025-02-10",
+     "external_id": "",
+     "running_balance": "D:1781.58"
+    },
+    {
+     "id": "25-j19",
+     "date": "2025-02-14",
+     "description": "Technical books and online courses",
+     "type": "Withdrawal",
+     "counterpart": "Amazon/Udemy",
+     "category": "Professional Training",
+     "amount": "D:-120.00",
+     "notes": "",
+     "book_date": "2025-02-14",
+     "external_id": "",
+     "running_balance": "D:1661.58"
+    },
+    {
+     "id": "500",
+     "date": "2025-02-15",
+     "description": "Travel expense advance",
+     "type": "Withdrawal",
+     "counterpart": "BankX Checking",
+     "category": "Travel & Transport",
+     "amount": "D:150.00",
+     "notes": "",
+     "book_date": "2025-02-15",
+     "external_id": "",
+     "running_balance": "D:1811.58"
+    },
+    {
+     "id": "25-j20",
+     "date": "2025-02-28",
+     "description": "Fuel and tolls",
+     "type": "Withdrawal",
+     "counterpart": "Various",
+     "category": "Travel & Transport",
+     "amount": "D:-85.00",
+     "notes": "",
+     "book_date": "2025-02-28",
+     "external_id": "",
+     "running_balance": "D:1726.58"
+    },
+    {
+     "id": "25-j8",
+     "date": "2025-03-05",
+     "description": "Consulting - Blue Startup",
+     "type": "Deposit",
+     "counterpart": "Blue Startup",
+     "category": "Consulting",
+     "amount": "D:1500.00",
+     "notes": "",
+     "book_date": "2025-03-05",
+     "external_id": "",
+     "running_balance": "D:3226.58"
+    },
+    {
+     "id": "25-j21",
+     "date": "2025-03-05",
+     "description": "Office rent - March",
+     "type": "Withdrawal",
+     "counterpart": "Office Landlord",
+     "category": "Office Rent",
+     "amount": "D:-280.00",
+     "notes": "",
+     "book_date": "2025-03-05",
+     "external_id": "",
+     "running_balance": "D:2946.58"
+    },
+    {
+     "id": "501",
+     "date": "2025-03-10",
+     "description": "Travel expense reimbursement",
+     "type": "Deposit",
+     "counterpart": "Acme Consulting LLC",
+     "category": "Reimbursements",
+     "amount": "D:150.00",
+     "notes": "",
+     "book_date": "2025-03-10",
+     "external_id": "",
+     "running_balance": "D:3096.58"
+    },
+    {
+     "id": "25-j4",
+     "date": "2025-03-15",
+     "description": "Tax withholdings",
+     "type": "Withdrawal",
+     "counterpart": "Tax Authority",
+     "category": "Taxes & Contributions",
+     "amount": "D:-557.44",
+     "notes": "",
+     "book_date": "2025-03-15",
+     "external_id": "",
+     "running_balance": "D:2539.14"
+    },
+    {
+     "id": "25-j5",
+     "date": "2025-03-15",
+     "description": "Supplementary benefit installment recovery",
+     "type": "Withdrawal",
+     "counterpart": "Tax Authority",
+     "category": "Taxes & Contributions",
+     "amount": "D:-220.74",
+     "notes": "",
+     "book_date": "2025-03-15",
+     "external_id": "",
+     "running_balance": "D:2318.40"
+    },
+    {
+     "id": "25-j6",
+     "date": "2025-03-15",
+     "description": "Other withholdings",
+     "type": "Withdrawal",
+     "counterpart": "Tax Authority",
+     "category": "Taxes & Contributions",
+     "amount": "D:-1.90",
+     "notes": "",
+     "book_date": "2025-03-15",
+     "external_id": "",
+     "running_balance": "D:2316.50"
+    },
+    {
+     "id": "25-j22",
+     "date": "2025-03-15",
+     "description": "Accountant fees Q1",
+     "type": "Withdrawal",
+     "counterpart": "Baker & Partners",
+     "category": "Accountant Fees",
+     "amount": "D:-320.00",
+     "notes": "",
+     "book_date": "2025-03-15",
+     "external_id": "",
+     "running_balance": "D:1996.50"
+    },
+    {
+     "id": "25-j9",
+     "date": "2025-03-28",
+     "description": "Invoice #003 - Acme Consulting LLC",
+     "type": "Deposit",
+     "counterpart": "Acme Consulting LLC",
+     "category": "Professional Fees",
+     "amount": "D:2900.00",
+     "notes": "",
+     "book_date": "2025-03-28",
+     "external_id": "",
+     "running_balance": "D:4896.50"
+    },
+    {
+     "id": "25-j23",
+     "date": "2025-03-30",
+     "description": "Milan business trip",
+     "type": "Withdrawal",
+     "counterpart": "Various",
+     "category": "Travel & Transport",
+     "amount": "D:-450.00",
+     "notes": "",
+     "book_date": "2025-03-30",
+     "external_id": "",
+     "running_balance": "D:4446.50"
+    },
+    {
+     "id": "25-j30",
+     "date": "2025-03-31",
+     "description": "Transfer to savings account",
+     "type": "Transfer",
+     "counterpart": "BankX Savings",
+     "category": "",
+     "amount": "D:-500.00",
+     "notes": "",
+     "book_date": "2025-03-31",
+     "external_id": "",
+     "running_balance": "D:3946.50"
+    },
+    {
+     "id": "25-j24",
+     "date": "2025-04-05",
+     "description": "Office rent - April",
+     "type": "Withdrawal",
+     "counterpart": "Office Landlord",
+     "category": "Office Rent",
+     "amount": "D:-280.00",
+     "notes": "",
+     "book_date": "2025-04-05",
+     "external_id": "",
+     "running_balance": "D:3666.50"
+    },
+    {
+     "id": "25-j10",
+     "date": "2025-04-12",
+     "description": "Invoice #004 - Verde Inc.",
+     "type": "Deposit",
+     "counterpart": "Verde Inc.",
+     "category": "Professional Fees",
+     "amount": "D:3100.00",
+     "notes": "",
+     "book_date": "2025-04-12",
+     "external_id": "",
+     "running_balance": "D:6766.50"
+    },
+    {
+     "id": "25-j25",
+     "date": "2025-04-15",
+     "description": "Income tax advance",
+     "type": "Withdrawal",
+     "counterpart": "Tax Authority",
+     "category": "Taxes",
+     "amount": "D:-1200.00",
+     "notes": "",
+     "book_date": "2025-04-15",
+     "external_id": "",
+     "running_balance": "D:5566.50"
+    },
+    {
+     "id": "25-j26",
+     "date": "2025-04-22",
+     "description": "Annual hosting and domain",
+     "type": "Withdrawal",
+     "counterpart": "Hetzner Online",
+     "category": "Software & Subscriptions",
+     "amount": "D:-199.00",
+     "notes": "",
+     "book_date": "2025-04-22",
+     "external_id": "",
+     "running_balance": "D:5367.50"
+    },
+    {
+     "id": "25-j27",
+     "date": "2025-05-05",
+     "description": "Office rent - May",
+     "type": "Withdrawal",
+     "counterpart": "Office Landlord",
+     "category": "Office Rent",
+     "amount": "D:-280.00",
+     "notes": "",
+     "book_date": "2025-05-05",
+     "external_id": "",
+     "running_balance": "D:5087.50"
+    },
+    {
+     "id": "25-j11",
+     "date": "2025-05-08",
+     "description": "Travel expense reimbursement",
+     "type": "Deposit",
+     "counterpart": "Acme Consulting LLC",
+     "category": "Reimbursements",
+     "amount": "D:450.00",
+     "notes": "",
+     "book_date": "2025-05-08",
+     "external_id": "",
+     "running_balance": "D:5537.50"
+    },
+    {
+     "id": "25-j28",
+     "date": "2025-05-18",
+     "description": "Office supplies",
+     "type": "Withdrawal",
+     "counterpart": "Amazon",
+     "category": "Office Supplies",
+     "amount": "D:-155.00",
+     "notes": "",
+     "book_date": "2025-05-18",
+     "external_id": "",
+     "running_balance": "D:5382.50"
+    },
+    {
+     "id": "25-j12",
+     "date": "2025-05-20",
+     "description": "Invoice #005 - Giallo Ltd",
+     "type": "Deposit",
+     "counterpart": "Giallo Ltd",
+     "category": "Professional Fees",
+     "amount": "D:3050.00",
+     "notes": "",
+     "book_date": "2025-05-20",
+     "external_id": "",
+     "running_balance": "D:8432.50"
+    }
+   ],
+   "tx_count": 30,
+   "updated_at": null
+  },
+  {
+   "owner": "Sample User — Freelancer",
+   "period_start": "date:2025-01-01",
+   "period_end": "date:2025-12-31",
+   "currency": "€",
+   "account_name": "BankX Savings",
+   "account_iban": "IT60X0542811101000000789012",
+   "account_role": "Savings Account",
+   "currency_code": "EUR",
+   "opening_balance": "D:12150.00",
+   "closing_balance": "D:12150.00",
+   "total_in": "D:0",
+   "total_out": "D:0",
+   "rows": [],
+   "tx_count": 0,
+   "updated_at": null
+  }
+ ],
+ "tax_summary": {
+  "owner": "Sample User — Freelancer",
+  "year": 2025,
+  "currency": "€",
+  "income_by_cat": [
+   {
+    "category": "Professional Fees",
+    "amount": "D:15050.00"
+   },
+   {
+    "category": "Consulting",
+    "amount": "D:1500.00"
+   },
+   {
+    "category": "Reimbursements",
+    "amount": "D:600.00"
+   }
+  ],
+  "income_by_client": [
+   {
+    "client": "Acme Consulting LLC",
+    "amount": "D:6700.00"
+   },
+   {
+    "client": "Verde Inc.",
+    "amount": "D:5900.00"
+   },
+   {
+    "client": "Giallo Ltd",
+    "amount": "D:3050.00"
+   },
+   {
+    "client": "Blue Startup",
+    "amount": "D:1500.00"
+   }
+  ],
+  "deductible_rows": [
+   {
+    "category": "Accountant Fees",
+    "amount": "D:320.00"
+   },
+   {
+    "category": "Software & Subscriptions",
+    "amount": "D:288.00"
+   }
+  ],
+  "nondeductible_rows": [
+   {
+    "category": "Office Rent",
+    "amount": "D:1400.00"
+   },
+   {
+    "category": "Taxes",
+    "amount": "D:1200.00"
+   },
+   {
+    "category": "Taxes & Contributions",
+    "amount": "D:780.08"
+   },
+   {
+    "category": "Travel & Transport",
+    "amount": "D:685.00"
+   },
+   {
+    "category": "Social Security Contributions",
+    "amount": "D:650.00"
+   },
+   {
+    "category": "Office Supplies",
+    "amount": "D:155.00"
+   },
+   {
+    "category": "Professional Training",
+    "amount": "D:120.00"
+   }
+  ],
+  "total_income": "D:17150.00",
+  "total_deductible": "D:608.00",
+  "total_nondeductible": "D:4990.08",
+  "taxable_estimate": "D:16542.00"
+ },
+ "expense_trend": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "months": [
+   "2025-01",
+   "2025-02",
+   "2025-03",
+   "2025-04",
+   "2025-05"
+  ],
+  "rows": [
+   {
+    "category": "Office Rent",
+    "monthly": [
+     "D:280.00",
+     "D:280.00",
+     "D:280.00",
+     "D:280.00",
+     "D:280.00"
+    ],
+    "total": "D:1400.00"
+   },
+   {
+    "category": "Taxes",
+    "monthly": [
+     "D:0",
+     "D:0",
+     "D:0",
+     "D:1200.00",
+     "D:0"
+    ],
+    "total": "D:1200.00"
+   },
+   {
+    "category": "Taxes & Contributions",
+    "monthly": [
+     "D:0",
+     "D:0",
+     "D:780.08",
+     "D:0",
+     "D:0"
+    ],
+    "total": "D:780.08"
+   },
+   {
+    "category": "Travel & Transport",
+    "monthly": [
+     "D:0",
+     "D:235.00",
+     "D:450.00",
+     "D:0",
+     "D:0"
+    ],
+    "total": "D:685.00"
+   },
+   {
+    "category": "Social Security Contributions",
+    "monthly": [
+     "D:650.00",
+     "D:0",
+     "D:0",
+     "D:0",
+     "D:0"
+    ],
+    "total": "D:650.00"
+   },
+   {
+    "category": "Accountant Fees",
+    "monthly": [
+     "D:0",
+     "D:0",
+     "D:320.00",
+     "D:0",
+     "D:0"
+    ],
+    "total": "D:320.00"
+   },
+   {
+    "category": "Software & Subscriptions",
+    "monthly": [
+     "D:89.00",
+     "D:0",
+     "D:0",
+     "D:199.00",
+     "D:0"
+    ],
+    "total": "D:288.00"
+   },
+   {
+    "category": "Office Supplies",
+    "monthly": [
+     "D:0",
+     "D:0",
+     "D:0",
+     "D:0",
+     "D:155.00"
+    ],
+    "total": "D:155.00"
+   },
+   {
+    "category": "Professional Training",
+    "monthly": [
+     "D:0",
+     "D:120.00",
+     "D:0",
+     "D:0",
+     "D:0"
+    ],
+    "total": "D:120.00"
+   }
+  ],
+  "totals_by_month": [
+   "D:1019.00",
+   "D:635.00",
+   "D:1830.08",
+   "D:1679.00",
+   "D:435.00"
+  ],
+  "income_by_month": [
+   "D:3200.00",
+   "D:2800.00",
+   "D:4550.00",
+   "D:3100.00",
+   "D:3500.00"
+  ],
+  "grand_total": "D:5598.08"
+ },
+ "tagged": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "tags": [
+   "tax"
+  ],
+  "match_all": false,
+  "rows": [
+   {
+    "date": "2025-01-15",
+    "description": "Invoice #001 - Acme Consulting LLC",
+    "type": "Deposit",
+    "source": "Acme Consulting LLC",
+    "destination": "BankX Checking",
+    "category": "Professional Fees",
+    "budget": "",
+    "tags": "invoice, tax",
+    "amount": "D:3200.00",
+    "notes": "",
+    "running_balance": "D:3200.00"
+   },
+   {
+    "date": "2025-01-22",
+    "description": "Social security contributions Q1",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Social Security",
+    "category": "Social Security Contributions",
+    "budget": "Tax & Social Security",
+    "tags": "tax, social-security",
+    "amount": "D:-650.00",
+    "notes": "",
+    "running_balance": "D:2550.00"
+   },
+   {
+    "date": "2025-03-28",
+    "description": "Invoice #003 - Acme Consulting LLC",
+    "type": "Deposit",
+    "source": "Acme Consulting LLC",
+    "destination": "BankX Checking",
+    "category": "Professional Fees",
+    "budget": "",
+    "tags": "invoice, tax",
+    "amount": "D:2900.00",
+    "notes": "",
+    "running_balance": "D:5450.00"
+   },
+   {
+    "date": "2025-03-30",
+    "description": "Milan business trip",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Various",
+    "category": "Travel & Transport",
+    "budget": "Operating Expenses",
+    "tags": "tax",
+    "amount": "D:-450.00",
+    "notes": "",
+    "running_balance": "D:5000.00"
+   },
+   {
+    "date": "2025-04-15",
+    "description": "Income tax advance",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Tax Authority",
+    "category": "Taxes",
+    "budget": "Tax & Social Security",
+    "tags": "tax",
+    "amount": "D:-1200.00",
+    "notes": "",
+    "running_balance": "D:3800.00"
+   }
+  ],
+  "total_transactions": 5,
+  "income_by_cat": [
+   {
+    "category": "Professional Fees",
+    "amount": "D:6100.00",
+    "pct": "D:100.0"
+   }
+  ],
+  "expense_by_cat": [
+   {
+    "category": "Taxes",
+    "amount": "D:1200.00",
+    "pct": "D:52.2"
+   },
+   {
+    "category": "Social Security Contributions",
+    "amount": "D:650.00",
+    "pct": "D:28.3"
+   },
+   {
+    "category": "Travel & Transport",
+    "amount": "D:450.00",
+    "pct": "D:19.6"
+   }
+  ],
+  "total_in": "D:6100.00",
+  "total_out": "D:2300.00",
+  "net": "D:3800.00"
+ },
+ "budget_vs_actual": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "rows": [
+   {
+    "budget_name": "Tax & Social Security",
+    "limit": "D:1500.00",
+    "actual": "D:1850.00",
+    "variance": "D:-350.00",
+    "variance_pct": "D:-23.3",
+    "spent_pct": "D:123.3",
+    "status": "over",
+    "pace_status": "AHEAD"
+   },
+   {
+    "budget_name": "Operating Expenses",
+    "limit": "D:800.00",
+    "actual": "D:1418.00",
+    "variance": "D:-618.00",
+    "variance_pct": "D:-77.2",
+    "spent_pct": "D:177.2",
+    "status": "over",
+    "pace_status": "AHEAD"
+   },
+   {
+    "budget_name": "Fixed Costs",
+    "limit": "D:320.00",
+    "actual": "D:1400.00",
+    "variance": "D:-1080.00",
+    "variance_pct": "D:-337.5",
+    "spent_pct": "D:437.5",
+    "status": "over",
+    "pace_status": "AHEAD"
+   }
+  ],
+  "total_limit": "D:2620.00",
+  "total_actual": "D:4668.00",
+  "total_variance": "D:-2048.00",
+  "unbudgeted_spending": "D:930.08",
+  "elapsed_pct": "D:100"
+ },
+ "bills": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "rows": [
+   {
+    "name": "Office Rent",
+    "amount_min": "D:280.00",
+    "amount_max": "D:280.00",
+    "expected": "D:280.00",
+    "frequency": "Monthly",
+    "next_expected": "2025-06-05",
+    "last_paid": "2025-05-05",
+    "paid_amount": "D:1400.00",
+    "times_paid": 5,
+    "active": true,
+    "notes": ""
+   },
+   {
+    "name": "Accountant",
+    "amount_min": "D:300.00",
+    "amount_max": "D:350.00",
+    "expected": "D:325.00",
+    "frequency": "Quarterly",
+    "next_expected": "2025-06-15",
+    "last_paid": "2025-03-15",
+    "paid_amount": "D:320.00",
+    "times_paid": 1,
+    "active": true,
+    "notes": "Quarterly consulting"
+   },
+   {
+    "name": "Adobe Creative Cloud",
+    "amount_min": "D:89.00",
+    "amount_max": "D:89.00",
+    "expected": "D:89.00",
+    "frequency": "Monthly",
+    "next_expected": "2025-06-10",
+    "last_paid": "2025-03-10",
+    "paid_amount": "D:267.00",
+    "times_paid": 3,
+    "active": true,
+    "notes": ""
+   },
+   {
+    "name": "Hosting Hetzner",
+    "amount_min": "D:180.00",
+    "amount_max": "D:220.00",
+    "expected": "D:200.00",
+    "frequency": "Yearly",
+    "next_expected": "2026-04-22",
+    "last_paid": "2025-04-22",
+    "paid_amount": "D:199.00",
+    "times_paid": 1,
+    "active": true,
+    "notes": "VPS + storage"
+   }
+  ],
+  "total_expected": "D:894.00",
+  "total_paid": "D:2186.00",
+  "delta": "D:1292.00"
+ },
+ "savings_goals": {
+  "owner": "Sample User — Freelancer",
+  "as_of_date": "date:2025-12-31",
+  "currency": "€",
+  "goals": [
+   {
+    "name": "Emergency Fund (6 months)",
+    "target": "D:15000.00",
+    "current": "D:12150.00",
+    "remaining": "D:2850.00",
+    "pct": "D:81.0",
+    "start_date": "2023-01-01",
+    "target_date": "2025-12-31",
+    "months_left": 1,
+    "monthly_needed": "D:2850.00",
+    "account_name": "BankX Savings",
+    "notes": "Goal: 6 months of expenses"
+   },
+   {
+    "name": "New MacBook Pro",
+    "target": "D:2500.00",
+    "current": "D:800.00",
+    "remaining": "D:1700.00",
+    "pct": "D:32.0",
+    "start_date": "2025-01-01",
+    "target_date": "2025-10-01",
+    "months_left": 1,
+    "monthly_needed": "D:1700.00",
+    "account_name": "BankX Savings",
+    "notes": "M4 Pro"
+   },
+   {
+    "name": "Japan Trip",
+    "target": "D:3000.00",
+    "current": "D:600.00",
+    "remaining": "D:2400.00",
+    "pct": "D:20.0",
+    "start_date": "2025-01-01",
+    "target_date": "2026-03-01",
+    "months_left": 3,
+    "monthly_needed": "D:800.00",
+    "account_name": "BankX Savings",
+    "notes": "Tokyo + Kyoto 2 weeks"
+   }
+  ],
+  "total_saved": "D:13550.00",
+  "total_target": "D:20500.00",
+  "overall_pct": "D:66.1",
+  "goal_count": 3
+ },
+ "liabilities": {
+  "owner": "Sample User — Freelancer",
+  "as_of_date": "date:2025-12-31",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "rows": [
+   {
+    "name": "Home Mortgage",
+    "type": "Mortgage",
+    "balance": "D:-87500.00",
+    "debt_amount": "D:87500.00",
+    "interest_rate": "D:2.30",
+    "currency_code": "EUR",
+    "period_payments": 0,
+    "opening_date": "",
+    "notes": "Monthly payment €520 — matures 2041"
+   }
+  ],
+  "total_debt": "D:87500.00",
+  "total_payments": "D:0",
+  "liability_count": 1
+ },
+ "kpi_scorecard": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "total_in": "D:17150.00",
+  "total_out": "D:5598.08",
+  "net_cash_flow": "D:11551.92",
+  "avg_monthly_in": "D:3430.00",
+  "avg_monthly_out": "D:1119.62",
+  "savings_rate": "D:67.4",
+  "burn_rate": "D:1119.62",
+  "cash_runway": "D:18.5",
+  "liquid_assets": "D:20732.50",
+  "total_liab": "D:87500.00",
+  "net_worth": "D:-66767.50",
+  "liquidity_ratio": "D:0.24",
+  "hhi": "D:3102.5",
+  "top1_client": "Acme Consulting LLC",
+  "top1_pct": "D:39.1",
+  "n_months": 5,
+  "monthly_trend": [
+   {
+    "month": "2025-01",
+    "income": "D:3200.00",
+    "expense": "D:1019.00",
+    "net": "D:2181.00"
+   },
+   {
+    "month": "2025-02",
+    "income": "D:2800.00",
+    "expense": "D:635.00",
+    "net": "D:2165.00"
+   },
+   {
+    "month": "2025-03",
+    "income": "D:4550.00",
+    "expense": "D:1830.08",
+    "net": "D:2719.92"
+   },
+   {
+    "month": "2025-04",
+    "income": "D:3100.00",
+    "expense": "D:1679.00",
+    "net": "D:1421.00"
+   },
+   {
+    "month": "2025-05",
+    "income": "D:3500.00",
+    "expense": "D:435.00",
+    "net": "D:3065.00"
+   }
+  ]
+ },
+ "yoy": {
+  "owner": "Sample User — Freelancer",
+  "currency": "€",
+  "period_a": {
+   "start": "date:2025-01-01",
+   "end": "date:2025-12-31",
+   "label": "2025"
+  },
+  "period_b": {
+   "start": "date:2024-01-01",
+   "end": "date:2024-12-31",
+   "label": "2024"
+  },
+  "income_rows": [
+   {
+    "category": "Professional Fees",
+    "type": "income",
+    "amount_a": "D:15050.00",
+    "amount_b": "D:10700.00",
+    "delta": "D:4350.00",
+    "delta_pct": "D:40.7"
+   },
+   {
+    "category": "Consulting",
+    "type": "income",
+    "amount_a": "D:1500.00",
+    "amount_b": "D:0",
+    "delta": "D:1500.00",
+    "delta_pct": "D:0"
+   },
+   {
+    "category": "Reimbursements",
+    "type": "income",
+    "amount_a": "D:600.00",
+    "amount_b": "D:0",
+    "delta": "D:600.00",
+    "delta_pct": "D:0"
+   }
+  ],
+  "expense_rows": [
+   {
+    "category": "Office Rent",
+    "type": "expense",
+    "amount_a": "D:1400.00",
+    "amount_b": "D:260.00",
+    "delta": "D:1140.00",
+    "delta_pct": "D:438.5"
+   },
+   {
+    "category": "Taxes",
+    "type": "expense",
+    "amount_a": "D:1200.00",
+    "amount_b": "D:900.00",
+    "delta": "D:300.00",
+    "delta_pct": "D:33.3"
+   },
+   {
+    "category": "Taxes & Contributions",
+    "type": "expense",
+    "amount_a": "D:780.08",
+    "amount_b": "D:0",
+    "delta": "D:780.08",
+    "delta_pct": "D:0"
+   },
+   {
+    "category": "Travel & Transport",
+    "type": "expense",
+    "amount_a": "D:685.00",
+    "amount_b": "D:0",
+    "delta": "D:685.00",
+    "delta_pct": "D:0"
+   },
+   {
+    "category": "Social Security Contributions",
+    "type": "expense",
+    "amount_a": "D:650.00",
+    "amount_b": "D:580.00",
+    "delta": "D:70.00",
+    "delta_pct": "D:12.1"
+   },
+   {
+    "category": "Accountant Fees",
+    "type": "expense",
+    "amount_a": "D:320.00",
+    "amount_b": "D:0",
+    "delta": "D:320.00",
+    "delta_pct": "D:0"
+   },
+   {
+    "category": "Software & Subscriptions",
+    "type": "expense",
+    "amount_a": "D:288.00",
+    "amount_b": "D:75.00",
+    "delta": "D:213.00",
+    "delta_pct": "D:284.0"
+   },
+   {
+    "category": "Office Supplies",
+    "type": "expense",
+    "amount_a": "D:155.00",
+    "amount_b": "D:0",
+    "delta": "D:155.00",
+    "delta_pct": "D:0"
+   },
+   {
+    "category": "Professional Training",
+    "type": "expense",
+    "amount_a": "D:120.00",
+    "amount_b": "D:200.00",
+    "delta": "D:-80.00",
+    "delta_pct": "D:-40.0"
+   }
+  ],
+  "total_in_a": "D:17150.00",
+  "total_in_b": "D:10700.00",
+  "total_out_a": "D:5598.08",
+  "total_out_b": "D:2015.00",
+  "net_a": "D:11551.92",
+  "net_b": "D:8685.00",
+  "delta_in_pct": "D:60.3",
+  "delta_out_pct": "D:177.8"
+ },
+ "cumulative_cashflow": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "months": [
+   {
+    "month": "2025-01",
+    "month_label": "January 2025",
+    "income": "D:3200.00",
+    "expense": "D:1019.00",
+    "net": "D:2181.00",
+    "cumulative": "D:2181.00"
+   },
+   {
+    "month": "2025-02",
+    "month_label": "February 2025",
+    "income": "D:2800.00",
+    "expense": "D:635.00",
+    "net": "D:2165.00",
+    "cumulative": "D:4346.00"
+   },
+   {
+    "month": "2025-03",
+    "month_label": "March 2025",
+    "income": "D:4550.00",
+    "expense": "D:1830.08",
+    "net": "D:2719.92",
+    "cumulative": "D:7065.92"
+   },
+   {
+    "month": "2025-04",
+    "month_label": "April 2025",
+    "income": "D:3100.00",
+    "expense": "D:1679.00",
+    "net": "D:1421.00",
+    "cumulative": "D:8486.92"
+   },
+   {
+    "month": "2025-05",
+    "month_label": "May 2025",
+    "income": "D:3500.00",
+    "expense": "D:435.00",
+    "net": "D:3065.00",
+    "cumulative": "D:11551.92"
+   }
+  ],
+  "final_cumulative": "D:11551.92",
+  "peak_month": {
+   "month": "2025-05",
+   "month_label": "May 2025",
+   "income": "D:3500.00",
+   "expense": "D:435.00",
+   "net": "D:3065.00",
+   "cumulative": "D:11551.92"
+  },
+  "low_month": {
+   "month": "2025-01",
+   "month_label": "January 2025",
+   "income": "D:3200.00",
+   "expense": "D:1019.00",
+   "net": "D:2181.00",
+   "cumulative": "D:2181.00"
+  }
+ },
+ "income_concentration": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "rows": [
+   {
+    "client": "Acme Consulting LLC",
+    "amount": "D:6700.00",
+    "pct": "D:39.1",
+    "count": 4,
+    "avg_per_tx": "D:1675.00"
+   },
+   {
+    "client": "Verde Inc.",
+    "amount": "D:5900.00",
+    "pct": "D:34.4",
+    "count": 2,
+    "avg_per_tx": "D:2950.00"
+   },
+   {
+    "client": "Giallo Ltd",
+    "amount": "D:3050.00",
+    "pct": "D:17.8",
+    "count": 1,
+    "avg_per_tx": "D:3050.00"
+   },
+   {
+    "client": "Blue Startup",
+    "amount": "D:1500.00",
+    "pct": "D:8.7",
+    "count": 1,
+    "avg_per_tx": "D:1500.00"
+   }
+  ],
+  "total_income": "D:17150.00",
+  "client_count": 4
+ },
+ "audit_log": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "rows": [
+   {
+    "id": "25-j15",
+    "external_id": "—",
+    "group_id": "25-g15",
+    "date": "2025-01-05",
+    "book_date": "2025-01-05",
+    "description": "Office rent - January",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Office Landlord",
+    "amount": "D:280.00",
+    "currency": "EUR",
+    "category": "Office Rent",
+    "budget": "Fixed Costs",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "recurring",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j16",
+    "external_id": "—",
+    "group_id": "25-g16",
+    "date": "2025-01-10",
+    "book_date": "2025-01-10",
+    "description": "Adobe Creative Cloud",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Adobe Systems",
+    "amount": "D:89.00",
+    "currency": "EUR",
+    "category": "Software & Subscriptions",
+    "budget": "Operating Expenses",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "software",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j1",
+    "external_id": "—",
+    "group_id": "25-g1",
+    "date": "2025-01-15",
+    "book_date": "2025-01-15",
+    "description": "Invoice #001 - Acme Consulting LLC",
+    "type": "Deposit",
+    "source": "Acme Consulting LLC",
+    "destination": "BankX Checking",
+    "amount": "D:3200.00",
+    "currency": "EUR",
+    "category": "Professional Fees",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "invoice, tax",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j2",
+    "external_id": "—",
+    "group_id": "25-g2",
+    "date": "2025-01-20",
+    "book_date": "2025-01-20",
+    "description": "Emergency fund transfer",
+    "type": "Transfer",
+    "source": "BankX Checking",
+    "destination": "BankX Savings",
+    "amount": "D:500.00",
+    "currency": "EUR",
+    "category": "—",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j17",
+    "external_id": "—",
+    "group_id": "25-g17",
+    "date": "2025-01-22",
+    "book_date": "2025-01-22",
+    "description": "Social security contributions Q1",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Social Security",
+    "amount": "D:650.00",
+    "currency": "EUR",
+    "category": "Social Security Contributions",
+    "budget": "Tax & Social Security",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "tax, social-security",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j3",
+    "external_id": "—",
+    "group_id": "25-g3",
+    "date": "2025-01-25",
+    "book_date": "2025-01-25",
+    "description": "Mortgage payment - January",
+    "type": "Transfer",
+    "source": "BankX Checking",
+    "destination": "Home Mortgage",
+    "amount": "D:520.00",
+    "currency": "EUR",
+    "category": "Home",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j29",
+    "external_id": "—",
+    "group_id": "25-g29",
+    "date": "2025-01-31",
+    "book_date": "2025-01-31",
+    "description": "Transfer to savings account",
+    "type": "Transfer",
+    "source": "BankX Checking",
+    "destination": "BankX Savings",
+    "amount": "D:500.00",
+    "currency": "EUR",
+    "category": "—",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j18",
+    "external_id": "—",
+    "group_id": "25-g18",
+    "date": "2025-02-05",
+    "book_date": "2025-02-05",
+    "description": "Office rent - February",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Office Landlord",
+    "amount": "D:280.00",
+    "currency": "EUR",
+    "category": "Office Rent",
+    "budget": "Fixed Costs",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "recurring",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j7",
+    "external_id": "—",
+    "group_id": "25-g7",
+    "date": "2025-02-10",
+    "book_date": "2025-02-10",
+    "description": "Invoice #002 - Verde Inc.",
+    "type": "Deposit",
+    "source": "Verde Inc.",
+    "destination": "BankX Checking",
+    "amount": "D:2800.00",
+    "currency": "EUR",
+    "category": "Professional Fees",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "invoice",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j19",
+    "external_id": "—",
+    "group_id": "25-g19",
+    "date": "2025-02-14",
+    "book_date": "2025-02-14",
+    "description": "Technical books and online courses",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Amazon/Udemy",
+    "amount": "D:120.00",
+    "currency": "EUR",
+    "category": "Professional Training",
+    "budget": "Operating Expenses",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "",
+    "has_attachments": false
+   },
+   {
+    "id": "500",
+    "external_id": "—",
+    "group_id": "25-g13",
+    "date": "2025-02-15",
+    "book_date": "2025-02-15",
+    "description": "Travel expense advance",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Rome Hotel",
+    "amount": "D:150.00",
+    "currency": "EUR",
+    "category": "Travel & Transport",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j20",
+    "external_id": "—",
+    "group_id": "25-g20",
+    "date": "2025-02-28",
+    "book_date": "2025-02-28",
+    "description": "Fuel and tolls",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Various",
+    "amount": "D:85.00",
+    "currency": "EUR",
+    "category": "Travel & Transport",
+    "budget": "Operating Expenses",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j21",
+    "external_id": "—",
+    "group_id": "25-g21",
+    "date": "2025-03-05",
+    "book_date": "2025-03-05",
+    "description": "Office rent - March",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Office Landlord",
+    "amount": "D:280.00",
+    "currency": "EUR",
+    "category": "Office Rent",
+    "budget": "Fixed Costs",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "recurring",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j8",
+    "external_id": "—",
+    "group_id": "25-g8",
+    "date": "2025-03-05",
+    "book_date": "2025-03-05",
+    "description": "Consulting - Blue Startup",
+    "type": "Deposit",
+    "source": "Blue Startup",
+    "destination": "BankX Checking",
+    "amount": "D:1500.00",
+    "currency": "EUR",
+    "category": "Consulting",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "consulting",
+    "has_attachments": false
+   },
+   {
+    "id": "501",
+    "external_id": "—",
+    "group_id": "25-g14",
+    "date": "2025-03-10",
+    "book_date": "2025-03-10",
+    "description": "Travel expense reimbursement",
+    "type": "Deposit",
+    "source": "Acme Consulting LLC",
+    "destination": "BankX Checking",
+    "amount": "D:150.00",
+    "currency": "EUR",
+    "category": "Reimbursements",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j22",
+    "external_id": "—",
+    "group_id": "25-g22",
+    "date": "2025-03-15",
+    "book_date": "2025-03-15",
+    "description": "Accountant fees Q1",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Baker & Partners",
+    "amount": "D:320.00",
+    "currency": "EUR",
+    "category": "Accountant Fees",
+    "budget": "Operating Expenses",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j4",
+    "external_id": "—",
+    "group_id": "g-split-1",
+    "date": "2025-03-15",
+    "book_date": "2025-03-15",
+    "description": "Tax withholdings",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Tax Authority",
+    "amount": "D:557.44",
+    "currency": "EUR",
+    "category": "Taxes & Contributions",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j5",
+    "external_id": "—",
+    "group_id": "g-split-1",
+    "date": "2025-03-15",
+    "book_date": "2025-03-15",
+    "description": "Supplementary benefit installment recovery",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Tax Authority",
+    "amount": "D:220.74",
+    "currency": "EUR",
+    "category": "Taxes & Contributions",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j6",
+    "external_id": "—",
+    "group_id": "g-split-1",
+    "date": "2025-03-15",
+    "book_date": "2025-03-15",
+    "description": "Other withholdings",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Tax Authority",
+    "amount": "D:1.90",
+    "currency": "EUR",
+    "category": "Taxes & Contributions",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j9",
+    "external_id": "—",
+    "group_id": "25-g9",
+    "date": "2025-03-28",
+    "book_date": "2025-03-28",
+    "description": "Invoice #003 - Acme Consulting LLC",
+    "type": "Deposit",
+    "source": "Acme Consulting LLC",
+    "destination": "BankX Checking",
+    "amount": "D:2900.00",
+    "currency": "EUR",
+    "category": "Professional Fees",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "invoice, tax",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j23",
+    "external_id": "—",
+    "group_id": "25-g23",
+    "date": "2025-03-30",
+    "book_date": "2025-03-30",
+    "description": "Milan business trip",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Various",
+    "amount": "D:450.00",
+    "currency": "EUR",
+    "category": "Travel & Transport",
+    "budget": "Operating Expenses",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "tax",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j30",
+    "external_id": "—",
+    "group_id": "25-g30",
+    "date": "2025-03-31",
+    "book_date": "2025-03-31",
+    "description": "Transfer to savings account",
+    "type": "Transfer",
+    "source": "BankX Checking",
+    "destination": "BankX Savings",
+    "amount": "D:500.00",
+    "currency": "EUR",
+    "category": "—",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j24",
+    "external_id": "—",
+    "group_id": "25-g24",
+    "date": "2025-04-05",
+    "book_date": "2025-04-05",
+    "description": "Office rent - April",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Office Landlord",
+    "amount": "D:280.00",
+    "currency": "EUR",
+    "category": "Office Rent",
+    "budget": "Fixed Costs",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "recurring",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j10",
+    "external_id": "—",
+    "group_id": "25-g10",
+    "date": "2025-04-12",
+    "book_date": "2025-04-12",
+    "description": "Invoice #004 - Verde Inc.",
+    "type": "Deposit",
+    "source": "Verde Inc.",
+    "destination": "BankX Checking",
+    "amount": "D:3100.00",
+    "currency": "EUR",
+    "category": "Professional Fees",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "invoice",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j25",
+    "external_id": "—",
+    "group_id": "25-g25",
+    "date": "2025-04-15",
+    "book_date": "2025-04-15",
+    "description": "Income tax advance",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Tax Authority",
+    "amount": "D:1200.00",
+    "currency": "EUR",
+    "category": "Taxes",
+    "budget": "Tax & Social Security",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "tax",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j26",
+    "external_id": "—",
+    "group_id": "25-g26",
+    "date": "2025-04-22",
+    "book_date": "2025-04-22",
+    "description": "Annual hosting and domain",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Hetzner Online",
+    "amount": "D:199.00",
+    "currency": "EUR",
+    "category": "Software & Subscriptions",
+    "budget": "Operating Expenses",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "software",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j27",
+    "external_id": "—",
+    "group_id": "25-g27",
+    "date": "2025-05-05",
+    "book_date": "2025-05-05",
+    "description": "Office rent - May",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Office Landlord",
+    "amount": "D:280.00",
+    "currency": "EUR",
+    "category": "Office Rent",
+    "budget": "Fixed Costs",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "recurring",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j11",
+    "external_id": "—",
+    "group_id": "25-g11",
+    "date": "2025-05-08",
+    "book_date": "2025-05-08",
+    "description": "Travel expense reimbursement",
+    "type": "Deposit",
+    "source": "Acme Consulting LLC",
+    "destination": "BankX Checking",
+    "amount": "D:450.00",
+    "currency": "EUR",
+    "category": "Reimbursements",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "reimbursement",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j28",
+    "external_id": "—",
+    "group_id": "25-g28",
+    "date": "2025-05-18",
+    "book_date": "2025-05-18",
+    "description": "Office supplies",
+    "type": "Withdrawal",
+    "source": "BankX Checking",
+    "destination": "Amazon",
+    "amount": "D:155.00",
+    "currency": "EUR",
+    "category": "Office Supplies",
+    "budget": "Operating Expenses",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "",
+    "has_attachments": false
+   },
+   {
+    "id": "25-j12",
+    "external_id": "—",
+    "group_id": "25-g12",
+    "date": "2025-05-20",
+    "book_date": "2025-05-20",
+    "description": "Invoice #005 - Giallo Ltd",
+    "type": "Deposit",
+    "source": "Giallo Ltd",
+    "destination": "BankX Checking",
+    "amount": "D:3050.00",
+    "currency": "EUR",
+    "category": "Professional Fees",
+    "budget": "—",
+    "reconciled": false,
+    "reconciled_tag": "U",
+    "tags": "invoice",
+    "has_attachments": false
+   }
+  ],
+  "total_count": 30,
+  "reconciled_count": 0
+ },
+ "summary": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "instance": {
+   "firefly_version": "6.2.10",
+   "api_version": "2.1.0",
+   "os": "Linux",
+   "php_version": "8.3.9",
+   "user_email": "demo@firefly.local",
+   "user_role": "owner"
+  },
+  "counts": {
+   "asset_accounts": 4,
+   "liabilities": 1,
+   "budgets": 3,
+   "bills": 4,
+   "piggy_banks": 3
+  },
+  "period": {
+   "tx_total": 30,
+   "tx_deposits": 8,
+   "tx_withdrawals": 18,
+   "tx_transfers": 4,
+   "first_tx_date": "2025-01-05",
+   "last_tx_date": "2025-05-20",
+   "accounts_used": 17,
+   "categories_used": 13,
+   "payees_used": 14,
+   "tags_used": 7,
+   "avg_daily_income": "D:46.99",
+   "avg_daily_expense": "D:15.34"
+  }
+ },
+ "journal": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "rows": [
+   {
+    "n": 1,
+    "date": "2025-01-05",
+    "description": "Office rent - January",
+    "account": "Office Landlord",
+    "debit": "D:280.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 1,
+    "date": "2025-01-05",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:280.00",
+    "notes": ""
+   },
+   {
+    "n": 2,
+    "date": "2025-01-10",
+    "description": "Adobe Creative Cloud",
+    "account": "Adobe Systems",
+    "debit": "D:89.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 2,
+    "date": "2025-01-10",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:89.00",
+    "notes": ""
+   },
+   {
+    "n": 3,
+    "date": "2025-01-15",
+    "description": "Invoice #001 - Acme Consulting LLC",
+    "account": "BankX Checking",
+    "debit": "D:3200.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 3,
+    "date": "2025-01-15",
+    "description": "",
+    "account": "Acme Consulting LLC",
+    "debit": null,
+    "credit": "D:3200.00",
+    "notes": ""
+   },
+   {
+    "n": 4,
+    "date": "2025-01-20",
+    "description": "Emergency fund transfer",
+    "account": "BankX Savings",
+    "debit": "D:500.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 4,
+    "date": "2025-01-20",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:500.00",
+    "notes": ""
+   },
+   {
+    "n": 5,
+    "date": "2025-01-22",
+    "description": "Social security contributions Q1",
+    "account": "Social Security",
+    "debit": "D:650.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 5,
+    "date": "2025-01-22",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:650.00",
+    "notes": ""
+   },
+   {
+    "n": 6,
+    "date": "2025-01-25",
+    "description": "Mortgage payment - January",
+    "account": "Home Mortgage",
+    "debit": "D:520.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 6,
+    "date": "2025-01-25",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:520.00",
+    "notes": ""
+   },
+   {
+    "n": 7,
+    "date": "2025-01-31",
+    "description": "Transfer to savings account",
+    "account": "BankX Savings",
+    "debit": "D:500.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 7,
+    "date": "2025-01-31",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:500.00",
+    "notes": ""
+   },
+   {
+    "n": 8,
+    "date": "2025-02-05",
+    "description": "Office rent - February",
+    "account": "Office Landlord",
+    "debit": "D:280.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 8,
+    "date": "2025-02-05",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:280.00",
+    "notes": ""
+   },
+   {
+    "n": 9,
+    "date": "2025-02-10",
+    "description": "Invoice #002 - Verde Inc.",
+    "account": "BankX Checking",
+    "debit": "D:2800.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 9,
+    "date": "2025-02-10",
+    "description": "",
+    "account": "Verde Inc.",
+    "debit": null,
+    "credit": "D:2800.00",
+    "notes": ""
+   },
+   {
+    "n": 10,
+    "date": "2025-02-14",
+    "description": "Technical books and online courses",
+    "account": "Amazon/Udemy",
+    "debit": "D:120.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 10,
+    "date": "2025-02-14",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:120.00",
+    "notes": ""
+   },
+   {
+    "n": 11,
+    "date": "2025-02-15",
+    "description": "Travel expense advance",
+    "account": "Rome Hotel",
+    "debit": "D:150.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 11,
+    "date": "2025-02-15",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:150.00",
+    "notes": ""
+   },
+   {
+    "n": 12,
+    "date": "2025-02-28",
+    "description": "Fuel and tolls",
+    "account": "Various",
+    "debit": "D:85.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 12,
+    "date": "2025-02-28",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:85.00",
+    "notes": ""
+   },
+   {
+    "n": 13,
+    "date": "2025-03-05",
+    "description": "Office rent - March",
+    "account": "Office Landlord",
+    "debit": "D:280.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 13,
+    "date": "2025-03-05",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:280.00",
+    "notes": ""
+   },
+   {
+    "n": 14,
+    "date": "2025-03-05",
+    "description": "Consulting - Blue Startup",
+    "account": "BankX Checking",
+    "debit": "D:1500.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 14,
+    "date": "2025-03-05",
+    "description": "",
+    "account": "Blue Startup",
+    "debit": null,
+    "credit": "D:1500.00",
+    "notes": ""
+   },
+   {
+    "n": 15,
+    "date": "2025-03-10",
+    "description": "Travel expense reimbursement",
+    "account": "BankX Checking",
+    "debit": "D:150.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 15,
+    "date": "2025-03-10",
+    "description": "",
+    "account": "Acme Consulting LLC",
+    "debit": null,
+    "credit": "D:150.00",
+    "notes": ""
+   },
+   {
+    "n": 16,
+    "date": "2025-03-15",
+    "description": "Accountant fees Q1",
+    "account": "Baker & Partners",
+    "debit": "D:320.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 16,
+    "date": "2025-03-15",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:320.00",
+    "notes": ""
+   },
+   {
+    "n": 17,
+    "date": "2025-03-15",
+    "description": "Tax withholdings",
+    "account": "Tax Authority",
+    "debit": "D:557.44",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 17,
+    "date": "2025-03-15",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:557.44",
+    "notes": ""
+   },
+   {
+    "n": 18,
+    "date": "2025-03-15",
+    "description": "Supplementary benefit installment recovery",
+    "account": "Tax Authority",
+    "debit": "D:220.74",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 18,
+    "date": "2025-03-15",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:220.74",
+    "notes": ""
+   },
+   {
+    "n": 19,
+    "date": "2025-03-15",
+    "description": "Other withholdings",
+    "account": "Tax Authority",
+    "debit": "D:1.90",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 19,
+    "date": "2025-03-15",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:1.90",
+    "notes": ""
+   },
+   {
+    "n": 20,
+    "date": "2025-03-28",
+    "description": "Invoice #003 - Acme Consulting LLC",
+    "account": "BankX Checking",
+    "debit": "D:2900.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 20,
+    "date": "2025-03-28",
+    "description": "",
+    "account": "Acme Consulting LLC",
+    "debit": null,
+    "credit": "D:2900.00",
+    "notes": ""
+   },
+   {
+    "n": 21,
+    "date": "2025-03-30",
+    "description": "Milan business trip",
+    "account": "Various",
+    "debit": "D:450.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 21,
+    "date": "2025-03-30",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:450.00",
+    "notes": ""
+   },
+   {
+    "n": 22,
+    "date": "2025-03-31",
+    "description": "Transfer to savings account",
+    "account": "BankX Savings",
+    "debit": "D:500.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 22,
+    "date": "2025-03-31",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:500.00",
+    "notes": ""
+   },
+   {
+    "n": 23,
+    "date": "2025-04-05",
+    "description": "Office rent - April",
+    "account": "Office Landlord",
+    "debit": "D:280.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 23,
+    "date": "2025-04-05",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:280.00",
+    "notes": ""
+   },
+   {
+    "n": 24,
+    "date": "2025-04-12",
+    "description": "Invoice #004 - Verde Inc.",
+    "account": "BankX Checking",
+    "debit": "D:3100.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 24,
+    "date": "2025-04-12",
+    "description": "",
+    "account": "Verde Inc.",
+    "debit": null,
+    "credit": "D:3100.00",
+    "notes": ""
+   },
+   {
+    "n": 25,
+    "date": "2025-04-15",
+    "description": "Income tax advance",
+    "account": "Tax Authority",
+    "debit": "D:1200.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 25,
+    "date": "2025-04-15",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:1200.00",
+    "notes": ""
+   },
+   {
+    "n": 26,
+    "date": "2025-04-22",
+    "description": "Annual hosting and domain",
+    "account": "Hetzner Online",
+    "debit": "D:199.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 26,
+    "date": "2025-04-22",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:199.00",
+    "notes": ""
+   },
+   {
+    "n": 27,
+    "date": "2025-05-05",
+    "description": "Office rent - May",
+    "account": "Office Landlord",
+    "debit": "D:280.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 27,
+    "date": "2025-05-05",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:280.00",
+    "notes": ""
+   },
+   {
+    "n": 28,
+    "date": "2025-05-08",
+    "description": "Travel expense reimbursement",
+    "account": "BankX Checking",
+    "debit": "D:450.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 28,
+    "date": "2025-05-08",
+    "description": "",
+    "account": "Acme Consulting LLC",
+    "debit": null,
+    "credit": "D:450.00",
+    "notes": ""
+   },
+   {
+    "n": 29,
+    "date": "2025-05-18",
+    "description": "Office supplies",
+    "account": "Amazon",
+    "debit": "D:155.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 29,
+    "date": "2025-05-18",
+    "description": "",
+    "account": "BankX Checking",
+    "debit": null,
+    "credit": "D:155.00",
+    "notes": ""
+   },
+   {
+    "n": 30,
+    "date": "2025-05-20",
+    "description": "Invoice #005 - Giallo Ltd",
+    "account": "BankX Checking",
+    "debit": "D:3050.00",
+    "credit": null,
+    "notes": ""
+   },
+   {
+    "n": 30,
+    "date": "2025-05-20",
+    "description": "",
+    "account": "Giallo Ltd",
+    "debit": null,
+    "credit": "D:3050.00",
+    "notes": ""
+   }
+  ],
+  "daily_totals": [
+   {
+    "date": "2025-01-05",
+    "debit": "D:280.00",
+    "credit": "D:280.00"
+   },
+   {
+    "date": "2025-01-10",
+    "debit": "D:89.00",
+    "credit": "D:89.00"
+   },
+   {
+    "date": "2025-01-15",
+    "debit": "D:3200.00",
+    "credit": "D:3200.00"
+   },
+   {
+    "date": "2025-01-20",
+    "debit": "D:500.00",
+    "credit": "D:500.00"
+   },
+   {
+    "date": "2025-01-22",
+    "debit": "D:650.00",
+    "credit": "D:650.00"
+   },
+   {
+    "date": "2025-01-25",
+    "debit": "D:520.00",
+    "credit": "D:520.00"
+   },
+   {
+    "date": "2025-01-31",
+    "debit": "D:500.00",
+    "credit": "D:500.00"
+   },
+   {
+    "date": "2025-02-05",
+    "debit": "D:280.00",
+    "credit": "D:280.00"
+   },
+   {
+    "date": "2025-02-10",
+    "debit": "D:2800.00",
+    "credit": "D:2800.00"
+   },
+   {
+    "date": "2025-02-14",
+    "debit": "D:120.00",
+    "credit": "D:120.00"
+   },
+   {
+    "date": "2025-02-15",
+    "debit": "D:150.00",
+    "credit": "D:150.00"
+   },
+   {
+    "date": "2025-02-28",
+    "debit": "D:85.00",
+    "credit": "D:85.00"
+   },
+   {
+    "date": "2025-03-05",
+    "debit": "D:1780.00",
+    "credit": "D:1780.00"
+   },
+   {
+    "date": "2025-03-10",
+    "debit": "D:150.00",
+    "credit": "D:150.00"
+   },
+   {
+    "date": "2025-03-15",
+    "debit": "D:1100.08",
+    "credit": "D:1100.08"
+   },
+   {
+    "date": "2025-03-28",
+    "debit": "D:2900.00",
+    "credit": "D:2900.00"
+   },
+   {
+    "date": "2025-03-30",
+    "debit": "D:450.00",
+    "credit": "D:450.00"
+   },
+   {
+    "date": "2025-03-31",
+    "debit": "D:500.00",
+    "credit": "D:500.00"
+   },
+   {
+    "date": "2025-04-05",
+    "debit": "D:280.00",
+    "credit": "D:280.00"
+   },
+   {
+    "date": "2025-04-12",
+    "debit": "D:3100.00",
+    "credit": "D:3100.00"
+   },
+   {
+    "date": "2025-04-15",
+    "debit": "D:1200.00",
+    "credit": "D:1200.00"
+   },
+   {
+    "date": "2025-04-22",
+    "debit": "D:199.00",
+    "credit": "D:199.00"
+   },
+   {
+    "date": "2025-05-05",
+    "debit": "D:280.00",
+    "credit": "D:280.00"
+   },
+   {
+    "date": "2025-05-08",
+    "debit": "D:450.00",
+    "credit": "D:450.00"
+   },
+   {
+    "date": "2025-05-18",
+    "debit": "D:155.00",
+    "credit": "D:155.00"
+   },
+   {
+    "date": "2025-05-20",
+    "debit": "D:3050.00",
+    "credit": "D:3050.00"
+   }
+  ],
+  "total_debit": "D:24768.08",
+  "total_credit": "D:24768.08",
+  "count": 30
+ },
+ "budget_forecast": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "rows": [
+   {
+    "budget_name": "Tax & Social Security",
+    "limit": "D:1500.00",
+    "actual": "D:1850.00",
+    "daily_avg": "D:5.07",
+    "forecast": "D:1850.00",
+    "variance": "D:-350.00",
+    "status": "critical"
+   },
+   {
+    "budget_name": "Operating Expenses",
+    "limit": "D:800.00",
+    "actual": "D:1418.00",
+    "daily_avg": "D:3.88",
+    "forecast": "D:1418.00",
+    "variance": "D:-618.00",
+    "status": "critical"
+   },
+   {
+    "budget_name": "Fixed Costs",
+    "limit": "D:320.00",
+    "actual": "D:1400.00",
+    "daily_avg": "D:3.84",
+    "forecast": "D:1400.00",
+    "variance": "D:-1080.00",
+    "status": "critical"
+   }
+  ],
+  "days_elapsed": 365,
+  "total_days": 365,
+  "total_limit": "D:2620.00",
+  "total_actual": "D:4668.00",
+  "total_forecast": "D:4668.00"
+ },
+ "category_ledger": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "sections": [
+   {
+    "category_name": "Accountant Fees",
+    "rows": [
+     {
+      "date": "2025-03-15",
+      "description": "Accountant fees Q1",
+      "type": "Withdrawal",
+      "counterpart": "Baker & Partners",
+      "amount": "D:-320.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-320.00",
+    "count": 1
+   },
+   {
+    "category_name": "Consulting",
+    "rows": [
+     {
+      "date": "2025-03-05",
+      "description": "Consulting - Blue Startup",
+      "type": "Deposit",
+      "counterpart": "Blue Startup",
+      "amount": "D:1500.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:1500.00",
+    "count": 1
+   },
+   {
+    "category_name": "Office Rent",
+    "rows": [
+     {
+      "date": "2025-01-05",
+      "description": "Office rent - January",
+      "type": "Withdrawal",
+      "counterpart": "Office Landlord",
+      "amount": "D:-280.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-02-05",
+      "description": "Office rent - February",
+      "type": "Withdrawal",
+      "counterpart": "Office Landlord",
+      "amount": "D:-280.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-03-05",
+      "description": "Office rent - March",
+      "type": "Withdrawal",
+      "counterpart": "Office Landlord",
+      "amount": "D:-280.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-04-05",
+      "description": "Office rent - April",
+      "type": "Withdrawal",
+      "counterpart": "Office Landlord",
+      "amount": "D:-280.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-05-05",
+      "description": "Office rent - May",
+      "type": "Withdrawal",
+      "counterpart": "Office Landlord",
+      "amount": "D:-280.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-1400.00",
+    "count": 5
+   },
+   {
+    "category_name": "Office Supplies",
+    "rows": [
+     {
+      "date": "2025-05-18",
+      "description": "Office supplies",
+      "type": "Withdrawal",
+      "counterpart": "Amazon",
+      "amount": "D:-155.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-155.00",
+    "count": 1
+   },
+   {
+    "category_name": "Professional Fees",
+    "rows": [
+     {
+      "date": "2025-01-15",
+      "description": "Invoice #001 - Acme Consulting LLC",
+      "type": "Deposit",
+      "counterpart": "Acme Consulting LLC",
+      "amount": "D:3200.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-02-10",
+      "description": "Invoice #002 - Verde Inc.",
+      "type": "Deposit",
+      "counterpart": "Verde Inc.",
+      "amount": "D:2800.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-03-28",
+      "description": "Invoice #003 - Acme Consulting LLC",
+      "type": "Deposit",
+      "counterpart": "Acme Consulting LLC",
+      "amount": "D:2900.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-04-12",
+      "description": "Invoice #004 - Verde Inc.",
+      "type": "Deposit",
+      "counterpart": "Verde Inc.",
+      "amount": "D:3100.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-05-20",
+      "description": "Invoice #005 - Giallo Ltd",
+      "type": "Deposit",
+      "counterpart": "Giallo Ltd",
+      "amount": "D:3050.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:15050.00",
+    "count": 5
+   },
+   {
+    "category_name": "Professional Training",
+    "rows": [
+     {
+      "date": "2025-02-14",
+      "description": "Technical books and online courses",
+      "type": "Withdrawal",
+      "counterpart": "Amazon/Udemy",
+      "amount": "D:-120.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-120.00",
+    "count": 1
+   },
+   {
+    "category_name": "Reimbursements",
+    "rows": [
+     {
+      "date": "2025-03-10",
+      "description": "Travel expense reimbursement",
+      "type": "Deposit",
+      "counterpart": "Acme Consulting LLC",
+      "amount": "D:150.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-05-08",
+      "description": "Travel expense reimbursement",
+      "type": "Deposit",
+      "counterpart": "Acme Consulting LLC",
+      "amount": "D:450.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:600.00",
+    "count": 2
+   },
+   {
+    "category_name": "Social Security Contributions",
+    "rows": [
+     {
+      "date": "2025-01-22",
+      "description": "Social security contributions Q1",
+      "type": "Withdrawal",
+      "counterpart": "Social Security",
+      "amount": "D:-650.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-650.00",
+    "count": 1
+   },
+   {
+    "category_name": "Software & Subscriptions",
+    "rows": [
+     {
+      "date": "2025-01-10",
+      "description": "Adobe Creative Cloud",
+      "type": "Withdrawal",
+      "counterpart": "Adobe Systems",
+      "amount": "D:-89.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-04-22",
+      "description": "Annual hosting and domain",
+      "type": "Withdrawal",
+      "counterpart": "Hetzner Online",
+      "amount": "D:-199.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-288.00",
+    "count": 2
+   },
+   {
+    "category_name": "Taxes",
+    "rows": [
+     {
+      "date": "2025-04-15",
+      "description": "Income tax advance",
+      "type": "Withdrawal",
+      "counterpart": "Tax Authority",
+      "amount": "D:-1200.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-1200.00",
+    "count": 1
+   },
+   {
+    "category_name": "Taxes & Contributions",
+    "rows": [
+     {
+      "date": "2025-03-15",
+      "description": "Tax withholdings",
+      "type": "Withdrawal",
+      "counterpart": "Tax Authority",
+      "amount": "D:-557.44",
+      "reconciled": false
+     },
+     {
+      "date": "2025-03-15",
+      "description": "Supplementary benefit installment recovery",
+      "type": "Withdrawal",
+      "counterpart": "Tax Authority",
+      "amount": "D:-220.74",
+      "reconciled": false
+     },
+     {
+      "date": "2025-03-15",
+      "description": "Other withholdings",
+      "type": "Withdrawal",
+      "counterpart": "Tax Authority",
+      "amount": "D:-1.90",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-780.08",
+    "count": 3
+   },
+   {
+    "category_name": "Travel & Transport",
+    "rows": [
+     {
+      "date": "2025-02-15",
+      "description": "Travel expense advance",
+      "type": "Withdrawal",
+      "counterpart": "Rome Hotel",
+      "amount": "D:-150.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-02-28",
+      "description": "Fuel and tolls",
+      "type": "Withdrawal",
+      "counterpart": "Various",
+      "amount": "D:-85.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-03-30",
+      "description": "Milan business trip",
+      "type": "Withdrawal",
+      "counterpart": "Various",
+      "amount": "D:-450.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-685.00",
+    "count": 3
+   }
+  ],
+  "grand_total": "D:11551.92"
+ },
+ "payee_ledger": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "sections": [
+   {
+    "payee_name": "Acme Consulting LLC",
+    "rows": [
+     {
+      "date": "2025-01-15",
+      "description": "Invoice #001 - Acme Consulting LLC",
+      "type": "Deposit",
+      "category": "Professional Fees",
+      "amount": "D:3200.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-03-10",
+      "description": "Travel expense reimbursement",
+      "type": "Deposit",
+      "category": "Reimbursements",
+      "amount": "D:150.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-03-28",
+      "description": "Invoice #003 - Acme Consulting LLC",
+      "type": "Deposit",
+      "category": "Professional Fees",
+      "amount": "D:2900.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-05-08",
+      "description": "Travel expense reimbursement",
+      "type": "Deposit",
+      "category": "Reimbursements",
+      "amount": "D:450.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:6700.00",
+    "count": 4
+   },
+   {
+    "payee_name": "Adobe Systems",
+    "rows": [
+     {
+      "date": "2025-01-10",
+      "description": "Adobe Creative Cloud",
+      "type": "Withdrawal",
+      "category": "Software & Subscriptions",
+      "amount": "D:-89.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-89.00",
+    "count": 1
+   },
+   {
+    "payee_name": "Amazon",
+    "rows": [
+     {
+      "date": "2025-05-18",
+      "description": "Office supplies",
+      "type": "Withdrawal",
+      "category": "Office Supplies",
+      "amount": "D:-155.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-155.00",
+    "count": 1
+   },
+   {
+    "payee_name": "Amazon/Udemy",
+    "rows": [
+     {
+      "date": "2025-02-14",
+      "description": "Technical books and online courses",
+      "type": "Withdrawal",
+      "category": "Professional Training",
+      "amount": "D:-120.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-120.00",
+    "count": 1
+   },
+   {
+    "payee_name": "Baker & Partners",
+    "rows": [
+     {
+      "date": "2025-03-15",
+      "description": "Accountant fees Q1",
+      "type": "Withdrawal",
+      "category": "Accountant Fees",
+      "amount": "D:-320.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-320.00",
+    "count": 1
+   },
+   {
+    "payee_name": "Blue Startup",
+    "rows": [
+     {
+      "date": "2025-03-05",
+      "description": "Consulting - Blue Startup",
+      "type": "Deposit",
+      "category": "Consulting",
+      "amount": "D:1500.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:1500.00",
+    "count": 1
+   },
+   {
+    "payee_name": "Giallo Ltd",
+    "rows": [
+     {
+      "date": "2025-05-20",
+      "description": "Invoice #005 - Giallo Ltd",
+      "type": "Deposit",
+      "category": "Professional Fees",
+      "amount": "D:3050.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:3050.00",
+    "count": 1
+   },
+   {
+    "payee_name": "Hetzner Online",
+    "rows": [
+     {
+      "date": "2025-04-22",
+      "description": "Annual hosting and domain",
+      "type": "Withdrawal",
+      "category": "Software & Subscriptions",
+      "amount": "D:-199.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-199.00",
+    "count": 1
+   },
+   {
+    "payee_name": "Office Landlord",
+    "rows": [
+     {
+      "date": "2025-01-05",
+      "description": "Office rent - January",
+      "type": "Withdrawal",
+      "category": "Office Rent",
+      "amount": "D:-280.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-02-05",
+      "description": "Office rent - February",
+      "type": "Withdrawal",
+      "category": "Office Rent",
+      "amount": "D:-280.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-03-05",
+      "description": "Office rent - March",
+      "type": "Withdrawal",
+      "category": "Office Rent",
+      "amount": "D:-280.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-04-05",
+      "description": "Office rent - April",
+      "type": "Withdrawal",
+      "category": "Office Rent",
+      "amount": "D:-280.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-05-05",
+      "description": "Office rent - May",
+      "type": "Withdrawal",
+      "category": "Office Rent",
+      "amount": "D:-280.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-1400.00",
+    "count": 5
+   },
+   {
+    "payee_name": "Rome Hotel",
+    "rows": [
+     {
+      "date": "2025-02-15",
+      "description": "Travel expense advance",
+      "type": "Withdrawal",
+      "category": "Travel & Transport",
+      "amount": "D:-150.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-150.00",
+    "count": 1
+   },
+   {
+    "payee_name": "Social Security",
+    "rows": [
+     {
+      "date": "2025-01-22",
+      "description": "Social security contributions Q1",
+      "type": "Withdrawal",
+      "category": "Social Security Contributions",
+      "amount": "D:-650.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-650.00",
+    "count": 1
+   },
+   {
+    "payee_name": "Tax Authority",
+    "rows": [
+     {
+      "date": "2025-03-15",
+      "description": "Tax withholdings",
+      "type": "Withdrawal",
+      "category": "Taxes & Contributions",
+      "amount": "D:-557.44",
+      "reconciled": false
+     },
+     {
+      "date": "2025-03-15",
+      "description": "Supplementary benefit installment recovery",
+      "type": "Withdrawal",
+      "category": "Taxes & Contributions",
+      "amount": "D:-220.74",
+      "reconciled": false
+     },
+     {
+      "date": "2025-03-15",
+      "description": "Other withholdings",
+      "type": "Withdrawal",
+      "category": "Taxes & Contributions",
+      "amount": "D:-1.90",
+      "reconciled": false
+     },
+     {
+      "date": "2025-04-15",
+      "description": "Income tax advance",
+      "type": "Withdrawal",
+      "category": "Taxes",
+      "amount": "D:-1200.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-1980.08",
+    "count": 4
+   },
+   {
+    "payee_name": "Various",
+    "rows": [
+     {
+      "date": "2025-02-28",
+      "description": "Fuel and tolls",
+      "type": "Withdrawal",
+      "category": "Travel & Transport",
+      "amount": "D:-85.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-03-30",
+      "description": "Milan business trip",
+      "type": "Withdrawal",
+      "category": "Travel & Transport",
+      "amount": "D:-450.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:-535.00",
+    "count": 2
+   },
+   {
+    "payee_name": "Verde Inc.",
+    "rows": [
+     {
+      "date": "2025-02-10",
+      "description": "Invoice #002 - Verde Inc.",
+      "type": "Deposit",
+      "category": "Professional Fees",
+      "amount": "D:2800.00",
+      "reconciled": false
+     },
+     {
+      "date": "2025-04-12",
+      "description": "Invoice #004 - Verde Inc.",
+      "type": "Deposit",
+      "category": "Professional Fees",
+      "amount": "D:3100.00",
+      "reconciled": false
+     }
+    ],
+    "total": "D:5900.00",
+    "count": 2
+   }
+  ],
+  "grand_total": "D:11551.92"
+ },
+ "linkage_audit": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "groups": [
+   {
+    "source": {
+     "id": "500",
+     "date": "2025-02-15",
+     "description": "Travel expense advance",
+     "category": "Travel & Transport",
+     "amount": "D:-150.00"
+    },
+    "links": [
+     {
+      "id": "501",
+      "date": "2025-03-10",
+      "description": "Travel expense reimbursement",
+      "category": "Reimbursements",
+      "amount": "D:150.00"
+     }
+    ],
+    "link_types": "Reimbursement",
+    "total_reimbursed": "D:150.00",
+    "recovery_pct": "D:100.0",
+    "status": "Complete"
+   }
+  ],
+  "total_recovered": "D:150.00"
+ },
+ "all_tags": {
+  "owner": "Sample User — Freelancer",
+  "period_start": "date:2025-01-01",
+  "period_end": "date:2025-12-31",
+  "currency": "€",
+  "tags": {
+   "invoice": {
+    "rows": [
+     {
+      "date": "2025-01-15",
+      "description": "Invoice #001 - Acme Consulting LLC",
+      "category": "Professional Fees",
+      "amount": "D:3200.00"
+     },
+     {
+      "date": "2025-02-10",
+      "description": "Invoice #002 - Verde Inc.",
+      "category": "Professional Fees",
+      "amount": "D:2800.00"
+     },
+     {
+      "date": "2025-03-28",
+      "description": "Invoice #003 - Acme Consulting LLC",
+      "category": "Professional Fees",
+      "amount": "D:2900.00"
+     },
+     {
+      "date": "2025-04-12",
+      "description": "Invoice #004 - Verde Inc.",
+      "category": "Professional Fees",
+      "amount": "D:3100.00"
+     },
+     {
+      "date": "2025-05-20",
+      "description": "Invoice #005 - Giallo Ltd",
+      "category": "Professional Fees",
+      "amount": "D:3050.00"
+     }
+    ],
+    "total": "D:15050.00"
+   },
+   "tax": {
+    "rows": [
+     {
+      "date": "2025-01-15",
+      "description": "Invoice #001 - Acme Consulting LLC",
+      "category": "Professional Fees",
+      "amount": "D:3200.00"
+     },
+     {
+      "date": "2025-01-22",
+      "description": "Social security contributions Q1",
+      "category": "Social Security Contributions",
+      "amount": "D:-650.00"
+     },
+     {
+      "date": "2025-03-28",
+      "description": "Invoice #003 - Acme Consulting LLC",
+      "category": "Professional Fees",
+      "amount": "D:2900.00"
+     },
+     {
+      "date": "2025-03-30",
+      "description": "Milan business trip",
+      "category": "Travel & Transport",
+      "amount": "D:-450.00"
+     },
+     {
+      "date": "2025-04-15",
+      "description": "Income tax advance",
+      "category": "Taxes",
+      "amount": "D:-1200.00"
+     }
+    ],
+    "total": "D:3800.00"
+   },
+   "consulting": {
+    "rows": [
+     {
+      "date": "2025-03-05",
+      "description": "Consulting - Blue Startup",
+      "category": "Consulting",
+      "amount": "D:1500.00"
+     }
+    ],
+    "total": "D:1500.00"
+   },
+   "reimbursement": {
+    "rows": [
+     {
+      "date": "2025-05-08",
+      "description": "Travel expense reimbursement",
+      "category": "Reimbursements",
+      "amount": "D:450.00"
+     }
+    ],
+    "total": "D:450.00"
+   },
+   "recurring": {
+    "rows": [
+     {
+      "date": "2025-01-05",
+      "description": "Office rent - January",
+      "category": "Office Rent",
+      "amount": "D:-280.00"
+     },
+     {
+      "date": "2025-02-05",
+      "description": "Office rent - February",
+      "category": "Office Rent",
+      "amount": "D:-280.00"
+     },
+     {
+      "date": "2025-03-05",
+      "description": "Office rent - March",
+      "category": "Office Rent",
+      "amount": "D:-280.00"
+     },
+     {
+      "date": "2025-04-05",
+      "description": "Office rent - April",
+      "category": "Office Rent",
+      "amount": "D:-280.00"
+     },
+     {
+      "date": "2025-05-05",
+      "description": "Office rent - May",
+      "category": "Office Rent",
+      "amount": "D:-280.00"
+     }
+    ],
+    "total": "D:-1400.00"
+   },
+   "software": {
+    "rows": [
+     {
+      "date": "2025-01-10",
+      "description": "Adobe Creative Cloud",
+      "category": "Software & Subscriptions",
+      "amount": "D:-89.00"
+     },
+     {
+      "date": "2025-04-22",
+      "description": "Annual hosting and domain",
+      "category": "Software & Subscriptions",
+      "amount": "D:-199.00"
+     }
+    ],
+    "total": "D:-288.00"
+   },
+   "social-security": {
+    "rows": [
+     {
+      "date": "2025-01-22",
+      "description": "Social security contributions Q1",
+      "category": "Social Security Contributions",
+      "amount": "D:-650.00"
+     }
+    ],
+    "total": "D:-650.00"
+   }
+  }
+ },
+ "historical_growth": {
+  "owner": "Sample User — Freelancer",
+  "currency": "€",
+  "rows": [
+   {
+    "year": 2023,
+    "income": "D:45000.00",
+    "expense": "D:38000.00",
+    "net": "D:0.00",
+    "income_growth": "D:0",
+    "expense_growth": "D:0",
+    "net_growth": "D:0"
+   },
+   {
+    "year": 2024,
+    "income": "D:48000.00",
+    "expense": "D:39000.00",
+    "net": "D:0.00",
+    "income_growth": "D:6.7",
+    "expense_growth": "D:2.6",
+    "net_growth": "D:0"
+   },
+   {
+    "year": 2025,
+    "income": "D:52000.00",
+    "expense": "D:41000.00",
+    "net": "D:0.00",
+    "income_growth": "D:8.3",
+    "expense_growth": "D:5.1",
+    "net_growth": "D:0"
+   }
+  ],
+  "year_count": 3
+ },
+ "liquidity_forecast": {
+  "owner": "Sample User — Freelancer",
+  "currency": "€",
+  "start_date": "date:2025-12-31",
+  "forecast_months": [
+   {
+    "month": "2026-01",
+    "month_label": "January 2026",
+    "inflow": "D:3430.00",
+    "outflow": "D:1488.62",
+    "fixed_outflow": "D:369.00",
+    "variable_outflow": "D:1119.62",
+    "balance": "D:16941.38"
+   },
+   {
+    "month": "2026-02",
+    "month_label": "February 2026",
+    "inflow": "D:3430.00",
+    "outflow": "D:1488.62",
+    "fixed_outflow": "D:369.00",
+    "variable_outflow": "D:1119.62",
+    "balance": "D:18882.76"
+   },
+   {
+    "month": "2026-03",
+    "month_label": "March 2026",
+    "inflow": "D:3430.00",
+    "outflow": "D:1813.62",
+    "fixed_outflow": "D:694.00",
+    "variable_outflow": "D:1119.62",
+    "balance": "D:20499.14"
+   },
+   {
+    "month": "2026-04",
+    "month_label": "April 2026",
+    "inflow": "D:3430.00",
+    "outflow": "D:1688.62",
+    "fixed_outflow": "D:569.00",
+    "variable_outflow": "D:1119.62",
+    "balance": "D:22240.52"
+   },
+   {
+    "month": "2026-05",
+    "month_label": "May 2026",
+    "inflow": "D:3430.00",
+    "outflow": "D:1488.62",
+    "fixed_outflow": "D:369.00",
+    "variable_outflow": "D:1119.62",
+    "balance": "D:24181.90"
+   },
+   {
+    "month": "2026-06",
+    "month_label": "June 2026",
+    "inflow": "D:3430.00",
+    "outflow": "D:1813.62",
+    "fixed_outflow": "D:694.00",
+    "variable_outflow": "D:1119.62",
+    "balance": "D:25798.28"
+   }
+  ],
+  "final_balance": "D:25798.28",
+  "avg_income": "D:3430.00",
+  "avg_variable": "D:1119.62"
+ }
+}

@@ -1,0 +1,764 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "General Journal"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "CHRONOLOGICAL DOUBLE-ENTRY REGISTER"
+  },
+  {
+   "table": [
+    [
+     "No.",
+     "Date",
+     "Description",
+     "Account",
+     "Debit",
+     "Credit"
+    ],
+    [
+     "1",
+     "2025-01-05",
+     "Office rent - January",
+     "Office Landlord",
+     "€ 280.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "280.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-01-05",
+     "",
+     "280.00",
+     "280.00"
+    ],
+    [
+     "2",
+     "2025-01-10",
+     "Adobe Creative Cloud",
+     "Adobe Systems",
+     "89.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "89.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-01-10",
+     "",
+     "89.00",
+     "89.00"
+    ],
+    [
+     "3",
+     "2025-01-15",
+     "Invoice #001 - Acme Consulting LLC",
+     "BankX Checking",
+     "3,200.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "Acme Consulting LLC",
+     "",
+     "3,200.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-01-15",
+     "",
+     "3,200.00",
+     "3,200.00"
+    ],
+    [
+     "4",
+     "2025-01-20",
+     "Emergency fund transfer",
+     "BankX Savings",
+     "500.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "500.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-01-20",
+     "",
+     "500.00",
+     "500.00"
+    ],
+    [
+     "5",
+     "2025-01-22",
+     "Social security contributions Q1",
+     "Social Security",
+     "650.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "650.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-01-22",
+     "",
+     "650.00",
+     "650.00"
+    ],
+    [
+     "6",
+     "2025-01-25",
+     "Mortgage payment - January",
+     "Home Mortgage",
+     "520.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "520.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-01-25",
+     "",
+     "520.00",
+     "520.00"
+    ],
+    [
+     "7",
+     "2025-01-31",
+     "Transfer to savings account",
+     "BankX Savings",
+     "500.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "500.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-01-31",
+     "",
+     "500.00",
+     "500.00"
+    ],
+    [
+     "8",
+     "2025-02-05",
+     "Office rent - February",
+     "Office Landlord",
+     "280.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "280.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-02-05",
+     "",
+     "280.00",
+     "280.00"
+    ],
+    [
+     "9",
+     "2025-02-10",
+     "Invoice #002 - Verde Inc.",
+     "BankX Checking",
+     "2,800.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "Verde Inc.",
+     "",
+     "2,800.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-02-10",
+     "",
+     "2,800.00",
+     "2,800.00"
+    ],
+    [
+     "10",
+     "2025-02-14",
+     "Technical books and online courses",
+     "Amazon/Udemy",
+     "120.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "120.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-02-14",
+     "",
+     "120.00",
+     "120.00"
+    ],
+    [
+     "11",
+     "2025-02-15",
+     "Travel expense advance",
+     "Rome Hotel",
+     "150.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "150.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-02-15",
+     "",
+     "150.00",
+     "150.00"
+    ],
+    [
+     "12",
+     "2025-02-28",
+     "Fuel and tolls",
+     "Various",
+     "85.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "85.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-02-28",
+     "",
+     "85.00",
+     "85.00"
+    ],
+    [
+     "13",
+     "2025-03-05",
+     "Office rent - March",
+     "Office Landlord",
+     "280.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "280.00"
+    ],
+    [
+     "14",
+     "2025-03-05",
+     "Consulting - Blue Startup",
+     "BankX Checking",
+     "1,500.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "Blue Startup",
+     "",
+     "1,500.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-03-05",
+     "",
+     "1,780.00",
+     "1,780.00"
+    ],
+    [
+     "15",
+     "2025-03-10",
+     "Travel expense reimbursement",
+     "BankX Checking",
+     "150.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "Acme Consulting LLC",
+     "",
+     "150.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-03-10",
+     "",
+     "150.00",
+     "150.00"
+    ],
+    [
+     "16",
+     "2025-03-15",
+     "Accountant fees Q1",
+     "Baker & Partners",
+     "320.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "320.00"
+    ],
+    [
+     "17",
+     "2025-03-15",
+     "Tax withholdings",
+     "Tax Authority",
+     "557.44",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "557.44"
+    ],
+    [
+     "18",
+     "2025-03-15",
+     "Supplementary benefit installment recovery",
+     "Tax Authority",
+     "220.74",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "220.74"
+    ],
+    [
+     "19",
+     "2025-03-15",
+     "Other withholdings",
+     "Tax Authority",
+     "1.90",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "1.90"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-03-15",
+     "",
+     "1,100.08",
+     "1,100.08"
+    ],
+    [
+     "20",
+     "2025-03-28",
+     "Invoice #003 - Acme Consulting LLC",
+     "BankX Checking",
+     "2,900.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "Acme Consulting LLC",
+     "",
+     "2,900.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-03-28",
+     "",
+     "2,900.00",
+     "2,900.00"
+    ],
+    [
+     "21",
+     "2025-03-30",
+     "Milan business trip",
+     "Various",
+     "450.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "450.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-03-30",
+     "",
+     "450.00",
+     "450.00"
+    ],
+    [
+     "22",
+     "2025-03-31",
+     "Transfer to savings account",
+     "BankX Savings",
+     "500.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "500.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-03-31",
+     "",
+     "500.00",
+     "500.00"
+    ],
+    [
+     "23",
+     "2025-04-05",
+     "Office rent - April",
+     "Office Landlord",
+     "280.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "280.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-04-05",
+     "",
+     "280.00",
+     "280.00"
+    ],
+    [
+     "24",
+     "2025-04-12",
+     "Invoice #004 - Verde Inc.",
+     "BankX Checking",
+     "3,100.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "Verde Inc.",
+     "",
+     "3,100.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-04-12",
+     "",
+     "3,100.00",
+     "3,100.00"
+    ],
+    [
+     "25",
+     "2025-04-15",
+     "Income tax advance",
+     "Tax Authority",
+     "1,200.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "1,200.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-04-15",
+     "",
+     "1,200.00",
+     "1,200.00"
+    ],
+    [
+     "26",
+     "2025-04-22",
+     "Annual hosting and domain",
+     "Hetzner Online",
+     "199.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "199.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-04-22",
+     "",
+     "199.00",
+     "199.00"
+    ],
+    [
+     "27",
+     "2025-05-05",
+     "Office rent - May",
+     "Office Landlord",
+     "280.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "280.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-05-05",
+     "",
+     "280.00",
+     "280.00"
+    ],
+    [
+     "28",
+     "2025-05-08",
+     "Travel expense reimbursement",
+     "BankX Checking",
+     "450.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "Acme Consulting LLC",
+     "",
+     "450.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-05-08",
+     "",
+     "450.00",
+     "450.00"
+    ],
+    [
+     "29",
+     "2025-05-18",
+     "Office supplies",
+     "Amazon",
+     "155.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "BankX Checking",
+     "",
+     "155.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-05-18",
+     "",
+     "155.00",
+     "155.00"
+    ],
+    [
+     "30",
+     "2025-05-20",
+     "Invoice #005 - Giallo Ltd",
+     "BankX Checking",
+     "3,050.00",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "Giallo Ltd",
+     "",
+     "3,050.00"
+    ],
+    [
+     "",
+     "",
+     "Daily total 2025-05-20",
+     "",
+     "3,050.00",
+     "3,050.00"
+    ],
+    [
+     "",
+     "",
+     "Total",
+     "",
+     "€ 24,768.08",
+     "€ 24,768.08"
+    ]
+   ],
+   "colWidths": [
+    34.02,
+    62.36,
+    252.28,
+    221.1,
+    85.04,
+    85.04
+   ]
+  }
+ ],
+ "strings": [
+  "GENERAL JOURNAL",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1",
+  "GENERAL JOURNAL",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 2",
+  "GENERAL JOURNAL",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 3",
+  "GENERAL JOURNAL",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 4"
+ ],
+ "pages": 4
+}

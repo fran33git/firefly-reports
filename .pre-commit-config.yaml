@@ -1,3 +1,6 @@
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [pre-commit]
+
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.4.4
@@ -14,3 +17,13 @@ repos:
         additional_dependencies:
           - types-requests
           - python-dotenv
+
+  - repo: local
+    hooks:
+      - id: check-publish
+        name: nothing private in the commits to push
+        entry: bash tools/check-publish.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]

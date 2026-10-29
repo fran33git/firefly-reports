@@ -1,20 +1,50 @@
 """Shared pytest fixtures for firefly-reports tests.
 
-All fixtures are derived from the mock data in demo.py so tests run
+All fixtures are derived from the mock data in ``firefly_reports.demo.data`` so tests run
 without a live Firefly III instance.
 """
 
+import socket
 from datetime import date
 
 import pytest
 
 from firefly_reports import i18n
 
+_REAL_CONNECT = socket.socket.connect  # captured before ``block_network`` replaces it
 
-@pytest.fixture(scope="session", autouse=True)
+
+@pytest.fixture(autouse=True)
 def setup_i18n():
-    """Load English translations once for the entire test session."""
+    """Load English translations before every test, so one test's language never leaks."""
     i18n.load("en")
+
+
+@pytest.fixture(autouse=True)
+def block_network(monkeypatch):
+    """Fail any test that tries to open a network connection.
+
+    HTTP is mocked with ``responses``; a real connection means a test escaped its mock
+    (for instance by picking up a developer's ``.env``) and would reach a live instance.
+    """
+
+    def refuse(self, *args, **kwargs):
+        raise RuntimeError("network access is disabled in tests")
+
+    monkeypatch.setattr(socket.socket, "connect", refuse)
+
+
+@pytest.fixture
+def allow_loopback(monkeypatch, block_network):
+    """Let a test connect to 127.0.0.1 / ::1 only, for the TLS tests that run a local server."""
+
+    def loopback_only(self, address, *args, **kwargs):
+        host = address[0] if isinstance(address, tuple) else address
+        if host not in ("127.0.0.1", "::1", "localhost"):
+            raise RuntimeError("network access is disabled in tests (only loopback is allowed)")
+        return _REAL_CONNECT(self, address, *args, **kwargs)
+
+    monkeypatch.setattr(socket.socket, "connect", loopback_only)
 
 
 @pytest.fixture
@@ -25,8 +55,8 @@ def txn_2025() -> list[dict]:
             "type": "deposit",
             "date": "2025-01-15",
             "amount": "3200.00",
-            "description": "Invoice #001 - Rossi S.r.l.",
-            "source_name": "Rossi S.r.l.",
+            "description": "Invoice #001 - Acme Consulting LLC",
+            "source_name": "Acme Consulting LLC",
             "destination_name": "Main Account",
             "category_name": "Professional Fees",
             "budget_name": None,
@@ -67,8 +97,8 @@ def txn_2025() -> list[dict]:
             "type": "deposit",
             "date": "2025-03-28",
             "amount": "2900.00",
-            "description": "Invoice #003 - Rossi S.r.l.",
-            "source_name": "Rossi S.r.l.",
+            "description": "Invoice #003 - Acme Consulting LLC",
+            "source_name": "Acme Consulting LLC",
             "destination_name": "Main Account",
             "category_name": "Professional Fees",
             "budget_name": None,
@@ -326,8 +356,8 @@ def txn_2024() -> list[dict]:
             "type": "deposit",
             "date": "2024-02-10",
             "amount": "2600.00",
-            "description": "Invoice - Rossi",
-            "source_name": "Rossi S.r.l.",
+            "description": "Invoice - Acme",
+            "source_name": "Acme Consulting LLC",
             "destination_name": "Main Account",
             "category_name": "Professional Fees",
             "budget_name": None,
@@ -354,8 +384,8 @@ def txn_2024() -> list[dict]:
             "type": "deposit",
             "date": "2024-08-20",
             "amount": "3100.00",
-            "description": "Invoice - Rossi",
-            "source_name": "Rossi S.r.l.",
+            "description": "Invoice - Acme",
+            "source_name": "Acme Consulting LLC",
             "destination_name": "Main Account",
             "category_name": "Professional Fees",
             "budget_name": None,

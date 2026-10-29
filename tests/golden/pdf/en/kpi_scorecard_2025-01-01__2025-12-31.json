@@ -1,0 +1,160 @@
+{
+ "story": [
+  {
+   "spacer": 8.5
+  },
+  {
+   "p": "title",
+   "text": "Financial KPI Scorecard"
+  },
+  {
+   "p": "entity",
+   "text": "Sample User — Freelancer"
+  },
+  {
+   "p": "meta",
+   "text": "Reference period: 2025-01-01 – 2025-12-31"
+  },
+  {
+   "spacer": 4.25
+  },
+  {
+   "flowable": "HRFlowable"
+  },
+  {
+   "p": "section",
+   "text": "KEY FINANCIAL PERFORMANCE INDICATORS"
+  },
+  {
+   "table": [
+    [
+     "Indicator",
+     "Value",
+     "Note"
+    ],
+    [
+     "Savings Rate",
+     "67.4 %",
+     "Net Income / Total Income"
+    ],
+    [
+     "Burn Rate (Avg Monthly Expenses)",
+     "€ 1,119.62",
+     "Monthly average of expenses in the period"
+    ],
+    [
+     "Cash Runway",
+     "18.5 months",
+     "Liquidity / Burn Rate — months of guaranteed operations"
+    ],
+    [
+     "Financial Net Worth",
+     "(€ 66,767.50)",
+     "Liquid assets − Total liabilities"
+    ],
+    [
+     "Liquidity Ratio",
+     "0.24x",
+     "Liquid Assets / Total Liabilities"
+    ],
+    [
+     "Net Cash Flow for Period",
+     "€ 11,551.92",
+     "Income − Total Expenses"
+    ],
+    [
+     "Avg Monthly Income",
+     "€ 3,430.00",
+     "Over 5 months"
+    ],
+    [
+     "Avg Monthly Expenses",
+     "€ 1,119.62",
+     "Over 5 months"
+    ],
+    [
+     "Income Concentration (HHI)",
+     "3102 / 10.000",
+     "Herfindahl-Hirschman Index (> 2500 = high concentration)"
+    ],
+    [
+     "Top Client",
+     "Acme Consulting LLC (39.1 %)",
+     "Highest-share income source"
+    ]
+   ],
+   "colWidths": [
+    198.43,
+    113.39,
+    195.59
+   ]
+  },
+  {
+   "spacer": 17.01
+  },
+  {
+   "p": "section",
+   "text": "MONTHLY TREND"
+  },
+  {
+   "table": [
+    [
+     "Month",
+     "Income",
+     "Expenses",
+     "Net",
+     "Change"
+    ],
+    [
+     "Jan 2025",
+     "3,200.00",
+     "1,019.00",
+     "2,181.00",
+     "—"
+    ],
+    [
+     "Feb 2025",
+     "2,800.00",
+     "635.00",
+     "2,165.00",
+     "-0.7 %"
+    ],
+    [
+     "Mar 2025",
+     "4,550.00",
+     "1,830.08",
+     "2,719.92",
+     "25.6 %"
+    ],
+    [
+     "Apr 2025",
+     "3,100.00",
+     "1,679.00",
+     "1,421.00",
+     "-47.8 %"
+    ],
+    [
+     "May 2025",
+     "3,500.00",
+     "435.00",
+     "3,065.00",
+     "115.7 %"
+    ]
+   ],
+   "colWidths": [
+    99.21,
+    99.21,
+    99.21,
+    99.21,
+    110.55
+   ]
+  }
+ ],
+ "strings": [
+  "FINANCIAL KPI SCORECARD",
+  "Sample User — Freelancer",
+  "Period: 2025-01-01 – 2025-12-31   ·   Generated on 2026-01-15",
+  "Page 1"
+ ],
+ "pages": 1
+}
