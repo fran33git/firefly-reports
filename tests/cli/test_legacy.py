@@ -8,6 +8,7 @@ from firefly_reports.cli._legacy import command_hint, find_command, redact, rewr
 from tests.golden.harness import run_main
 
 VALUE_OPTIONS = value_options(build_parser())
+PLAIN_URL = "https://firefly.example.com"
 CREDS = ["--url", "https://demo.invalid", "--token", "x"]
 
 
@@ -129,7 +130,8 @@ def test_redact_hides_abbreviated_token_spellings():
 def test_hint_masks_credentials_in_the_url():
     hint = command_hint(["--url", "https://user:pw@firefly.example.com", "--year", "2025"])
     assert "pw" not in hint and "user" not in hint and "https://***@firefly.example.com" in hint
-    assert "https://firefly.example.com" in command_hint(["--url=https://firefly.example.com"])
+    plain = command_hint([f"--url={PLAIN_URL}"])
+    assert plain.count(PLAIN_URL) == 1
 
 
 def test_hint_quoting_is_platform_aware():

@@ -33,6 +33,7 @@ def test_real_handshake_chain_is_readable(tmp_path, allow_loopback):
     thread = threading.Thread(target=serve, daemon=True)
     thread.start()
     client_ctx = ssl.create_default_context(cafile=str(cert))
+    client_ctx.minimum_version = ssl.TLSVersion.TLSv1_2
     try:
         with (
             socket.create_connection(("127.0.0.1", port), timeout=10) as raw,
