@@ -1,0 +1,88 @@
+{
+  "pages": {
+    "Adding-a-New-Report.md": {
+      "description": "Step-by-step guide to adding a report: the report package, the registry entry, translations, tests and golden snapshots.",
+      "audience": "developer",
+      "kind": "guide",
+      "updated": "2026-10-23",
+      "order": 100
+    },
+    "Architecture.md": {
+      "description": "How the 2.0 pipeline works: fetch, build, write, the registry of report packages, the layering rules and the testability seams.",
+      "audience": "developer",
+      "kind": "reference",
+      "updated": "2026-10-23",
+      "order": 70
+    },
+    "Beancount-Export.md": {
+      "description": "User guide of the Beancount export: the two-pass workflow, the mapping file, layouts, options, example output and Fava tips.",
+      "audience": "user",
+      "kind": "guide",
+      "updated": "2026-10-23",
+      "order": 50
+    },
+    "Configuration.md": {
+      "description": "Every configuration option: precedence of flags, TOML file and environment variables, all keys, the report and demo flags, exit codes.",
+      "audience": "user",
+      "kind": "reference",
+      "updated": "2026-10-23",
+      "order": 30
+    },
+    "Contributing.md": {
+      "description": "How to set up a development environment, pass the local gate, follow the code style and commit conventions, and open a pull request.",
+      "audience": "developer",
+      "kind": "reference",
+      "updated": "2026-10-23",
+      "order": 120
+    },
+    "Home.md": {
+      "description": "Start here: what firefly-reports generates, the two commands to try it, and the navigation to the user and developer guides.",
+      "audience": "user",
+      "kind": "guide",
+      "updated": "2026-10-23",
+      "order": 10
+    },
+    "Installation.md": {
+      "description": "Install firefly-reports from PyPI or a source checkout, try it on built-in sample data, and run it against your Firefly III instance.",
+      "audience": "user",
+      "kind": "guide",
+      "updated": "2026-10-23",
+      "order": 20
+    },
+    "Ledger-Architecture.md": {
+      "description": "Internals of the Beancount export: the neutral model, conversion and account resolution, the writer contract, adding a new format.",
+      "audience": "developer",
+      "kind": "reference",
+      "updated": "2026-10-23",
+      "order": 80
+    },
+    "Library-API.md": {
+      "description": "The provisional Python facade: connect to Firefly III, fetch, build and write the reports, with a complete offline example.",
+      "audience": "developer",
+      "kind": "reference",
+      "updated": "2026-10-23",
+      "order": 90
+    },
+    "Reports-Reference.md": {
+      "description": "All 26 reports and the two dashboards: file names, what each one shows, and the flags and modes that generate them.",
+      "audience": "user",
+      "kind": "reference",
+      "updated": "2026-10-23",
+      "order": 40
+    },
+    "Testing.md": {
+      "description": "How the test suite is organised and run: the local gate, the offline rule, golden snapshots, the A/B harness and ledger tests.",
+      "audience": "developer",
+      "kind": "reference",
+      "updated": "2026-10-23",
+      "order": 110
+    },
+    "Troubleshooting.md": {
+      "description": "Fixes for the most common problems: credentials and connection errors, config messages, failed files, empty reports, collecting a debug log.",
+      "audience": "user",
+      "kind": "reference",
+      "updated": "2026-10-23",
+      "order": 60
+    }
+  }
+}

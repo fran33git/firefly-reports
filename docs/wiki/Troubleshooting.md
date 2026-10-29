@@ -1,28 +1,39 @@
 # Troubleshooting
 
+This page helps users diagnose the most common problems with firefly-reports: credential and connection
+errors, configuration messages, deprecation warnings, files that fail to generate, empty reports, and how
+to collect a debug log. Errors are printed on stderr, prefixed with `Error:`, in the output language; the
+exit codes are listed in [[Configuration]].
+
 ## Authentication errors
 
-**Symptom:** `HTTP 401 Unauthorized` or `requests.exceptions.HTTPError: 401`
+**Symptom:** `Error: Firefly III request failed: 401 Client Error: Unauthorized ...` (exit code `1`).
 
-**Causes and fixes:**
+- The token is incorrect or expired: create a new Personal Access Token in Firefly III (Profile -> OAuth).
+- A stale token is configured somewhere else: the first value found wins, in the order command line,
+  `firefly-reports.toml`, environment (`FIREFLY_TOKEN`, `.env`). Since 2.0 a token in
+  `firefly-reports.toml` beats one in the environment. See [[Configuration]].
+- Leading or trailing whitespace is stripped automatically.
 
-- Token is incorrect or expired → regenerate the PAT in Firefly III (Profile → OAuth).
-- Token has leading or trailing whitespace → check the value in your `.env` or `firefly-reports.toml`. The tool strips whitespace automatically, but check older configs.
-- Wrong URL → confirm the URL matches your Firefly III instance (including scheme: `https://`).
+## Missing or invalid URL and token
 
----
+| Message | Fix |
+|---|---|
+| `Error: Firefly III URL is required. ...` | Pass `--url`, set `FIREFLY_URL`, or add `url` to `firefly-reports.toml` |
+| `Error: invalid Firefly III URL '...'. It must include the scheme, ...` | Use the full base URL, e.g. `https://firefly.example.com` |
+| `Error: token is required. ...` | Pass `--token`, set `FIREFLY_TOKEN`, add it to `.env` or `firefly-reports.toml`. The interactive prompt is only offered when the terminal is interactive (not in cron or CI) |
 
 ## Connection errors
 
-**Symptom:** `requests.exceptions.ConnectionError` or `requests.exceptions.Timeout`
+**Symptom:** `Error: Firefly III request failed: HTTPConnectionPool(...) ... Connection refused` or a
+timeout (exit code `1`).
 
-**Causes and fixes:**
-
-- Firefly III is unreachable from the machine running this tool → check network/VPN/firewall.
-- Wrong base URL → the URL must point to the root of the instance (e.g. `https://firefly.example.com`), not to a sub-path.
-- SSL certificate error → if your instance uses a self-signed certificate, trust it properly (`REQUESTS_CA_BUNDLE=/path/to/ca.pem`). `--trust-insecure-ssl` also works but turns off **all** certificate verification.
-
----
+- Firefly III is unreachable from this machine: check the network, VPN or firewall.
+- Wrong base URL: it must point to the root of the instance (e.g. `https://firefly.example.com`), not to a
+  sub-path.
+- TLS certificate errors: a self-signed certificate must be trusted by the Python `requests` library of
+  the machine running the tool (for example `REQUESTS_CA_BUNDLE=/path/to/ca.pem`). `--trust-insecure-ssl`
+  also works but turns off **all** certificate verification.
 
 ## Refusing to connect: untrusted CA
 
@@ -40,72 +51,100 @@
 
 Lists ship with each release: an older installation or executable does not know about newer incidents, so keep the tool up to date.
 
----
+## Period and date errors
+
+| Message | Fix |
+|---|---|
+| `Error: provide --year YYYY (full year, all reports) or both --start and --end.` | Give a period, or set `year` in `firefly-reports.toml` |
+| `Error: use either --year or --start/--end, not both.` | Choose one form. A `year` key in `firefly-reports.toml` counts as `--year`: remove it to run a custom range |
+| `Error: invalid date for --start: '...' (expected format YYYY-MM-DD).` | Use ISO dates |
+| `Error: --start (...) must not be after --end (...).` | Swap the dates |
+| `Error: invalid fiscal year start '...' (expected MM-DD).` | Fix `--fiscal-year-start` or `[filters] fiscal_year_start` |
+
+## Configuration file messages
+
+- `Config error: firefly-reports.toml is malformed — <details>`: the file is not valid TOML; the
+  details give the line and column. Exit code `1`.
+- `Warning: unknown key 'x' in firefly-reports.toml is ignored. Did you mean 'y'?`: a key that nothing
+  reads, usually a typo. The run continues; fix the key name. The supported keys are listed in
+  [[Configuration]].
+- `Error: Config error: export.layout must be one of yearly, single (got '...').`: an invalid value in the
+  `[export]` section.
+
+## Deprecation warnings
+
+- `Warning: running reports without a subcommand is deprecated and will stop working in firefly-reports 3.0. Use: firefly-reports report ...`:
+  the 1.x form (`firefly-reports --year 2025 ...`) still runs the reports. Use the command shown (the token
+  is masked in it). A bare `firefly-reports` also runs the reports this way when `year` is set in
+  `firefly-reports.toml`.
+- `Warning: 'python -m firefly_reports.main' is deprecated ...` (or `firefly_reports.demo`): use
+  `firefly-reports` or `python -m firefly_reports` with a command (`report`, `demo`).
+
+## Some files failed
+
+**Symptom:** a `FAIL <file>: <error>` line during generation, then `[!] N files failed: ...` and exit code
+`3`.
+
+The other files were written normally; one failing report never stops the run. Rerun with `--debug` and
+look for the traceback of that file in the debug log (see below).
 
 ## Rate limiting with `--fetch-links`
 
-**Symptom:** The deep-fetch phase is very slow, or `requests.exceptions.HTTPError: 429`
+**Symptom:** the deep-fetch phase is very slow, or the log shows `Rate limited (429)`.
 
-The `--fetch-links` flag fetches each linked transaction individually with a delay between requests. The default delay is 0.2 seconds.
-
-**Tune the delay:**
+`--fetch-links` fetches each linked transaction individually with a delay between requests (default
+0.2 seconds, `--link-delay` or `[reports] link_delay`):
 
 ```bash
-# Faster (only for local/LAN instances with no rate limit)
-firefly-reports ... --fetch-links --link-delay 0.05
+# Faster (only for local or LAN instances without a rate limit)
+firefly-reports report --year 2025 --fetch-links --link-delay 0.05
 
-# Slower (for remote instances or when hitting 429 errors)
-firefly-reports ... --fetch-links --link-delay 0.5
+# Slower (remote instances, or when hitting HTTP 429)
+firefly-reports report --year 2025 --fetch-links --link-delay 0.5
 ```
 
-On HTTP 429, the tool automatically retries once using the `Retry-After` header value (or double the current delay). Failed transactions are skipped and counted; a summary is logged at the end.
-
----
+On HTTP 429 the client retries once, after the `Retry-After` delay (or twice the configured delay).
 
 ## Empty or zero-value reports
 
-**Symptom:** A report PDF is blank or shows all zeros.
+**Symptom:** a report PDF is blank or shows only zeros.
 
-**Causes and fixes:**
-
-- Date range has no transactions → verify `--year` or `--start` and `--end` match a period with data in Firefly III.
-- Transaction types not matching → the tool uses Firefly III transaction types: `deposit` (income), `withdrawal` (expense), `transfer` (neutral). Check that your Firefly III transactions are correctly typed.
-- Tax Summary shows all non-deductible → add `deductible_keywords` to the `[tax]` section of `firefly-reports.toml`.
-
----
+- The period has no transactions: check `--year` or `--start`/`--end` against your data.
+- A filter removes everything: check `--accounts-include`, `--categories-include`, `--reconciled-only` and
+  the `[filters]` section of `firefly-reports.toml`. The console shows
+  `-> global filters: N -> M transactions` when filters are active.
+- Transaction types: `deposit` counts as income, `withdrawal` as expense, `transfer` is neutral and
+  `opening balance` is ignored. Check that your transactions are typed correctly in Firefly III.
+- Tax Summary shows every expense as non-deductible: add `deductible_keywords` to the `[tax]` section of
+  `firefly-reports.toml` (a warning about it is printed at the start of the run).
+- A report is missing altogether: some reports exist only in year mode, only with a flag, or not in
+  legacy mode; see [[Reports-Reference|Reports Reference]].
 
 ## Using `--debug`
 
-Enable the debug log to capture the full HTTP request/response cycle, timing per report, and data summaries:
+The debug log records the API calls, the pagination, timings and summary values:
 
 ```bash
-firefly-reports ... --debug
-# Writes: output/debug_20250523_143022.log
+firefly-reports report --year 2025 --debug
+# [*] Debug log: /path/to/output/debug_<timestamp>.log
 
-# Or specify the log path:
-firefly-reports ... --debug --debug-file /tmp/firefly-debug.log
+firefly-reports report --year 2025 --debug --debug-file "$HOME/firefly-debug.log"
 ```
 
-The log includes:
-- Each API endpoint called and its response status + size
-- Pagination: pages fetched per endpoint
-- Timing per report (fetch, processing, PDF render)
-- Cash flow and KPI summary values
-- Deep-fetch progress (if `--fetch-links` is active)
-
-**Security:** The debug log never writes the token in plain text. The `Authorization` header is always redacted.
-
----
+The log includes each API endpoint called with its HTTP status and size, the pages fetched per endpoint,
+the time spent on each PDF and on the workbook, the cash-flow and KPI summary values, warnings such as rate
+limiting, and the full traceback of any file that failed. The command-line arguments are logged with the
+token masked, and bearer tokens are redacted from logged messages.
 
 ## Beancount export
 
-Problems with `firefly-reports export beancount` (account collisions, `--scaffold` TODO lines, yearly layout and date filters,
-leftover files, invalid mapping file, `bean-check` errors, exit codes) are listed in the
-[Beancount Export troubleshooting table](Beancount-Export#troubleshooting). Authentication, connection and
-rate-limit errors above apply to it unchanged (it prints `Request to Firefly III failed: ...` and exits 1).
-
----
+Problems with `firefly-reports export beancount` (missing mapping file, unmapped categories, account
+collisions, `--scaffold` TODO lines, yearly layout and date filters, leftover files, invalid mapping file,
+`bean-check` errors, exit codes) are covered in the troubleshooting table of
+[[Beancount-Export|Beancount Export]]. The authentication, connection and rate-limit sections above apply
+to it unchanged (it prints `Request to Firefly III failed: ...` and exits with code `1`).
 
 ## Compatibility
 
-Tested against Firefly III v6.x. The tool uses the v1 REST API (`/api/v1/`). Firefly III v5.x may work but is not officially supported.
+Tested against Firefly III v6.x through the v1 REST API (`/api/v1/`). Firefly III v5.x may work but is
+not supported.
