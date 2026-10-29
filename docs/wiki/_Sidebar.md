@@ -11,6 +11,7 @@
 
 - [[Architecture]]
 - [[Ledger-Architecture|Ledger Architecture]]
+- [[Library-API|Library API]]
 - [[Adding-a-New-Report|Adding a New Report]]
 - [[Testing]]
 - [[Contributing]]
