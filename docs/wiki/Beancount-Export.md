@@ -261,65 +261,116 @@ The first rule that matches wins. Collisions are only checked for names generate
 
 ## Worked example
 
-Firefly III data (simplified):
+Input data (simplified, from the same fixture that pins the export tests,
+`tests/fixtures/firefly_transactions.json`):
 
 | id | type | date | amount | from -> to | notes |
 |---|---|---|---|---|---|
-| 3 | withdrawal | 2025-01-20 | 42.50 EUR | Conto Corrente -> Caffè Münch & Söhne | description `Cena "da Mario"`, category Ristoranti, budget Svago |
-| 5 (group, 3 splits) | withdrawal | 2025-02-08 | 30.00 + 12.40 + 7.10 EUR | Conto Corrente -> Supermercato Più / Farmacia Centrale | group title `Spesa del sabato` |
-| 8 | withdrawal | 2025-03-03 | 91.75 EUR | Conto Corrente -> Hotel Lisboa | foreign amount 100.00 USD |
-| 9 | deposit | 2025-03-10 | 184.20 EUR | Freelance USA Inc -> Conto Corrente | foreign amount 200.00 USD |
-| 10 | transfer | 2025-03-15 | 1000.00 EUR | Conto Corrente -> Fineco Investimenti | reconciled |
+| 3 | withdrawal | 2025-01-20 | 42.50 EUR | Checking Account -> Café Münch & Söhne | description `Dinner "with friends"`, category Restaurants, budget Leisure |
+| 5 (group, 3 splits) | withdrawal | 2025-02-08 | 30.00 + 12.40 + 7.10 EUR | Checking Account -> Green Supermarket / City Pharmacy | group title `Saturday shopping` |
+| 8 | withdrawal | 2025-03-03 | 91.75 EUR | Checking Account -> Hotel Lisboa | foreign amount 100.00 USD |
+| 9 | deposit | 2025-03-10 | 184.20 EUR | Freelance USA Inc -> Checking Account | foreign amount 200.00 USD |
+| 10 | transfer | 2025-03-15 | 1000.00 EUR | Checking Account -> Acme Investments | reconciled |
 
-Generated (`--lang it`, investment account mapped to broker `Fineco`):
+Generated with `--lang en` on that data (no mapping file, so `--allow-unmapped`
+gives every account its automatic name):
+
+```
+firefly-reports export beancount --layout single --no-timestamp --allow-unmapped --lang en
+```
+
+`firefly.beancount` (the real output of the command above, pasted unedited):
 
 ```beancount
-; GENERATO - NON MODIFICARE A MANO
+; GENERATED - DO NOT EDIT BY HAND
 
 2024-12-31 commodity EUR
 2025-03-03 commodity USD
 
-2024-12-31 open Assets:Conto-Corrente
-2025-03-15 open Assets:Investimenti:Fineco:Cash
-2025-01-20 open Expenses:Caffe-Munch-Sohne
-...
+2025-03-15 open Assets:Acme-Investments
+2025-04-05 open Assets:Cash
+2024-12-31 open Assets:Checking-Account
+2025-02-01 open Assets:Savings-Emergency-Fund
+2024-12-31 open Equity:Opening-Balances
+2025-03-31 open Equity:Reconciliation
+2025-02-08 open Expenses:Groceries
+2025-02-08 open Expenses:Health
+2025-02-08 open Expenses:Home
+2025-01-20 open Expenses:Restaurants
+2025-03-03 open Expenses:Travel
+2025-04-02 open Expenses:Uncategorized
+2025-01-15 open Income:Fees
+2025-04-10 open Liabilities:Home-Mortgage
 
-2025-01-20 ! "Caffè Münch & Söhne" "Cena \"da Mario\""
+2024-12-31 * "Opening balance for Checking Account"
+  firefly_id: "1"
+  Equity:Opening-Balances        -1500.00 EUR
+  Assets:Checking-Account         1500.00 EUR
+
+2025-01-15 * "Acme Consulting LLC" "Invoice #001" #invoice #taxes-2025
+  firefly_id: "2"
+  Income:Fees                    -3200.00 EUR
+  Assets:Checking-Account         3200.00 EUR
+
+2025-01-20 * "Café Münch & Söhne" "Dinner \"with friends\""
   firefly_id: "3"
-  categoria: "Ristoranti"
-  budget: "Svago"
-  Assets:Conto-Corrente              -42.50 EUR
-  Expenses:Caffe-Munch-Sohne          42.50 EUR
+  budget: "Leisure"
+  note: "Line one Line two with \\ backslash"
+  Assets:Checking-Account          -42.50 EUR
+  Expenses:Restaurants              42.50 EUR
 
-2025-02-08 ! "Spesa del sabato"
+2025-02-01 * "Savings transfer"
+  firefly_id: "4"
+  Assets:Checking-Account         -500.00 EUR
+  Assets:Savings-Emergency-Fund    500.00 EUR
+
+2025-02-08 * "Saturday shopping"
   firefly_id: "5"
   firefly_group_id: "5"
-  Assets:Conto-Corrente              -49.50 EUR
-  Expenses:Supermercato-Piu           30.00 EUR
-    categoria: "Alimentari"
-    budget: "Casa"
-  Expenses:Supermercato-Piu           12.40 EUR
-    categoria: "Casa"
-    budget: "Casa"
-  Expenses:Farmacia-Centrale           7.10 EUR
-    categoria: "Salute"
+  Assets:Checking-Account          -49.50 EUR
+  Expenses:Groceries                30.00 EUR
+    payee: "Green Supermarket"
+    budget: "Home"
+  Expenses:Home                     12.40 EUR
+    payee: "Green Supermarket"
+    budget: "Home"
+  Expenses:Health                    7.10 EUR
+    payee: "City Pharmacy"
 
-2025-03-03 ! "Hotel Lisboa" "Hotel a Lisbona"
+2025-03-03 * "Hotel Lisboa" "Hotel in Lisbon"
   firefly_id: "8"
-  categoria: "Viaggi"
-  Assets:Conto-Corrente              -91.75 EUR
-  Expenses:Hotel-Lisboa              100.00 USD @@ 91.75 EUR
+  Assets:Checking-Account          -91.75 EUR
+  Expenses:Travel                  100.00 USD @@ 91.75 EUR
 
-2025-03-10 ! "Freelance USA Inc" "Consulenza"
+2025-03-10 * "Freelance USA Inc" "Consulting"
   firefly_id: "9"
-  categoria: "Compensi"
-  Income:Freelance-USA-Inc          -200.00 USD @@ 184.20 EUR
-  Assets:Conto-Corrente              184.20 EUR
+  Income:Fees                     -200.00 USD @@ 184.20 EUR
+  Assets:Checking-Account          184.20 EUR
 
-2025-03-15 * "Versamento al broker"
+2025-03-15 * "Broker deposit"
   firefly_id: "10"
-  Assets:Conto-Corrente            -1000.00 EUR
-  Assets:Investimenti:Fineco:Cash   1000.00 EUR
+  Assets:Checking-Account        -1000.00 EUR
+  Assets:Acme-Investments         1000.00 EUR
+
+2025-03-31 * "Reconciliation"
+  firefly_id: "11"
+  Equity:Reconciliation             -2.35 EUR
+  Assets:Checking-Account            2.35 EUR
+
+2025-04-02 * "Expense without payee"
+  firefly_id: "12"
+  Assets:Checking-Account           -9.99 EUR
+  Expenses:Uncategorized             9.99 EUR
+
+2025-04-05 * "Cash withdrawal"
+  firefly_id: "13"
+  Assets:Checking-Account          -60.00 EUR
+  Assets:Cash                       60.00 EUR
+
+2025-04-10 * "Home Loan Bank" "Installment"
+  firefly_id: "14"
+  Liabilities:Home-Mortgage       -250.00 EUR
+  Expenses:Uncategorized           250.00 EUR
 ```
 
 ## Mapping rules in detail
