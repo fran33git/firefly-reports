@@ -29,7 +29,7 @@ def test_init_happy_path_with_token(tmp_path, monkeypatch, capsys):
     monkeypatch.chdir(tmp_path)
     _mock_wizard(
         monkeypatch,
-        ["", "Mario Rossi", "", "IT", "y", "", "tax, business"],
+        ["", "Jane Doe", "", "IT", "y", "", "tax, business"],
         token="secret",
     )
     run_init()
@@ -37,7 +37,7 @@ def test_init_happy_path_with_token(tmp_path, monkeypatch, capsys):
     content = cfg.read_text(encoding="utf-8")
     assert 'url      = "https://firefly.example.com"' in content
     assert 'token    = "secret"' in content
-    assert 'owner    = "Mario Rossi"' in content
+    assert 'owner    = "Jane Doe"' in content
     assert 'currency = "€"' in content
     assert 'lang     = "it"' in content
     assert "legacy_report = true" in content

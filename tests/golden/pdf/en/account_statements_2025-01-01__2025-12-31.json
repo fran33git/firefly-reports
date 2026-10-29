@@ -76,9 +76,9 @@
     ],
     [
      "2025-01-15",
-     "Invoice #001 - Rossi LLC",
+     "Invoice #001 - Acme Consulting LLC",
      "DEP",
-     "Rossi LLC",
+     "Acme Consulting LLC",
      "3,200.00",
      "1,431.58"
     ],
@@ -174,7 +174,7 @@
      "2025-03-10",
      "Travel expense reimbursement",
      "DEP",
-     "Rossi LLC",
+     "Acme Consulting LLC",
      "150.00",
      "3,096.58"
     ],
@@ -206,15 +206,15 @@
      "2025-03-15",
      "Accountant fees Q1",
      "WIT",
-     "Bianchi & Partners",
+     "Baker & Partners",
      "(320.00)",
      "1,996.50"
     ],
     [
      "2025-03-28",
-     "Invoice #003 - Rossi LLC",
+     "Invoice #003 - Acme Consulting LLC",
      "DEP",
-     "Rossi LLC",
+     "Acme Consulting LLC",
      "2,900.00",
      "4,896.50"
     ],
@@ -278,7 +278,7 @@
      "2025-05-08",
      "Travel expense reimbursement",
      "DEP",
-     "Rossi LLC",
+     "Acme Consulting LLC",
      "450.00",
      "5,537.50"
     ],

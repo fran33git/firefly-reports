@@ -22,7 +22,7 @@ from firefly_reports.reports.options import Period, ReportOptions
 from firefly_reports.reports.spec import FireflySource
 
 EXAMPLES = """examples:
-  firefly-reports report --year 2025 --owner "Mario Rossi"
+  firefly-reports report --year 2025 --owner "Jane Doe"
   firefly-reports report --start 2025-01-01 --end 2025-06-30 --no-excel
 """
 

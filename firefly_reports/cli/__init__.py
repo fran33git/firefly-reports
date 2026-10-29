@@ -36,7 +36,7 @@ from firefly_reports.errors import FireflyReportsError
 COMMANDS = ("report", "export", "init", "demo")
 
 EPILOG = """examples:
-  firefly-reports report --year 2025 --owner "Mario Rossi"
+  firefly-reports report --year 2025 --owner "Jane Doe"
   firefly-reports export beancount --scaffold
   firefly-reports demo --out ./output
 
